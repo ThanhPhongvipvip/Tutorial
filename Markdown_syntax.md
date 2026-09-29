@@ -29,7 +29,7 @@
 |$\varphi$|\varphi|
 |$\theta$|\theta|
 |$\hat{a}$ (Ước lượng)|\hat{a}|
-|$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}$ |\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}|
+|$\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}$   |\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}|
 |$\arg\min_{x} f(x)$|\arg\min_{x} f(x)|
 |$\Rightarrow$|\Rightarrow|
 |$\Leftrightarrow$|\Leftrightarrow|
