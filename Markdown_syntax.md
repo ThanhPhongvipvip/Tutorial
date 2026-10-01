@@ -45,3 +45,13 @@
 |$\exists$|\exists|
 
 ### * Note: Trong ký hiệu toán học, các chỉ số  chạy tham số dưới sẽ nằm sau dấu _, các chỉ số ở phía trên sẽ nằm sau dấu ^/, các nhóm cùng vị trí nằm trong {}
+
+<div align="center">
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Process]
+    B --> C[End]
+```
+
+</div>
