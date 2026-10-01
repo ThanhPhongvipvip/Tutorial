@@ -256,3 +256,63 @@ export VGL_DISPLAY=:1
 
 vglrun -d :1 ./run.sh
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+## Nhanh hơn:
+
+### Config ssh:
+
+```bash
+Host ubuntu-vgl
+    HostName <IPv6>
+    User hieu
+    Port 22
+
+    ForwardX11 yes
+    ForwardX11Trusted yes
+    RequestTTY yes
+
+    RemoteCommand bash -lc 'PROJECT=$(find "$HOME" -type f -name run.sh -path "*/xf4_asr_rdd*" -print -quit); if [ -z "$PROJECT" ]; then echo "Không tìm thấy run.sh"; exit 1; fi; cd "$(dirname "$PROJECT")" || exit 1; unset VGL_CLIENT; export VGL_DISPLAY=:1; exec vglrun -d :1 ./run.sh'
+
+    LocalCommand sh -c 'if ! pgrep -u "$USER" -x vglclient >/dev/null 2>&1; then DISPLAY=:1 VGLCLIENT_IPV6=1 nohup vglclient -display :1 -port 4242 -ipv6 > "$HOME/.vglclient.log" 2>&1 & fi'
+    PermitLocalCommand yes
+```
+
+### SSH-remote
+
+### Build
+```bash
+export VGL_DISPLAY=:1
+unset VGL_CLIENT
+vglrun -d :1 ./run.sh
+```
+
+### Hoặc muốn nhanh hơn nữa:
+```bash
+ssh ubuntu-vgl
+```
+
+## Giảm lag GUI ( GIảm FPS)
+remote-run.sh
+```bash
+vglrun -d :1 \
+  -c jpeg \
+  -q 30 \
+  -np 8 \
+  -fps 60 \
+  ./run.sh
+```
+
+```bash
+chmod +x remote-run.sh run.sh
+```
