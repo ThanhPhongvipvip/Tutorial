@@ -6,34 +6,6 @@
 - vglclient -> nhận frame VirtualGL và hiển thị ở Ubuntu 1
 - VGL_CLIENT -> địa chỉ Ubuntu 1 mà Ubuntu 2 dùng để kết nối tới vglclient.
 
-## Kiến trúc:
-```mermaid
-flowchart LR
-    subgraph U1[Ubuntu 1]
-        D1[Desktop X11\nDISPLAY=:1]
-        VGL[vglclient\nport 4242]
-        
-        D1 --> VGL
-    end
-
-    subgraph U2[Ubuntu 2]
-        SSH[SSH server]
-        DISP[DISPLAY=localhost:10.0]
-        QT[Qt application]
-        VGLR[vglrun -d :1 ./run.sh]
-        X[X display :1]
-        GPU[NVIDIA RTX 5050]
-
-        SSH -- "SSH -Y" --> DISP
-        DISP -.-> QT
-        QT --> VGLR
-        VGLR --> X
-        X --> GPU
-    end
-
-    U2 -- "ZeroTier / LAN\nVirtualGL frames" <--> VGL
-```
-
 ## Các bước 
 ### 1. Ubuntu 1 - Máy nhận GUI
 
