@@ -254,19 +254,8 @@ cd ...
 unset VGL_CLIENT
 export VGL_DISPLAY=:1
 
-vglrun -d :1 ./run.sh
+vglrun -d :1 ./run.sh  
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 ## Nhanh hơn:
 
@@ -295,7 +284,7 @@ Host ubuntu-vgl
 export VGL_DISPLAY=:1
 unset VGL_CLIENT
 vglrun -d :1 ./run.sh
-```
+```  
 
 ### Hoặc muốn nhanh hơn nữa:
 ```bash
@@ -312,6 +301,7 @@ vglrun -d :1 \
   -fps 60 \
   ./run.sh
 ```
+
 
 ```bash
 chmod +x remote-run.sh run.sh
