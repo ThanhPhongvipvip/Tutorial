@@ -192,4 +192,63 @@ sudo grep -A2 -B1 '^Package: ros-rolling-desktop$' "$LIVE_STATUS" || true
 sudo grep -A2 -B1 '^Package: build-essential$' "$LIVE_STATUS" || true
 ```
 
+- Thêm script và dịch vụ vào custom-root của Cubic(Sử dụng deploy-nvidia-firstboot-iso.sh)
+```bash
+chmod +x deploy-nvidia-firstboot-iso.sh
+sudo ./deploy-nvidia-firstboot-iso.sh /home/phongvt/ubuntu-iso-build/custom-root
+```
+Script sẽ thêm một dịch vụ systemd vào hệ thống Ubuntu bên trong ISO. Khi Ubuntu được cài lên máy đích và khởi động lần đầu, dịch vụ sẽ kiểm tra GPU NVIDIA, dùng ubuntu-drivers install để chọn driver phù hợp nếu phát hiện GPU, rồi ghi nhận kết quả để không chạy lại
+
 - Chọn Next trong Cubic, sau đó chọn kernal, gzip rồi Generate
+
+- Trên máy đích, sau khi cài Ubuntu và khởi động lần đầu, kiểm tra log(Check Nvidia):
+```bash 
+sudo cat /var/log/nvidia-firstboot.log
+```
+
+Kiểm tra kết quả:
+```bash 
+sudo cat /var/lib/nvidia-firstboot/result
+```
+
+Nếu phát hiện NVIDIA:
+```bash 
+nvidia-driver-install-command-succeeded
+```
+
+Giả sử không có GPU Nvidia:
+```bash 
+no-nvidia
+```
+
+Sau khi cài xong nvidia, reboot rồi kiểm tra:
+```bash 
+nvidia-smi
+```
+#### <span style="color:red">Note: (Nvidia chưa test)</span> 
+
+#### Điều chỉnh để  Ubuntu khởi động nhanh hơn:
+- Dịch vụ hiện tại chạy quá trình cài driver trực tiếp trong giai đoạn khởi động hệ thống. Nếu Internet chậm, màn hình đăng nhập có thể xuất hiện muộn.
+Mở Terminal trên Ubuntu chủ, chạy lệnh sau để dịch vụ khởi chạy tác vụ cài driver ở chế độ nền:
+
+```bash 
+sudo tee /home/phongvt/ubuntu-iso-build/custom-root/etc/systemd/system/nvidia-firstboot.service >/dev/null <<'EOF'
+[Unit]
+Description=Schedule NVIDIA first boot driver installation
+ConditionKernelCommandLine=!boot=casper
+ConditionPathExists=!/var/lib/nvidia-firstboot/done
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemd-run --no-block --collect --unit=nvidia-firstboot-worker.service --property=Type=oneshot --property=Wants=network-online.target --property=After=network-online.target --property=TimeoutStartSec=45min /usr/local/sbin/nvidia-firstboot-install
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo chmod 0644 /home/phongvt/ubuntu-iso-build/custom-root/etc/systemd/system/nvidia-firstboot.service
+```
+
+- Sau đó tạo Next và tạo iso như trên
