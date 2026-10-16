@@ -216,11 +216,11 @@ chmod 0700 "$ROOT/root/install-dev-env.sh"
 
 # Copy the supplied checker if its fixed version is available next to this script.
 HERE="$(cd -- "$(dirname -- "$0")" && pwd)"
-if [[ -f "$HERE/check_env_iso.sh" ]]; then
-  install -D -m 0755 "$HERE/check_env_iso.sh" "$ROOT/usr/local/bin/check_env.sh"
+if [[ -f "$HERE/check_env.sh" ]]; then
+  install -D -m 0755 "$HERE/check_env.sh" "$ROOT/usr/local/bin/check_env.sh"
   echo "Đã cài checker đã chỉnh: /usr/local/bin/check_env.sh"
 else
-  echo "Gợi ý: chép check_env_iso.sh đã tải xuống vào custom-root/usr/local/bin/check_env.sh sau khi vào Cubic."
+  echo "Gợi ý: đặt check_env.sh cạnh script này rồi chạy lại, hoặc chép vào $ROOT/usr/local/bin/check_env.sh."
 fi
 
 # Make sure copied files are readable to the eventual live user.

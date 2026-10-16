@@ -10,12 +10,13 @@
 
 ## Install into the active Cubic project's custom-root from the HOST Ubuntu terminal:
 ```bash
-  chmod +x ~/Downloads/deploy-nvidia-firstboot-iso.sh
-  sudo ~/Downloads/deploy-nvidia-firstboot-iso.sh /home/phongvt/ubuntu-iso-build/custom-root
+cd ~/Downloads
+chmod +x deploy-nvidia-firstboot-iso.sh
+sudo ./deploy-nvidia-firstboot-iso.sh "$HOME/ubuntu-iso-build/cubic-project/custom-root"
 ```
-If the file was downloaded to another location, adjust the script path. If Cubic's active custom-root is elsewhere, pass that directory instead.
+Without an argument the script uses `~/ubuntu-iso-build/cubic-project/custom-root` of the user who ran `sudo` (the same project path as `prepare-cubic-env-host.sh` and `iso.md`). If Cubic's active custom-root is elsewhere, pass that directory instead.
 
-Then rebuild the ISO in Cubic. This script only adds the service; it does not build the ISO.
+Then rebuild the ISO in Cubic. This script only adds the service; it does not build the ISO. See `iso.md` for the optional unit override that runs the driver installation in the background.
 
 ### After installing Ubuntu from that ISO:
 - Internet access is required for APT/driver download.
@@ -24,5 +25,5 @@ Then rebuild the ISO in Cubic. This script only adds the service; it does not bu
 - Reboot after successful driver installation.
 - Official Ubuntu driver selection guide: https://ubuntu.com/desktop/docs/en/latest/how-to/graphics/install-nvidia-drivers/
 
-## <span style="color: red">Caution</span>: 
+## <span style="color: red">Caution</span>:
 Test the generated ISO in a VM and then on target hardware. The service runs only after Ubuntu is installed; it cannot fix a black screen that occurs before the installer starts. Secure Boot and driver-module compatibility still need validation on the target computer.

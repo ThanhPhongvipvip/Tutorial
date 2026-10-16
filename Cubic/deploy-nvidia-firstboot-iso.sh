@@ -4,7 +4,8 @@ set -Eeuo pipefail
 # Deploy a first-boot NVIDIA driver installer into a Cubic custom-root.
 # Run this on the host Ubuntu system, NOT inside the ISO's live session.
 
-ROOT="${1:-/home/phongvt/ubuntu-iso-build/custom-root}"
+CALLER_HOME="$(getent passwd "${SUDO_USER:-$USER}" | cut -d: -f6)"
+ROOT="${1:-$CALLER_HOME/ubuntu-iso-build/cubic-project/custom-root}"
 
 if [[ $EUID -ne 0 ]]; then
   echo "Run with sudo: sudo $0 [PATH_TO_CUBIC_CUSTOM_ROOT]" >&2

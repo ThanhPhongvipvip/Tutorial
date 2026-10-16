@@ -1,10 +1,24 @@
 # Custom .iso (Sử dụng Cubic dựa trên file Hướng dẫn cài đặt môi trường)
 
+## 0. Quy ước
+
+| Tên | Giá trị |
+|---|---|
+| Thư mục project Cubic | `~/ubuntu-iso-build/cubic-project` (cố định trong `prepare-cubic-env-host.sh`) |
+| custom-root | `~/ubuntu-iso-build/cubic-project/custom-root` |
+| custom-live | `~/ubuntu-iso-build/cubic-project/custom-live` |
+| Thư mục chứa các script | `~/Downloads` |
+| Checker | `~/Downloads/check_env.sh`, được chép vào ISO thành `/usr/local/bin/check_env.sh` |
+
+Mỗi bước đều ghi rõ nơi chạy:
+- **[HOST]**: terminal Ubuntu bình thường trên máy build, chạy bằng user thường (dùng `sudo` khi cần).
+- **[CUBIC]**: terminal chroot của Cubic (`root@cubic:~#`).
+
 ## 1. Quy trình
 
 ### 1.1. Các bước chi tiết
 
-#### a) CÀI ĐẶT VÀ KHỞI TẠO CUBIC TRÊN MÁY HOST
+#### a) [HOST] Cài đặt Cubic
 ```bash
 sudo apt-add-repository universe -y
 sudo apt-add-repository ppa:cubic-wizard/release -y
@@ -12,27 +26,30 @@ sudo apt update
 sudo apt install -y cubic
 ```
 
-#### b) Các bước: 
+#### b) Các bước
 
-- Chuẩn bị file script để kiểm tra môi trường
+- **[HOST]** Chuẩn bị script trong `~/Downloads`:
+    - `prepare-cubic-env-host.sh`
+    - `check_env.sh`: script prepare sẽ chép file này vào `custom-root/usr/local/bin/check_env.sh`.
+    - `deploy-nvidia-firstboot-iso.sh`
 
-- Khởi tạo dự án
-    - Mở Cubic qua terminal (cubic) hoặc menu ứng dụng.
+- Khởi tạo dự án:
+    - Mở Cubic qua terminal (`cubic`) hoặc menu ứng dụng.
 
-    - Chọn thư mục làm việc (Working directory, ví dụ: /home/user/cubic_workspace).
+    - Chọn thư mục làm việc (Working directory) **bắt buộc** là `~/ubuntu-iso-build/cubic-project`, vì `prepare-cubic-env-host.sh` dùng cố định đường dẫn này.
 
-    - Chọn file ISO gốc: ubuntu-24.04-desktop-amd64.iso.
+    - Chọn file ISO gốc: `ubuntu-24.04-desktop-amd64.iso`.
 
-    - Nhấn Next để Cubic giải nén SquashFS và tự động mở ra một Terminal chroot với quyền root@cubic:~#.
+    - Nhấn Next để Cubic giải nén SquashFS và tự động mở ra một Terminal chroot với quyền `root@cubic:~#`. **Để nguyên cửa sổ Cubic này.**
 
-- Tại Terminal (Script lấy QT, Snap 7, QWT từ máy hiện tại để đưa vào custome-root, đồng thời chuẩn bị script cài các gói còn lại trong cubic):
-```bash 
+- **[HOST]** Chạy script prepare (lấy Qt 6.7.2, Snap7, QWT từ máy hiện tại đưa vào custom-root, thêm nguồn ROS 2, chép checker và tạo `/root/install-dev-env.sh` để cài các gói còn lại trong Cubic):
+```bash
 cd ~/Downloads
-chmod +x prepare-cubic-env-host.sh check_env_iso.sh
+chmod +x prepare-cubic-env-host.sh check_env.sh
 sudo ./prepare-cubic-env-host.sh
 ```
 
-- Chuyển riêng nguồn ROS 2 sang HTTP. APT vẫn phải xác minh chữ ký GPG của repository; không tắt xác minh bảo mật hay dùng trusted=yes:
+- **[CUBIC]** Chuyển riêng nguồn ROS 2 sang HTTP. APT vẫn phải xác minh chữ ký GPG của repository; không tắt xác minh bảo mật hay dùng `trusted=yes`:
 
 ```bash
 grep -Rns 'packages.ros.org/ros2/ubuntu' \
@@ -48,25 +65,21 @@ done
 
 apt-get update
 ```
-- Kiểm tra lại ROS 2
 
-```bash 
+- **[CUBIC]** Kiểm tra lại ROS 2:
+
+```bash
 apt-cache policy ros-rolling-desktop
-
 apt-cache policy ros-dev-tools
 ```
 
-- Cài những gói được liệt kê trong check_env.sh, bao gồm build tools, QT5/OpenGL, Git, SSH Server, Wireshark, FFmpeg, Terminal, Ros 2 Rolling,.....
-```bash 
+- **[CUBIC]** Cài những gói được kiểm tra trong `check_env.sh`, bao gồm build tools, Qt5/OpenGL, Git, SSH Server, Wireshark, FFmpeg, Terminal, ROS 2 Rolling,... Script này cũng tạo locale `en_US.UTF-8`, cấu hình `ldconfig` cho Snap7/QWT và dọn cache apt khi xong:
+```bash
 bash /root/install-dev-env.sh
 ```
-- Kiểm tra: 
-```bash
-bash /usr/local/bin/check_env.sh
-```
 
-- Tại terminal cubic:
-```bash 
+- **[CUBIC]** Kiểm tra nhanh Qt, ROS 2, Snap7, QWT:
+```bash
 echo "===== QT 6.7.2 ====="
 /opt/Qt/6.7.2/gcc_64/bin/qmake -query QT_VERSION
 
@@ -84,19 +97,9 @@ echo "===== SNAP7 VÀ QWT ====="
 ldconfig -p | grep -E 'libsnap7|libqwt' || true
 ```
 
-- Dọn dẹp lại:
+- **[CUBIC]** Thiết lập Locale mặc định (tạo locale trước, sau đó mới đặt mặc định):
 ```bash
-apt-get clean
-rm -rf /var/lib/apt/lists/*
-```
-
-- Kiểm tra môi trường:
-```bash
-bash /usr/local/bin/check_env.sh
-```
-
-- Thiết lập Locale mặc định:
-```bash
+locale-gen en_US.UTF-8
 update-locale LANG=en_US.UTF-8 LANGUAGE=en_US:en
 
 export LANG=en_US.UTF-8
@@ -105,14 +108,11 @@ unset LC_ALL
 
 locale
 ```
-```bash 
-locale-gen en_US.UTF-8
-update-locale LANG=en_US.UTF-8 LANGUAGE=en_US:en
-```
-- Thêm autostart (Ví dụ Firefox)
+
+- **[CUBIC]** Thêm autostart (Ví dụ Firefox)
 
 Script auto start Firefox:
-```bash 
+```bash
 install -d -m 755 /usr/local/bin /etc/xdg/autostart
 
 cat > /usr/local/bin/firefox-autostart.sh <<'SCRIPT'
@@ -137,7 +137,7 @@ chmod 755 /usr/local/bin/firefox-autostart.sh
 
 Thiết lập tự khởi động:
 
-```bash 
+```bash
 cat > /etc/xdg/autostart/firefox-autostart.desktop <<'DESKTOP'
 [Desktop Entry]
 Type=Application
@@ -150,7 +150,16 @@ DESKTOP
 
 chmod 644 /etc/xdg/autostart/firefox-autostart.desktop
 ```
-- Đồng bộ Database trong Project Cubic ( Run trong terminal ubuntu)
+
+- **[CUBIC]** Dọn dẹp (nếu đã chạy thêm `apt-get update`/cài gói sau `install-dev-env.sh`) và kiểm tra môi trường lần cuối:
+```bash
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+
+bash /usr/local/bin/check_env.sh
+```
+
+- **[HOST]** Đồng bộ dpkg database từ custom-root sang custom-live:
 ```bash
 set -Eeuo pipefail
 
@@ -192,47 +201,20 @@ sudo grep -A2 -B1 '^Package: ros-rolling-desktop$' "$LIVE_STATUS" || true
 sudo grep -A2 -B1 '^Package: build-essential$' "$LIVE_STATUS" || true
 ```
 
-- Thêm script và dịch vụ vào custom-root của Cubic(Sử dụng deploy-nvidia-firstboot-iso.sh)
+> Nên chạy khối trên trong một shell con (`bash`) hoặc lưu thành file script, vì `set -e` và `exit` sẽ đóng terminal hiện tại khi gặp lỗi.
+
+- **[HOST]** Thêm script và dịch vụ NVIDIA first-boot vào custom-root (mặc định script dùng đúng custom-root ở mục 0; chỉ cần truyền đường dẫn nếu project nằm chỗ khác):
 ```bash
+cd ~/Downloads
 chmod +x deploy-nvidia-firstboot-iso.sh
-sudo ./deploy-nvidia-firstboot-iso.sh /home/phongvt/ubuntu-iso-build/custom-root
+sudo ./deploy-nvidia-firstboot-iso.sh "$HOME/ubuntu-iso-build/cubic-project/custom-root"
 ```
-Script sẽ thêm một dịch vụ systemd vào hệ thống Ubuntu bên trong ISO. Khi Ubuntu được cài lên máy đích và khởi động lần đầu, dịch vụ sẽ kiểm tra GPU NVIDIA, dùng ubuntu-drivers install để chọn driver phù hợp nếu phát hiện GPU, rồi ghi nhận kết quả để không chạy lại
+Script sẽ thêm một dịch vụ systemd vào hệ thống Ubuntu bên trong ISO. Khi Ubuntu được cài lên máy đích và khởi động lần đầu, dịch vụ sẽ kiểm tra GPU NVIDIA, dùng `ubuntu-drivers install` để chọn driver phù hợp nếu phát hiện GPU, rồi ghi nhận kết quả để không chạy lại.
 
-- Chọn Next trong Cubic, sau đó chọn kernal, gzip rồi Generate
+- **[HOST]** (Khuyến nghị) Điều chỉnh để Ubuntu khởi động nhanh hơn: dịch vụ mặc định chạy quá trình cài driver trực tiếp trong giai đoạn khởi động. Nếu Internet chậm, màn hình đăng nhập có thể xuất hiện muộn. Ghi đè unit để tác vụ cài driver chạy nền:
 
-- Trên máy đích, sau khi cài Ubuntu và khởi động lần đầu, kiểm tra log(Check Nvidia):
-```bash 
-sudo cat /var/log/nvidia-firstboot.log
-```
-
-Kiểm tra kết quả:
-```bash 
-sudo cat /var/lib/nvidia-firstboot/result
-```
-
-Nếu phát hiện NVIDIA:
-```bash 
-nvidia-driver-install-command-succeeded
-```
-
-Giả sử không có GPU Nvidia:
-```bash 
-no-nvidia
-```
-
-Sau khi cài xong nvidia, reboot rồi kiểm tra:
-```bash 
-nvidia-smi
-```
-#### <span style="color:red">Note: (Nvidia chưa test)</span> 
-
-#### Điều chỉnh để  Ubuntu khởi động nhanh hơn:
-- Dịch vụ hiện tại chạy quá trình cài driver trực tiếp trong giai đoạn khởi động hệ thống. Nếu Internet chậm, màn hình đăng nhập có thể xuất hiện muộn.
-Mở Terminal trên Ubuntu chủ, chạy lệnh sau để dịch vụ khởi chạy tác vụ cài driver ở chế độ nền:
-
-```bash 
-sudo tee /home/phongvt/ubuntu-iso-build/custom-root/etc/systemd/system/nvidia-firstboot.service >/dev/null <<'EOF'
+```bash
+sudo tee "$HOME/ubuntu-iso-build/cubic-project/custom-root/etc/systemd/system/nvidia-firstboot.service" >/dev/null <<'EOF'
 [Unit]
 Description=Schedule NVIDIA first boot driver installation
 ConditionKernelCommandLine=!boot=casper
@@ -248,7 +230,36 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOF
 
-sudo chmod 0644 /home/phongvt/ubuntu-iso-build/custom-root/etc/systemd/system/nvidia-firstboot.service
+sudo chmod 0644 "$HOME/ubuntu-iso-build/cubic-project/custom-root/etc/systemd/system/nvidia-firstboot.service"
 ```
 
-- Sau đó tạo Next và tạo iso như trên
+- **[CUBIC]** Chọn Next, sau đó chọn kernel, nén gzip rồi Generate.
+
+#### c) Kiểm tra trên máy đích
+
+Sau khi cài Ubuntu và khởi động lần đầu, kiểm tra log NVIDIA:
+```bash
+sudo cat /var/log/nvidia-firstboot.log
+```
+
+Kiểm tra kết quả:
+```bash
+sudo cat /var/lib/nvidia-firstboot/result
+```
+
+Nếu phát hiện NVIDIA và cài thành công:
+```text
+nvidia-driver-install-command-succeeded
+```
+
+Nếu không có GPU NVIDIA:
+```text
+no-nvidia
+```
+
+Sau khi cài xong driver NVIDIA, reboot rồi kiểm tra:
+```bash
+nvidia-smi
+```
+
+#### <span style="color:red">Note: (Nvidia chưa test)</span>
