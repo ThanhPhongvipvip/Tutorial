@@ -199,11 +199,11 @@ bash /usr/local/bin/check_env.sh
 ```
 
 Script này sẽ kiểm tra:
-- ✔ Build tools
-- ✔ Qt 6.x
-- ✔ ROS 2 Rolling
-- ✔ Snap7 và Qwt libraries
-- ✔ Các công cụ khác
+-  Build tools
+-  Qt 6.x
+-  ROS 2 Rolling
+-  Snap7 và Qwt libraries
+-  Các công cụ khác
 
 ### 5.4. Kiểm tra thủ công (tuỳ chọn)
 

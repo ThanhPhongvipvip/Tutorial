@@ -120,18 +120,6 @@ GitHub Packages là dịch vụ lưu trữ gói phần mềm tích hợp với G
 
 - **GitHub Packages**: Chứa **artifacts** (sản phẩm đã build/đóng gói)
 
-## So sánh với các dịch vụ khác
-
-| Loại Package | GitHub Packages | Registry Truyền thống |
-|:-------------|:----------------|:----------------------|
-| JavaScript   | ✓ npm           | npmjs.com             |
-| Java         | ✓ Maven         | Maven Central         |
-| Python       | ✓ PyPI          | pypi.org              |
-| Docker       | ✓ Container     | Docker Hub            |
-| .NET         | ✓ NuGet         | nuget.org             |
-| Ruby         | ✓ RubyGems      | rubygems.org          |
-
-
 **Ví dụ với Docker:**
 
 ```bash

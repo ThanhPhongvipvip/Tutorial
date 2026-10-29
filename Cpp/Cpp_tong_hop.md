@@ -265,9 +265,9 @@ public:
 ```
 
 **Lợi ích:**
-- ✓ Tách interface khỏi implementation
-- ✓ Dễ mở rộng: thêm PostgreSQLDatabase, MongoDatabase, etc.
-- ✓ Giảm coupling, tăng maintainability
+-  Tách interface khỏi implementation
+-  Dễ mở rộng: thêm PostgreSQLDatabase, MongoDatabase, etc.
+-  Giảm coupling, tăng maintainability
 
 ---
 

@@ -10,4 +10,3 @@ echo -e "\n=== Raw Pointer ==="
 echo -e "\n=== Smart Pointer ==="
 ./smart_pointer
 
-echo -e "\nĐọc So_sanh.md để so sánh chi tiết."
