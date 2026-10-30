@@ -158,7 +158,7 @@ docker pull ghcr.io/USERNAME/repository:tag
 GitHub Projects là công cụ quản lý dự án tích hợp với GitHub, giúp:
 - Tổ chức và theo dõi công việc
 - Quản lý Issues và Pull Requests
-- Hiển thị tiến độ dự án theo phong cách Kanban hoặc Table
+- Hiển thị tiến độ dự án 
 
 ## Cấu trúc Repository với Projects
 
@@ -184,7 +184,7 @@ Repository: DisplayInfo
 
 ### Bảng Kanban trong Project
 
-| 📝 To Do         | 🔄 In Progress      | ✅ Done         |
+| To Do         | In Progress      | Done         |
 |:----------------|:-------------------|:----------------|
 | Fix bug #12     | Implement UI       | Setup project   |
 | Write tests     | API connection     | Database schema |
@@ -225,27 +225,6 @@ Pull Request #15: Fix display bug (close #12)
 
 Khi PR được merge, Issue #12 tự động chuyển sang Done.
 
-## Phân biệt
-
-- **Repository/Code**: Chứa source code thực tế
-- **Issues**: Danh sách công việc, bug, feature request
-- **Projects**: Công cụ **quản lý và visualize** các Issues
-
-## Tạo Project qua CLI
-
-```bash
-# Cài đặt gh nếu chưa có
-sudo apt install gh
-
-# Tạo project mới
-gh project create --title "Sprint 1" --owner username
-
-# Liệt kê projects
-gh project list
-
-# Thêm issue vào project
-gh project item-add PROJECT_NUMBER --owner username --url ISSUE_URL
-```
 
 ## Lưu ý
 

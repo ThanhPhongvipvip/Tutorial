@@ -70,16 +70,10 @@ public:
 #### Các kiểu kế thừa
 
 ```cpp
-class Derived : public Base { };      // Public inheritance (phổ biến nhất)
+class Derived : public Base { };      // Public inheritance 
 class Derived : protected Base { };   // Protected inheritance
 class Derived : private Base { };     // Private inheritance
 ```
-
-| Kế thừa | public trong Base | protected trong Base | private trong Base |
-|:--------|:------------------|:--------------------|:------------------|
-| `public` | → public | → protected | ✗ không truy cập |
-| `protected` | → protected | → protected | ✗ không truy cập |
-| `private` | → private | → private | ✗ không truy cập |
 
 #### Ví dụ
 

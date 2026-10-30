@@ -151,7 +151,7 @@ $\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{bmatrix}$
 
 | Ký hiệu | LaTeX | Ý nghĩa |
 |:--------|:------|:--------|
-| $\arg\min_{x} f(x)$ | `\arg\min_{x} f(x)` | Argmin |
+| $\arg\min_{x} f(x)$ | \arg\min_{x} f(x) | Argmin |
 | $\arg\max_{x} f(x)$ | `\arg\max_{x} f(x)` | Argmax |
 | $\lim_{x \to \infty}$ | `\lim_{x \to \infty}` | Giới hạn |
 | $\log$ | `\log` | Logarit |
@@ -185,7 +185,7 @@ $$
 ```
 
 **Kết quả:**
-$$\begin{cases} x + y = 5 \\ 2x - y = 1 \end{cases}$$
+$$ \begin{cases} x + y = 5 \\ 2x - y = 1 \end{cases} $$
 
 ### Căn chỉnh nhiều dòng
 
