@@ -1,0 +1,145 @@
+# ============================================================
+# device.yaml - Schema v2: Minimal Auto-Discovery Config
+# 
+# MANDATORY FIELDS (only these need editing):
+# 1. device.id      - Unique machine identifier
+# 2. influxdb.url   - Central monitoring server IP/hostname
+#
+# TOKEN SETUP (environment variable, not in file):
+#   export INFLUX_TOKEN="your_influxdb_token"
+#   sudo -E ./install-agent-v2.sh
+#
+# AUTO-DISCOVERY:
+# - Hostname auto-detected → device.name
+# - CSV files auto-discovered from paths
+# - PostgreSQL auto-discovered from local socket
+# - Docker auto-detected if running
+# - Systemd services auto-discovered
+# - enabled: auto means "detect if available"
+# ============================================================
+
+schema_version: 2
+
+# ============================================================
+# DEVICE - Unique machine identifier
+# ============================================================
+device:
+  id: "cuonglq"                    # EDIT: Unique ID (e.g., machine01, prod-db)
+  
+  name: auto                       # Auto-detect from hostname
+  
+  location: "Factory-B"            # Optional: for organizing devices
+
+# ============================================================
+# INFLUXDB - Connection to central monitoring server
+# ============================================================
+influxdb:
+  enabled: true
+  
+  url: "http://192.168.1.53:8086"  # EDIT: Central server IP:port
+  
+  organization: "monitoring"
+  
+  # Token from environment variable (secure, not in file)
+  # Usage: export INFLUX_TOKEN="..." && sudo -E ./install-agent-v2.sh
+  token_env: "INFLUX_TOKEN"
+  
+  buckets:
+    system: "system_metrics"       # System metrics (CPU, memory, disk, network)
+    csv: "device_csv"              # CSV data files
+    database: "device_database"    # Database metrics (PostgreSQL, etc.)
+
+# ============================================================
+# AGENT - Telegraf collection parameters
+# ============================================================
+agent:
+  interval: "10s"        # Collect metrics every 10 seconds
+  flush_interval: "10s"  # Send to InfluxDB every 10 seconds
+
+# ============================================================
+# SYSTEM MONITORING
+# ============================================================
+monitoring:
+  system:
+    # auto = detect and enable if available
+    # true = always enable
+    # false = disable
+    enabled: auto
+    
+  heartbeat:
+    enabled: true      # Always enabled to track online/offline status
+    interval: "10s"
+
+# ============================================================
+# CSV AUTO-DISCOVERY
+# ============================================================
+csv:
+  enabled: true
+  
+  interval: "1m"  # Read CSV files every 1 minute
+  
+  paths:
+    # List glob patterns for CSV files
+    # Script auto-detects: header, delimiter, column types, tag columns
+    - "/home/cuonglq/test_grafana/language.csv"
+    # Examples:
+    # - "/home/user/data/sales.csv"
+    # - "/var/data/*.csv"
+  
+  discovery:
+    # Auto-detect configuration from file content
+    header: auto           # Detect if file has header row
+    delimiter: auto        # Detect delimiter: , ; \t |
+    column_types: auto     # Detect: int, float, bool, string
+    tag_columns: auto      # Auto-detect dimension columns
+  
+  mode: on_change  # on_change | always | timed
+
+# ============================================================
+# POSTGRESQL AUTO-DISCOVERY
+# ============================================================
+postgresql:
+  enabled: auto
+  
+  discovery:
+    mode: local                # local | remote
+    scan_instances: true       # Scan for running PostgreSQL instances
+    scan_databases: true       # Discover available databases
+  
+  # Credentials file for remote connections (optional)
+  credentials_file: "/etc/monitor-agent/postgresql.yml"
+
+# ============================================================
+# DOCKER AUTO-DISCOVERY
+# ============================================================
+docker:
+  enabled: auto
+  
+  discovery:
+    socket: auto          # Auto-detect Docker socket path
+    containers: all       # all | running | filter patterns
+    # containers: "prod-*"  # Example: monitor prod-* containers only
+
+# ============================================================
+# SYSTEMD AUTO-DISCOVERY
+# ============================================================
+applications:
+  enabled: auto
+  
+  discovery:
+    mode: running         # running | all | service_list
+    
+    include: []           # Example: ["ssh", "docker", "postgresql"]
+    
+    exclude:
+      - "getty@*"         # Exclude getty terminals
+      - "systemd-*"       # Exclude systemd internal services
+
+# ============================================================
+# REGISTRATION - Central service discovery (optional)
+# ============================================================
+registration:
+  enabled: auto          # auto = detect if PostgreSQL available
+  # Only enabled when:
+  # - Machine has PostgreSQL
+  # - Need central discovery registry
