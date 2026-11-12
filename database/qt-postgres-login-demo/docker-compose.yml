@@ -1,0 +1,54 @@
+name: qt-login-pg
+
+services:
+  db:
+    image: postgres:16
+    container_name: qt_login_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run ./run.sh to generate .env}
+      POSTGRES_DB: ${POSTGRES_DB:-appdb}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?run ./run.sh to generate .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Chỉ init.sh nằm trong initdb.d; schema.sql được init.sh gọi thủ công kèm tham số.
+      - ./db/init.sh:/docker-entrypoint-initdb.d/10-init.sh:ro
+      - ./db/schema.sql:/sql/schema.sql:ro
+    # Không publish cổng 5432 ra host mặc định => không đụng cổng với PostgreSQL có sẵn.
+    # Muốn truy cập từ host: bỏ comment dòng dưới.
+    # ports: ["127.0.0.1:5432:5432"]
+    healthcheck:
+      # -h 127.0.0.1 ép dùng TCP: chỉ thành công khi server thật sự (không phải server tạm
+      # lúc init) đã sẵn sàng.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: qt-login-demo:latest
+    # Chạy bằng uid/gid của người dùng host để truy cập được X server.
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB:-appdb}
+      DB_USER: login_app
+      DB_PASSWORD: ${APP_DB_PASSWORD:?run ./run.sh to generate .env}
+      DISPLAY: ${DISPLAY_FOR_CONTAINER:-:0}
+      XAUTHORITY: /tmp/.Xauthority
+      QT_QPA_PLATFORM: ${QT_QPA_PLATFORM:-xcb}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${XAUTH_FILE:-/dev/null}:/tmp/.Xauthority:ro
+
+volumes:
+  pgdata:

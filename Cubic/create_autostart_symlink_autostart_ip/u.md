@@ -185,7 +185,7 @@ exec "\$APP_ROOT/$exe_rel" "\$@"
 RUNEOF
     chmod 755 "$appdir/run.sh" "$exe"
     APP_COUNT=$(( APP_COUNT + 1 ))
-    echo "✓ $name done"
+    echo " $name done"
 done
 
 echo "====================================="
@@ -205,7 +205,7 @@ else
 fi
 
 echo "====================================="
-echo "✓ Staging complete: $STAGING"
+echo " Staging complete: $STAGING"
 ```
 
 Chạy:
@@ -416,7 +416,7 @@ X-GNOME-Autostart-enabled=true
 NoDisplay=true
 DESK
     chown "$uid:$gid" "$TARGET$uhome/.config/autostart/$app.desktop"
-    log "✓ $app deployed"
+    log " $app deployed"
 done
 
 log "=== Deploy complete ==="

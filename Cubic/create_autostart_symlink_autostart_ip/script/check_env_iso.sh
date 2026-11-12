@@ -30,17 +30,17 @@ print_section() {
 }
 
 ok() {
-    echo -e "  ${GREEN}✔${NC}  $1"
+    echo -e "  ${GREEN}${NC}  $1"
     ((PASS++))
 }
 
 fail() {
-    echo -e "  ${RED}✘${NC}  $1"
+    echo -e "  ${RED}${NC}  $1"
     ((FAIL++))
 }
 
 warn() {
-    echo -e "  ${YELLOW}⚠${NC}  $1"
+    echo -e "  ${YELLOW}${NC}  $1"
     ((WARN++))
 }
 
@@ -497,17 +497,17 @@ print_header "TÓM TẮT KẾT QUẢ"
 echo ""
 TOTAL=$((PASS + FAIL + WARN))
 echo -e "  Tổng kiểm tra : ${BOLD}$TOTAL${NC}"
-echo -e "  ${GREEN}✔ PASS${NC}         : ${BOLD}$PASS${NC}"
-echo -e "  ${RED}✘ FAIL${NC}         : ${BOLD}$FAIL${NC}"
-echo -e "  ${YELLOW}⚠ WARNING${NC}      : ${BOLD}$WARN${NC}"
+echo -e "  ${GREEN} PASS${NC}         : ${BOLD}$PASS${NC}"
+echo -e "  ${RED} FAIL${NC}         : ${BOLD}$FAIL${NC}"
+echo -e "  ${YELLOW} WARNING${NC}      : ${BOLD}$WARN${NC}"
 echo ""
 
 if [ "$FAIL" -eq 0 ] && [ "$WARN" -eq 0 ]; then
-    echo -e "  ${GREEN}${BOLD}🎉 Môi trường đầy đủ! Sẵn sàng build.${NC}"
+    echo -e "  ${GREEN}${BOLD} Môi trường đầy đủ! Sẵn sàng build.${NC}"
 elif [ "$FAIL" -eq 0 ]; then
-    echo -e "  ${YELLOW}${BOLD}⚠  Có $WARN cảnh báo nhỏ, kiểm tra lại nếu cần.${NC}"
+    echo -e "  ${YELLOW}${BOLD}  Có $WARN cảnh báo nhỏ, kiểm tra lại nếu cần.${NC}"
 else
-    echo -e "  ${RED}${BOLD}✘  Có $FAIL thành phần bị thiếu. Cần cài thêm trước khi build.${NC}"
+    echo -e "  ${RED}${BOLD}  Có $FAIL thành phần bị thiếu. Cần cài thêm trước khi build.${NC}"
 fi
 echo ""
 echo -e "${BOLD}${BLUE}══════════════════════════════════════════════════════════${NC}"
@@ -523,9 +523,9 @@ echo -e "  - Package từ squashfs không hiển thị đầy đủ trong dpkg"
 echo -e "  - Kiểm tra đầy đủ sau khi cài Ubuntu lên ổ cứng"
 echo ""
 echo -e "${CYAN}Những gì cần có trong Live ISO:${NC}"
-echo -e "  ✔ Qt 6.x: qmake6 hoạt động"
-echo -e "  ✔ ROS 2: /opt/ros/rolling tồn tại"
-echo -e "  ✔ Snap7: /usr/local/lib/libsnap7.so tồn tại"
-echo -e "  ✔ Qwt: /usr/local/qwt-*/lib/libqwt.so tồn tại"
-echo -e "  ✔ Build tools: gcc, g++, make, cmake hoạt động"
+echo -e "   Qt 6.x: qmake6 hoạt động"
+echo -e "   ROS 2: /opt/ros/rolling tồn tại"
+echo -e "   Snap7: /usr/local/lib/libsnap7.so tồn tại"
+echo -e "   Qwt: /usr/local/qwt-*/lib/libqwt.so tồn tại"
+echo -e "   Build tools: gcc, g++, make, cmake hoạt động"
 echo ""

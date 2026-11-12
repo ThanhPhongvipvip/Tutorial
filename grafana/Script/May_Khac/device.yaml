@@ -1,0 +1,87 @@
+# ============================================================
+# device.yaml - Cấu hình giám sát thiết bị cuonglq (Máy B)
+# ============================================================
+
+schema_version: 2
+
+# 1. ĐỊNH DANH THIẾT BỊ
+device:
+  id: "cuonglq"
+  name: auto
+  description: "Máy B - cuonglq (PostgreSQL erd_demo + GPU RTX A2000)"
+  location: "Factory-B"
+
+# 2. KẾT NỐI MÁY CHỦ INFLUXDB TRUNG TÂM (Máy A)
+influxdb:
+  enabled: true
+  url: "http://192.168.1.53:8086"
+  organization: "monitoring"
+  token_env: "INFLUX_TOKEN"
+  buckets:
+    system: "system_metrics"
+    csv: "device_csv"
+    database: "device_database"
+
+# 3. KHO METADATA ERD TẬP TRUNG (Máy A)
+central_catalog:
+  host: "192.168.1.53"
+  port: 5432
+  user: "grafana_reader"
+  password: "1"
+  database: "monitoring_catalog"
+
+# 4. THÔNG SỐ AGENT
+agent:
+  interval: "10s"
+  flush_interval: "10s"
+
+# 5. GIÁM SÁT HỆ THỐNG
+monitoring:
+  system:
+    enabled: true
+    cpu: true
+    memory: true
+    disk: true
+    diskio: true
+    network: true
+    uptime: true
+    processes: true
+  heartbeat:
+    enabled: true
+    interval: "10s"
+
+# 6. GIÁM SÁT POSTGRESQL & VẼ SƠ ĐỒ ERD (Máy B)
+postgresql:
+  enabled: true
+  instances:
+    - name: "cuonglq_pg"
+      host: "192.168.1.60"
+      port: 5432
+      username: "postgres"
+      password: "1"
+      databases:
+        - "auto"
+      sslmode: "disable"
+
+# 7. GIÁM SÁT DỮ LIỆU CSV (Máy B)
+# Cách 1: Tự động giám sát toàn bộ file CSV trong thư mục (tiện nhất khi thêm file mới)
+csv:
+  enabled: true
+  interval: "1m"
+  paths:
+    - "/home/cuonglq/test_grafana/*.csv"
+
+  # Cách 2: Khai báo từng file cụ thể (nếu muốn)
+  # files:
+  #   - name: "language"
+  #     path: "/home/cuonglq/test_grafana/language.csv"
+  #   - name: "sample_bar_chart"
+  #     path: "/home/cuonglq/test_grafana/sample_bar_chart.csv"
+
+# 8. DOCKER
+docker:
+  enabled: false
+
+# 9. DỊCH VỤ HỆ THỐNG
+applications:
+  enabled: auto

@@ -179,5 +179,5 @@ if [[ ${#pkgs[@]} -gt 0 ]]; then
 fi
 
 echo "====================================="
-echo "✓ Staging complete: $STAGING"
+echo " Staging complete: $STAGING"
 

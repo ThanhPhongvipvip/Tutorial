@@ -64,7 +64,7 @@ echo $DISPLAY
 
 **Kiểm tra X server hoạt động:**
 ```bash
-DISPLAY=:1 xdpyinfo >/dev/null && echo "✓ X11 :1 OK"
+DISPLAY=:1 xdpyinfo >/dev/null && echo " X11 :1 OK"
 ```
 
 ### 4. Chạy vglclient
@@ -149,11 +149,11 @@ echo $DISPLAY
 
 **Kết quả mong đợi:** `localhost:10.0` (hoặc `localhost:11.0`, v.v.)
 
-**⚠️ KHÔNG được là:** `:0` hoặc `:1` (nghĩa là X11 forwarding không hoạt động)
+** KHÔNG được là:** `:0` hoặc `:1` (nghĩa là X11 forwarding không hoạt động)
 
 **Test X11:**
 ```bash
-xdpyinfo >/dev/null && echo "✓ X11 forwarding OK"
+xdpyinfo >/dev/null && echo " X11 forwarding OK"
 ```
 
 ### 2. Kiểm tra VirtualGL với GPU NVIDIA

@@ -10,9 +10,9 @@
 
 | Specifier | Truy cập trong lớp | Truy cập từ lớp con | Truy cập từ bên ngoài |
 |:----------|:------------------:|:-------------------:|:---------------------:|
-| `private` | ✓ | ✗ | ✗ |
-| `protected` | ✓ | ✓ | ✗ |
-| `public` | ✓ | ✓ | ✓ |
+| `private` |  |  |  |
+| `protected` |  |  |  |
+| `public` |  |  |  |
 
 #### Ví dụ thực tế
 
@@ -596,7 +596,7 @@ public:
 
 class B {
 public:
-    std::weak_ptr<A> ptrA;  // ✓ Dùng weak_ptr
+    std::weak_ptr<A> ptrA;  //  Dùng weak_ptr
     ~B() { std::cout << "B destroyed\n"; }
 };
 
@@ -608,7 +608,7 @@ int main() {
     b->ptrA = a;  // weak_ptr không tăng count
     
     return 0;
-    // ✓ a và b được destroy đúng cách!
+    //  a và b được destroy đúng cách!
 }
 ```
 
@@ -725,7 +725,7 @@ Student(const std::string& n, int a) {
     age = a;
 }
 
-// ✓ Cách NÊN (initializer list)
+//  Cách NÊN (initializer list)
 Student(const std::string& n, int a) 
     : name(n),  // Direct initialization
       age(a) {
@@ -782,7 +782,7 @@ int main() {
 ```cpp
 class Base {
 public:
-    virtual ~Base() {  // ✓ Virtual destructor
+    virtual ~Base() {  //  Virtual destructor
         std::cout << "Base destroyed\n";
     }
 };
@@ -804,7 +804,7 @@ public:
 
 int main() {
     Base* ptr = new Derived();
-    delete ptr;  // ✓ Gọi cả Derived::~Derived() và Base::~Base()
+    delete ptr;  //  Gọi cả Derived::~Derived() và Base::~Base()
     return 0;
 }
 ```
@@ -861,7 +861,7 @@ public:
     // move constructor, move assignment...
 };
 
-// ✓ Cách mới (rule of zero)
+//  Cách mới (rule of zero)
 class ModernWay {
 private:
     std::vector<int> data;  // Tự động quản lý memory!

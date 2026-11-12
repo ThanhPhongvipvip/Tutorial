@@ -1,0 +1,5 @@
+.git
+.env
+app/build
+db
+README.md

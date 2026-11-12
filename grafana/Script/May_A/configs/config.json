@@ -1,0 +1,52 @@
+{
+  "version": "2.1.0",
+  "last_updated": "2026-11-11",
+  
+  "central_server": {
+    "ip": "192.168.1.53",
+    "influxdb": {
+      "port": 8086,
+      "organization": "monitoring",
+      "token": "VEomqmt1BBVIbaQRWl1qmcDt8ptRf8_1iGuU0I5aqGW0Gcb_MC787Vv-0Qg2rU-OhQvosxQvQa8U2IqW3P8pCQ==",
+      "buckets": ["system_metrics", "device_csv", "device_database"]
+    },
+    "postgresql": {
+      "port": 5432,
+      "database": "monitoring_catalog",
+      "user": "grafana_reader",
+      "password": "1"
+    },
+    "grafana": {
+      "port": 3000,
+      "default_user": "admin",
+      "default_password": "admin"
+    }
+  },
+  
+  "devices": {
+    "phongvt": "Host A - Central server + Agent",
+    "cuonglq": "Machine B - Agent only"
+  },
+  
+  "commands": {
+    "setup_central": "./setup.sh --central-server",
+    "setup_agent": "./setup.sh <device-name>",
+    "validate": "./setup.sh --validate device.yaml",
+    "dashboard_generate": "python3 manage.py generate",
+    "dashboard_import": "python3 manage.py import",
+    "collect_erd": "python3 manage.py collect device.yaml"
+  },
+  
+  "troubleshooting": {
+    "no_data": [
+      "Check datasources: curl -s http://localhost:3000/api/datasources -u admin:admin",
+      "Check InfluxDB data: curl with token",
+      "Select device in Grafana dropdown"
+    ],
+    "agent_not_sending": [
+      "sudo systemctl status telegraf",
+      "sudo journalctl -u telegraf -f",
+      "Check INFLUX_TOKEN env variable"
+    ]
+  }
+}

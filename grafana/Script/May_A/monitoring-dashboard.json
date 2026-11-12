@@ -1,0 +1,1007 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB-Monitoring",
+      "description": "Chọn InfluxDB Data Source",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "volkovlabs-echarts-panel",
+      "name": "Business Charts",
+      "version": "5.0.0"
+    }
+  ],
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Tổng Số Thiết Bị",
+      "type": "stat",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r._measurement == \"cpu\" and r._field == \"usage_idle\")\n  |> filter(fn: (r) => r.device != \"THAY_THANH_TEN_MAY_CUA_BAN\")\n  |> group(columns: [\"device\"])\n  |> last()\n  |> group()\n  |> count()"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "Thiết Bị Online",
+      "type": "stat",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: -2m)\n  |> filter(fn: (r) => r._measurement == \"cpu\" and r._field == \"usage_idle\")\n  |> filter(fn: (r) => r.device != \"THAY_THANH_TEN_MAY_CUA_BAN\")\n  |> group(columns: [\"device\"])\n  |> last()\n  |> group()\n  |> count()"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "value",
+        "orientation": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 20,
+      "title": "TÀI NGUYÊN HỆ THỐNG: $device",
+      "type": "row",
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false
+    },
+    {
+      "id": 21,
+      "title": "CPU Usage (%) - ${device}",
+      "description": "• CPU Hệ Thống (Kernel)\n• CPU Ứng Dụng (User)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "System",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"cpu\" and r.cpu == \"cpu-total\" and r._field == \"usage_system\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"cpu\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"System\")"
+        },
+        {
+          "refId": "User",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"cpu\" and r.cpu == \"cpu-total\" and r._field == \"usage_user\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"cpu\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"User\")"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "lineInterpolation": "smooth",
+            "fillOpacity": 15,
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "System"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "CPU Hệ Thống (Kernel)"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "User"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "CPU Ứng Dụng (User)"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "title": "RAM Usage (%) - ${device}",
+      "type": "timeseries",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 4,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "RAM",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"mem\" and r._field == \"used_percent\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"RAM\")"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "fillOpacity": 25,
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "RAM"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "RAM Đã Dùng (%)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "title": "Disk Usage (Root /) - ${device}",
+      "type": "piechart",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 4,
+        "w": 8,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r._measurement == \"disk\" and r.path == \"/\" and (r._field == \"used\" or r._field == \"free\"))\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> group(columns: [\"_field\"])\n  |> last()\n  |> map(fn: (r) => ({\n      _time: r._time,\n      _field: if r._field == \"used\" then \"Đã dùng\" else \"Còn trống\",\n      _value: r._value\n  }))"
+        }
+      ],
+      "options": {
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Đã dùng"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Còn trống"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "title": "Network Download - ${device}",
+      "type": "gauge",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 12,
+        "h": 6
+      },
+      "targets": [
+        {
+          "refId": "Download",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"net\" and r._field == \"bytes_recv\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> derivative(unit: 1s, nonNegative: true)\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> map(fn: (r) => ({_value: if exists r._value and r._value > 0.0 then r._value else 0.0}))"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "binBps",
+          "min": 0,
+          "noValue": "0 B/s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5242880
+              },
+              {
+                "color": "#E24D42",
+                "value": 20971520
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 25,
+      "title": "Network Upload - ${device}",
+      "type": "gauge",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 11,
+        "w": 12,
+        "h": 6
+      },
+      "targets": [
+        {
+          "refId": "Upload",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"net\" and r._field == \"bytes_sent\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> derivative(unit: 1s, nonNegative: true)\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> map(fn: (r) => ({_value: if exists r._value and r._value > 0.0 then r._value else 0.0}))"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "binBps",
+          "min": 0,
+          "noValue": "0 B/s",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 5242880
+              },
+              {
+                "color": "#E24D42",
+                "value": 20971520
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 30,
+      "title": "GIÁM SÁT CARD ĐỒ HỌA (NVIDIA GPU): $device",
+      "type": "row",
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false
+    },
+    {
+      "id": 31,
+      "title": "GPU Core Utilization (%) - ${device}",
+      "description": "Mức tải GPU Core (%):\n• Nếu hiện 0%: Do GPU đang nhàn rỗi (idle), không có tác vụ AI/đồ hoạ nào.\n• Khi có tác vụ chạy, biểu đồ sẽ hiển thị biến động theo thời gian thực.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nvidia_smi\" and r._field == \"utilization_gpu\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"arch\", \"compute_mode\", \"pstate\", \"uuid\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"GPU Core\")"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "mean"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "displayName": "GPU #${__field.labels.index}: ${__field.labels.name}",
+          "noValue": "0%",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 32,
+      "title": "GPU VRAM Memory Usage (MiB) - ${device}",
+      "type": "timeseries",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "Used",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nvidia_smi\" and r._field == \"memory_used\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"arch\", \"compute_mode\", \"pstate\", \"uuid\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"Used\")"
+        },
+        {
+          "refId": "Total",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nvidia_smi\" and r._field == \"memory_total\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"arch\", \"compute_mode\", \"pstate\", \"uuid\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"Total\")"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mbytes",
+          "noValue": "Thiết bị không có GPU",
+          "custom": {
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Used"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "GPU #${__field.labels.index} (${__field.labels.name}) — Đã dùng"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Total"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "GPU #${__field.labels.index} (${__field.labels.name}) — Tổng"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    6,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "title": "GPU Nhiệt Độ (°C) - ${device}",
+      "type": "timeseries",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "Temp",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nvidia_smi\" and r._field == \"temperature_gpu\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> drop(columns: [\"arch\", \"compute_mode\", \"pstate\", \"uuid\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"Nhiệt Độ\")"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "mean"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "displayName": "GPU #${__field.labels.index}: ${__field.labels.name}",
+          "custom": {
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 35,
+      "title": "GPU Công Suất (W) - ${device}",
+      "type": "timeseries",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 7
+      },
+      "targets": [
+        {
+          "refId": "Power",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"nvidia_smi\" and r._field == \"power_draw\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> drop(columns: [\"arch\", \"compute_mode\", \"pstate\", \"uuid\", \"device\", \"device_name\", \"host\", \"location\", \"_measurement\", \"_start\", \"_stop\"])\n  |> yield(name: \"Công Suất\")"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "mean"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "displayName": "GPU #${__field.labels.index}: ${__field.labels.name}",
+          "custom": {
+            "lineInterpolation": "linear",
+            "fillOpacity": 0,
+            "lineWidth": 1,
+            "spanNulls": true
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 50,
+      "title": "DỮ LIỆU TẬP TIN CSV: $device",
+      "type": "row",
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false
+    },
+    {
+      "id": 51,
+      "title": "Bảng Dữ Liệu CSV Chi Tiết: ${device} (Tập tin: ${csv_file})",
+      "type": "table",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ag3xs672o3if4e"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 33,
+        "w": 24,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"device_csv\")\n  |> range(start: -30d)\n  |> filter(fn: (r) => r._measurement == \"file\")\n  |> filter(fn: (r) => r.device =~ /^${device:regex}$/)\n  |> filter(fn: (r) => if \"${csv_file}\" == \".*\" or \"${csv_file}\" == \"All\" then true else r.csv_name =~ /^${csv_file:regex}$/ or r.file =~ /^${csv_file:regex}$/)\n  |> map(fn: (r) => ({ r with row_id: if exists r.row_id then r.row_id else \"1\" }))\n  |> group(columns: [\"device\", \"csv_name\", \"row_id\", \"_field\"])\n  |> last()\n  |> toString()\n  |> group(columns: [\"device\", \"csv_name\"])\n  |> pivot(rowKey: [\"row_id\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> drop(columns: [\"_start\", \"_stop\", \"_measurement\", \"host\", \"device_name\", \"location\", \"source_file\", \"row_id\"])\n  |> limit(n: 500)"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "footer": {
+          "show": true,
+          "enablePagination": true,
+          "pagination": {
+            "itemsPerPage": 20
+          }
+        }
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_time"
+            },
+            "properties": [
+              {
+                "id": "custom.displayName",
+                "value": "Thời Gian"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "device"
+            },
+            "properties": [
+              {
+                "id": "custom.displayName",
+                "value": "Thiết Bị"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "csv_name"
+            },
+            "properties": [
+              {
+                "id": "custom.displayName",
+                "value": "Tập Tin"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 60,
+      "title": "SƠ ĐỒ THỰC THỂ QUAN HỆ (ERD) - THIẾT BỊ: $device",
+      "type": "row",
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false
+    },
+    {
+      "id": 61,
+      "title": "Sơ Đồ Thực Thể Quan Hệ (ERD) Chuẩn pgAdmin 4 — Thiết Bị: ${device} | DB: ${db_name}",
+      "description": "Sơ đồ ERD trực quan chuẩn pgAdmin 4 sử dụng Cytoscape.js + ELK.js (Orthogonal routing, tự động sắp xếp Sugiyama, hiển thị đầy đủ PK/FK/Data Type, hỗ trợ zoom, kéo thả và xuất ảnh PNG).",
+      "type": "volkovlabs-echarts-panel",
+      "datasource": {
+        "type": "postgres",
+        "uid": "fg3xs673n239ca"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 24,
+        "h": 22
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "WITH nodes AS (\n    SELECT \n        'node' AS type,\n        device || '.' || database_name || '.' || schema_name || '.' || table_name AS id,\n        schema_name || '.' || table_name AS label,\n        columns_detail AS columns,\n        NULL::text AS source,\n        NULL::text AS target,\n        database_name AS db,\n        schema_name AS schema\n    FROM db_metadata_tables\n    WHERE device = '${device}'\n      AND ('${db_name}' = 'All' OR '${db_name}' = '' OR database_name = '${db_name}')\n),\nedges AS (\n    SELECT \n        'edge' AS type,\n        constraint_name AS id,\n        from_table || ' → ' || to_table AS label,\n        COALESCE(cardinality, '1 : 0..N') AS columns,\n        device || '.' || database_name || '.' || schema_name || '.' || to_table AS source,\n        device || '.' || database_name || '.' || schema_name || '.' || from_table AS target,\n        database_name AS db,\n        schema_name AS schema\n    FROM db_metadata_relations\n    WHERE device = '${device}'\n      AND ('${db_name}' = 'All' OR '${db_name}' = '' OR database_name = '${db_name}')\n)\nSELECT * FROM nodes\nUNION ALL\nSELECT * FROM edges;"
+        }
+      ],
+      "options": {
+        "getOption": "// Business Charts (Volkov Labs) - ERD Viewer Chuyên Dụng (Cytoscape.js + ELK.js Chuẩn pgAdmin 4)\nlet chart = (typeof echartsInstance !== 'undefined') ? echartsInstance : (typeof context !== 'undefined' && context.panel ? context.panel.chart : null);\n\nlet dom = null;\nif (chart && typeof chart.getDom === 'function') {\n  dom = chart.getDom();\n} else if (typeof context !== 'undefined' && context.element) {\n  dom = context.element;\n} else if (typeof context !== 'undefined' && context.container) {\n  dom = context.container;\n}\n\nif (!dom) {\n  dom = document.querySelector('[data-panelid=\"61\"]');\n}\n\nlet deviceName = 'cuonglq';\nlet dbName = 'erd_demo';\n\ntry {\n  if (typeof replaceVariables === 'function') {\n    deviceName = replaceVariables('${device}') || 'cuonglq';\n    dbName = replaceVariables('${db_name}') || 'erd_demo';\n  } else if (typeof context !== 'undefined' && context.grafana && typeof context.grafana.replaceVariables === 'function') {\n    deviceName = context.grafana.replaceVariables('${device}') || 'cuonglq';\n    dbName = context.grafana.replaceVariables('${db_name}') || 'erd_demo';\n  } else if (typeof context !== 'undefined' && context.panel && context.panel.scopedVars) {\n    deviceName = context.panel.scopedVars.device?.value || 'cuonglq';\n    dbName = context.panel.scopedVars.db_name?.value || 'erd_demo';\n  }\n} catch (e) {\n  console.warn('Error reading Grafana variables:', e);\n}\n\nconst host = window.location.hostname || '192.168.1.53';\nconst iframeUrl = 'http://' + host + ':8088/?device=' + encodeURIComponent(deviceName) + '&db=' + encodeURIComponent(dbName);\n\nif (dom) {\n  dom.style.position = 'relative';\n  dom.style.overflow = 'hidden';\n  dom.style.width = '100%';\n  dom.style.height = '100%';\n\n  let iframe = dom.querySelector('iframe.erd-iframe');\n  if (!iframe) {\n    iframe = document.createElement('iframe');\n    iframe.className = 'erd-iframe';\n    iframe.src = iframeUrl;\n    iframe.setAttribute('data-url', iframeUrl);\n    iframe.style.position = 'absolute';\n    iframe.style.top = '0';\n    iframe.style.left = '0';\n    iframe.style.width = '100%';\n    iframe.style.height = '100%';\n    iframe.style.border = 'none';\n    iframe.style.zIndex = '100';\n    iframe.style.background = '#f8fafc';\n    iframe.style.borderRadius = '6px';\n    dom.appendChild(iframe);\n  } else if (iframe.getAttribute('data-url') !== iframeUrl) {\n    iframe.src = iframeUrl;\n    iframe.setAttribute('data-url', iframeUrl);\n  }\n}\n\nreturn {};"
+      }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "monitoring",
+    "gpu",
+    "erd",
+    "business-charts"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "ds_postgres",
+        "label": "Kho Metadata Catalog",
+        "type": "datasource",
+        "query": "grafana-postgresql-datasource",
+        "refresh": 1,
+        "hide": 0,
+        "current": {
+          "selected": true,
+          "text": "grafana-postgresql-datasource",
+          "value": "grafana-postgresql-datasource"
+        },
+        "options": [],
+        "skipUrlSync": false
+      },
+      {
+        "name": "device",
+        "label": "Thiết Bị (Device)",
+        "type": "query",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "ag3xs672o3if4e"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\nschema.tagValues(bucket: \"system_metrics\", tag: \"device\")\n  |> filter(fn: (r) => r._value != \"THAY_THANH_TEN_MAY_CUA_BAN\" and r._value != \"\")",
+        "query": "import \"influxdata/influxdb/schema\"\nschema.tagValues(bucket: \"system_metrics\", tag: \"device\")\n  |> filter(fn: (r) => r._value != \"THAY_THANH_TEN_MAY_CUA_BAN\" and r._value != \"\")",
+        "regex": "/^(?!THAY_THANH_TEN_MAY_CUA_BAN$).*/",
+        "refresh": 2,
+        "sort": 1,
+        "multi": false,
+        "includeAll": false,
+        "hide": 0,
+        "current": {
+          "selected": true,
+          "text": "cuonglq",
+          "value": "cuonglq"
+        },
+        "options": [],
+        "skipUrlSync": false
+      },
+      {
+        "name": "db_name",
+        "label": "Cơ Sở Dữ Liệu",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "fg3xs673n239ca"
+        },
+        "definition": "SELECT DISTINCT database_name FROM db_metadata_tables WHERE device = '${device}' ORDER BY database_name;",
+        "query": "SELECT DISTINCT database_name FROM db_metadata_tables WHERE device = '${device}' ORDER BY database_name;",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": false,
+        "allValue": "All",
+        "hide": 0,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "All"
+        },
+        "options": [],
+        "skipUrlSync": false
+      },
+      {
+        "name": "csv_file",
+        "label": "Tập Tin CSV",
+        "type": "query",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "ag3xs672o3if4e"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\nschema.tagValues(bucket: \"device_csv\", tag: \"csv_name\")",
+        "query": "import \"influxdata/influxdb/schema\"\nschema.tagValues(bucket: \"device_csv\", tag: \"csv_name\")",
+        "refresh": 2,
+        "sort": 1,
+        "multi": false,
+        "includeAll": true,
+        "allValue": ".*",
+        "hide": 0,
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": ".*"
+        },
+        "options": [],
+        "skipUrlSync": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "1h"
+    ]
+  },
+  "timezone": "browser",
+  "title": "System Monitoring & Central ERD Dashboard",
+  "uid": "monitoring",
+  "version": 1
+}
