@@ -1,6 +1,4 @@
-# Sổ Tay Toàn Diện Cơ Sở Dữ Liệu & PostgreSQL 16 (Trực Quan & Thực Chiến)
-
-Tài liệu được biên soạn và chuẩn hóa theo hướng **trực quan, dễ hiểu, có hệ thống và bám sát thực tế sản xuất**: mọi khái niệm cốt lõi đều đi kèm sơ đồ luồng, hình ảnh biểu diễn dữ liệu; toàn bộ các câu lệnh SQL được giải thích rõ ràng kèm **bảng kết quả thực tế tương ứng**; chuyên sâu về **tối ưu hiệu năng truy vấn, cơ chế MVCC, kiến trúc lưu trữ và bảo mật** trong PostgreSQL 16.
+#  Cơ Sở Dữ Liệu & PostgreSQL 16
 
 > Ứng dụng demo thực tế Qt + PostgreSQL 16 + Docker: xem tại thư mục [`qt-postgres-login-demo/`](qt-postgres-login-demo/README.md).
 
@@ -8,44 +6,42 @@ Tài liệu được biên soạn và chuẩn hóa theo hướng **trực quan, 
 
 ## Mục lục
 
-1. [Phần 1: Nhập Môn Cơ Sở Dữ Liệu & Mô Hình Quan Hệ (RDBMS)](#phần-1-nhập-môn-cơ-sở-dữ-liệu--mô-hình-quan-hệ-rdbms)
-   - [1.1 CSDL là gì? Tại sao không dùng Excel / File?](#11-csdl-là-gì-tại-sao-không-dùng-excel--file)
-   - [1.2 Phân loại: SQL (RDBMS) vs NoSQL - Khi nào dùng gì?](#12-phân-loại-sql-rdbms-vs-nosql---khi-nào-dùng-gì)
-   - [1.3 Các khái niệm cốt lõi: Bảng, Cột, Hàng, Giá trị NULL](#13-các-khái-niệm-cốt-lõi-bảng-cột-hàng-giá-trị-null)
-   - [1.4 Các loại Khóa trong CSDL (PK, FK, Unique, Composite Key)](#14-các-loại-khóa-trong-csdl-pk-fk-unique-composite-key)
-   - [1.5 Bảng các kiểu dữ liệu quan trọng nhất trong PostgreSQL](#15-bảng-các-kiểu-dữ-liệu-quan-trọng-nhất-trong-postgresql)
-   - [1.6 Các mối quan hệ trong CSDL (1-1, 1-N, N-N)](#16-các-mối-quan-hệ-trong-csdl-1-1-1-n-n-n)
-   - [1.7 Chuẩn hóa dữ liệu (1NF -> 2NF -> 3NF) & Hiện tượng phản chuẩn hóa](#17-chuẩn-hóa-dữ-liệu-1nf---2nf---3nf--hiện-tượng-phản-chuẩn-hóa)
-2. [Phần 2: PostgreSQL 16 & Môi Trường Làm Việc](#phần-2-postgresql-16--môi-trường-làm-việc)
-   - [2.1 Cấu trúc phân cấp logic: Cluster -> Database -> Schema -> Table](#21-cấu-trúc-phân-cấp-logic-cluster---database---schema---table)
-   - [2.2 Cài đặt & Khởi chạy PostgreSQL 16 + pgAdmin 4 bằng Docker Compose](#22-cài-đặt--khởi-chạy-postgresql-16--pgadmin-4-bằng-docker-compose)
-   - [2.3 Chuỗi kết nối chuẩn (Connection String / URI) & Biến môi trường](#23-chuỗi-kết-nối-chuẩn-connection-string--uri--biến-môi-trường)
-   - [2.4 Bảng lệnh tắt psql bỏ túi (CLI Cheat Sheet)](#24-bảng-lệnh-tắt-psql-bỏ-túi-cli-cheat-sheet)
-3. [Phần 3: Bảng Tra Cứu Toàn Diện Các Câu Lệnh Truy Vấn SQL](#phần-3-bảng-tra-cứu-toàn-diện-các-câu-lệnh-truy-vấn-sql)
-   - [3.1 Bảng lệnh tạo và sửa cấu trúc (DDL)](#31-bảng-lệnh-tạo-và-sửa-cấu-trúc-ddl)
-   - [3.2 Bảng lệnh thao tác dữ liệu cơ bản (DML)](#32-bảng-lệnh-thao-tác-dữ-liệu-cơ-bản-dml)
-   - [3.3 Bảng điều kiện lọc & Tìm kiếm (WHERE, LIKE, ILIKE, IN, BETWEEN, IS NULL)](#33-bảng-điều-kiện-lọc--tìm-kiếm-where-like-ilike-in-between-is-null)
-   - [3.4 Hàm tổng hợp, Gom nhóm & Vòng đời câu truy vấn (GROUP BY, HAVING)](#34-hàm-tổng-hợp-gom-nhóm--vòng-đời-câu-truy-vấn-group-by-having)
-   - [3.5 Bảng Tra Cứu & Trực Quan Hóa Toàn Diện Các Phép JOIN](#35-bảng-tra-cứu--trực-quan-hóa-toàn-diện-các-phép-join)
-   - [3.6 Kỹ thuật truy vấn nâng cao (Subquery, CTE, UPSERT, Set Operations)](#36-kỹ-thuật-truy-vấn-nâng-cao-subquery-cte-upsert-set-operations)
-   - [3.7 Window Functions & Thao tác JSONB](#37-window-functions--thao-tác-jsonb)
-4. [Phần 4: Giao Dịch (Transaction), Kiểm Soát Đồng Thời & MVCC](#phần-4-giao-dịch-transaction-kiểm-soát-đồng-thời--mvcc)
-   - [4.1 Tính chất ACID của Transaction](#41-tính-chất-acid-của-transaction)
-   - [4.2 MVCC: Tại sao đọc không chặn ghi, ghi không chặn đọc?](#42-mvcc-tại-sao-đọc-không-chặn-ghi-ghi-không-chặn-đọc)
-   - [4.3 Các mức cô lập (Isolation Levels) & Hiện tượng đọc sai](#43-các-mức-cô-lập-isolation-levels--hiện-tượng-đọc-sai)
-   - [4.4 Cơ chế Khóa hàng: FOR UPDATE & FOR UPDATE SKIP LOCKED](#44-cơ-chế-khóa-hàng-for-update--for-update-skip-locked)
-5. [Phần 5: Nghệ Thuật Tối Ưu Hóa Truy Vấn (Query Optimization)](#phần-5-nghệ-thuật-tối-ưu-hóa-truy-vấn-query-optimization)
-   - [5.1 Bản chất Chỉ mục (Index) & Cơ chế hoạt động (B-Tree vs Sequential Scan)](#51-bản-chất-chỉ-mục-index--cơ-chế-hoạt-động-b-tree-vs-sequential-scan)
-   - [5.2 Bảng tra cứu các loại Index trong PostgreSQL](#52-bảng-tra-cứu-các-loại-index-trong-postgresql)
-   - [5.3 Giải mã kế hoạch thực thi với EXPLAIN (ANALYZE, BUFFERS)](#53-giải-mã-kế-hoạch-thực-thi-với-explain-analyze-buffers)
-   - [5.4 Bảng so sánh "NÊN LÀM vs NÊN TRÁNH" khi viết SQL](#54-bảng-so-sánh-nên-làm-vs-nên-tránh-khi-viết-sql)
-   - [5.5 Dọn rác với VACUUM, Autovacuum & Chống phình dữ liệu (Bloat)](#55-dọn-rác-với-vacuum-autovacuum--chống-phình-dữ-liệu-bloat)
-   - [5.6 Tối ưu cấu hình phần cứng & Connection Pooling (PgBouncer)](#56-tối-ưu-cấu-hình-phần-cứng--connection-pooling-pgbouncer)
-6. [Phần 6: Kiến Trúc Nội Bộ, Bảo Mật & Vận Hành](#phần-6-kiến-trúc-nội-bộ-bảo-mật--vận-hành)
-   - [6.1 Sơ đồ kiến trúc các tiến trình & Cơ chế WAL (Write-Ahead Logging)](#61-sơ-đồ-kiến-trúc-các-tiến-trình--cơ-chế-wal-write-ahead-logging)
-   - [6.2 Phân quyền Role & Bảo mật mật khẩu với pgcrypto (bcrypt)](#62-phân-quyền-role--bảo-mật-mật-khẩu-với-pgcrypto-bcrypt)
-   - [6.3 Sao lưu và phục hồi (Backup & Restore: pg_dump, pg_restore)](#63-sao-lưu-và-phục-hồi-backup--restore-pg_dump-pg_restore)
-   - [6.4 Checklist 10 quy tắc vàng an toàn cơ sở dữ liệu Production](#64-checklist-10-quy-tắc-vàng-an-toàn-cơ-sở-dữ-liệu-production)
+- [**Phần 1: Nhập Môn Cơ Sở Dữ Liệu & Mô Hình Quan Hệ (RDBMS)**](#phần-1-nhập-môn-cơ-sở-dữ-liệu--mô-hình-quan-hệ-rdbms)
+  - [1.1 CSDL là gì? Tại sao không dùng Excel / File?](#11-csdl-là-gì-tại-sao-không-dùng-excel--file)
+  - [1.2 Phân loại: SQL (RDBMS) vs NoSQL - Khi nào dùng gì?](#12-phân-loại-sql-rdbms-vs-nosql---khi-nào-dùng-gì)
+  - [1.3 Các khái niệm cốt lõi: Bảng, Cột, Hàng, Giá trị NULL](#13-các-khái-niệm-cốt-lõi-bảng-cột-hàng-giá-trị-null)
+  - [1.4 Các loại Khóa trong CSDL (PK, FK, Unique, Composite Key)](#14-các-loại-khóa-trong-csdl-pk-fk-unique-composite-key)
+  - [1.5 Bảng các kiểu dữ liệu quan trọng nhất trong PostgreSQL](#15-bảng-các-kiểu-dữ-liệu-quan-trọng-nhất-trong-postgresql)
+  - [1.6 Các mối quan hệ trong CSDL (1-1, 1-N, N-N)](#16-các-mối-quan-hệ-trong-csdl-1-1-1-n-n-n)
+  - [1.7 Chuẩn hóa dữ liệu (1NF -> 2NF -> 3NF) & Hiện tượng phản chuẩn hóa](#17-chuẩn-hóa-dữ-liệu-1nf---2nf---3nf--hiện-tượng-phản-chuẩn-hóa)
+- [**Phần 2: PostgreSQL 16 & Môi Trường Làm Việc**](#phần-2-postgresql-16--môi-trường-làm-việc)
+  - [2.1 Cấu trúc phân cấp logic: Cluster -> Database -> Schema -> Table](#21-cấu-trúc-phân-cấp-logic-cluster---database---schema---table)
+  - [2.2 Cài đặt & Khởi chạy PostgreSQL 16 + pgAdmin 4 bằng Docker Compose](#22-cài-đặt--khởi-chạy-postgresql-16--pgadmin-4-bằng-docker-compose)
+  - [2.3 Chuỗi kết nối chuẩn (Connection String / URI) & Biến môi trường](#23-chuỗi-kết-nối-chuẩn-connection-string--uri--biến-môi-trường)
+  - [2.4 Bảng lệnh tắt psql bỏ túi (CLI Cheat Sheet)](#24-bảng-lệnh-tắt-psql-bỏ-túi-cli-cheat-sheet)
+- [**Phần 3: Bảng Tra Cứu Toàn Diện Các Câu Lệnh Truy Vấn SQL**](#phần-3-bảng-tra-cứu-toàn-diện-các-câu-lệnh-truy-vấn-sql)
+  - [3.1 Bảng lệnh tạo và sửa cấu trúc (DDL)](#31-bảng-lệnh-tạo-và-sửa-cấu-trúc-ddl)
+  - [3.2 Bảng lệnh thao tác dữ liệu cơ bản (DML)](#32-bảng-lệnh-thao-tác-dữ-liệu-cơ-bản-dml)
+  - [3.3 Bảng điều kiện lọc & Tìm kiếm (WHERE, LIKE, ILIKE, IN, BETWEEN, IS NULL)](#33-bảng-điều-kiện-lọc--tìm-kiếm-where-like-ilike-in-between-is-null)
+  - [3.4 Hàm tổng hợp, Gom nhóm & Vòng đời câu truy vấn (GROUP BY, HAVING)](#34-hàm-tổng-hợp-gom-nhóm--vòng-đời-câu-truy-vấn-group-by-having)
+  - [3.5 Các Phép JOIN](#35-các-phép-join)
+  - [3.6 Truy vấn Subquery, CTE, UPSERT, Set Operations](#36-truy-vấn-subquery-cte-upsert-set-operations)
+  - [3.7 Window Functions & Thao tác JSONB](#37-window-functions--thao-tác-jsonb)
+- [**Phần 4: Giao Dịch (Transaction), Kiểm Soát Đồng Thời & MVCC**](#phần-4-giao-dịch-transaction-kiểm-soát-đồng-thời--mvcc)
+  - [4.1 Tính chất ACID của Transaction](#41-tính-chất-acid-của-transaction)
+  - [4.2 MVCC: Multi-Version Concurrency Control](#42-mvcc-multi-version-concurrency-control)
+  - [4.3 Các mức cô lập (Isolation Levels) & Hiện tượng đọc sai](#43-các-mức-cô-lập-isolation-levels--hiện-tượng-đọc-sai)
+  - [4.4 Cơ chế Khóa hàng: FOR UPDATE & FOR UPDATE SKIP LOCKED](#44-cơ-chế-khóa-hàng-for-update--for-update-skip-locked)
+- [**Phần 5: Tối Ưu Hóa Truy Vấn (Query Optimization)**](#phần-5-tối-ưu-hóa-truy-vấn-query-optimization)
+  - [5.1 Bản chất Chỉ mục (Index) & Cơ chế hoạt động (B-Tree vs Sequential Scan)](#51-bản-chất-chỉ-mục-index--cơ-chế-hoạt-động-b-tree-vs-sequential-scan)
+  - [5.2 Bảng tra cứu các loại Index trong PostgreSQL](#52-bảng-tra-cứu-các-loại-index-trong-postgresql)
+  - [5.4 Bảng so sánh "NÊN LÀM vs NÊN TRÁNH" khi viết SQL](#54-bảng-so-sánh-nên-làm-vs-nên-tránh-khi-viết-sql)
+  - [5.5 Dọn rác với VACUUM, Autovacuum & Chống phình dữ liệu (Bloat)](#55-dọn-rác-với-vacuum-autovacuum--chống-phình-dữ-liệu-bloat)
+  - [5.6 Tối ưu cấu hình phần cứng & Connection Pooling (PgBouncer)](#56-tối-ưu-cấu-hình-phần-cứng--connection-pooling-pgbouncer)
+- [**Phần 6: Kiến Trúc Nội Bộ, Bảo Mật & Vận Hành**](#phần-6-kiến-trúc-nội-bộ-bảo-mật--vận-hành)
+  - [6.1 Sơ đồ kiến trúc các tiến trình & Cơ chế WAL (Write-Ahead Logging)](#61-sơ-đồ-kiến-trúc-các-tiến-trình--cơ-chế-wal-write-ahead-logging)
+  - [6.2 Phân quyền Role & Bảo mật mật khẩu với pgcrypto (bcrypt)](#62-phân-quyền-role--bảo-mật-mật-khẩu-với-pgcrypto-bcrypt)
+
 
 ---
 
@@ -474,7 +470,7 @@ ORDER BY gia_trung_binh DESC;           -- BƯỚC 4: Sắp xếp danh mục the
 
 ---
 
-## 3.5 Bảng Tra Cứu & Trực Quan Hóa Toàn Diện Các Phép JOIN
+## 3.5 Các Phép JOIN
 
 Phép `JOIN` dùng để ghép các cột từ hai hay nhiều bảng lại với nhau dựa trên mối liên kết logic giữa các cột chung (thường là Khóa chính trỏ tới Khóa ngoại).
 
@@ -731,7 +727,7 @@ BẢNG: employees
 
 ---
 
-## 3.6 Kỹ thuật truy vấn nâng cao (Subquery, CTE, UPSERT, Set Operations)
+## 3.6 Truy vấn Subquery, CTE, UPSERT, Set Operations
 
 | Kỹ thuật | Cú pháp mẫu | Mục đích & Ứng dụng thực tế |
 | :--- | :--- | :--- |
@@ -850,7 +846,7 @@ sequenceDiagram
 
 ---
 
-## 4.2 MVCC: Tại sao đọc không chặn ghi, ghi không chặn đọc?
+## 4.2 MVCC:
 
 PostgreSQL kiểm soát truy cập đồng thời bằng cơ chế **MVCC (Multi-Version Concurrency Control)**. Khi một câu lệnh `UPDATE` hoặc `DELETE` diễn ra, PostgreSQL **không bao giờ ghi đè trực tiếp** lên ô nhớ của bản ghi cũ, mà thực hiện:
 1. Đánh dấu bản ghi cũ là đã hết hiệu lực (Dead Tuple).
@@ -996,40 +992,6 @@ WHERE contype = f AND NOT EXISTS (
     SELECT 1 FROM pg_index i WHERE i.indrelid = c.conrelid AND (i.indkey::int2[])[0] = (c.conkey)[1]
 );
 ```
-
----
-
-## 5.3 Giải mã kế hoạch thực thi với EXPLAIN (ANALYZE, BUFFERS)
-
-`EXPLAIN` là công cụ soi vào "bộ não" của PostgreSQL để xem câu lệnh được thực thi như thế nào.
-
-```sql
--- Cú pháp chuẩn khi kiểm tra hiệu năng:
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT * FROM orders WHERE user_id = 100;
-```
-
-> **Lưu ý an toàn:** Thêm `ANALYZE` nghĩa là câu lệnh **thực sự chạy trong database**. Nếu thử nghiệm với `UPDATE/DELETE`, hãy bọc trong `BEGIN; ... ROLLBACK;` để không làm mất dữ liệu!
-
-### 4 thông số cốt lõi cần đọc:
-
-```text
-Index Scan using idx_orders_user_id on orders  (cost=0.42..8.44 rows=1 width=16)
-                                                (actual time=0.035..0.036 rows=2 loops=1)
-  Buffers: shared hit=4 read=0
-Planning Time: 0.085 ms
-Execution Time: 0.052 ms
-```
-
-1. **`actual time=0.035..0.036 ms`:** Thời gian chạy thực tế (tính bằng mili-giây).
-2. **`rows=1` vs `actual rows=2`:** Số dòng dự đoán so với số dòng thực tế. Nếu lệch nhau trên **10 lần**, chứng tỏ thống kê cũ -> chạy ngay `ANALYZE orders;`.
-3. **`Buffers: shared hit=4 read=0`:** 
-   - `hit`: Đọc trực tiếp từ RAM (siêu nhanh, nano-giây).
-   - `read`: Phải đọc từ ổ đĩa cứng (chậm hơn hàng trăm lần). Càng nhiều `hit`, ít `read` càng tốt.
-4. **3 Cờ đỏ (Red Flags) cảnh báo khẩn cấp:**
-   - 🚩 Xuất hiện `Seq Scan` trên bảng lớn kèm `Rows Removed by Filter` cao -> **Đang thiếu Index!**
-   - 🚩 `Sort Method: external merge Disk` -> Bộ nhớ sắp xếp bị tràn ra ổ cứng -> Cần tăng biến `work_mem`.
-   - 🚩 `Nested Loop` với số dòng thực tế quá lớn -> Câu truy vấn đang bị lặp hàng triệu lần -> Cần tối ưu lại JOIN.
 
 ---
 
@@ -1302,106 +1264,3 @@ WHERE username = 'phongvt'
 -- Nếu mật khẩu sai: Trả về rỗng (0 dòng). Toàn bộ quá trình kiểm tra diễn ra an toàn trong CSDL.
 ```
 
----
-
-## 6.3 Sao lưu và phục hồi (Backup & Restore: pg_dump, pg_restore)
-
-### 1. Phân loại hai chiến lược sao lưu trong doanh nghiệp
-
-```mermaid
-flowchart TD
-    Backup["Chiến Lược Sao Lưu (Backup Strategies)"] --> Logic["1. Logical Backup (pg_dump / pg_dumpall)
-- Xuất dữ liệu dưới dạng câu lệnh SQL hoặc file nén nhị phân
-- Linh hoạt: Restore được giữa các phiên bản khác nhau, đổi OS
-- Nhược điểm: Chậm khi dữ liệu lên tới hàng Terabytes"]
-    Backup --> Physical["2. Physical Backup & PITR (pg_basebackup)
-- Sao chép toàn bộ khối dữ liệu nhị phân của thư mục dữ liệu
-- Đi kèm lưu trữ nhật ký liên tục (WAL Archiving)
-- Phục hồi về chính xác từng GIÂY trong quá khứ (PITR)"]
-```
-
----
-
-### 2. Hướng dẫn thực hành Logical Backup với `pg_dump`
-
-Luôn sử dụng cờ `-Fc` (Custom format). Đây là định dạng nén nhị phân độc quyền của PostgreSQL, cho phép nén dung lượng nhỏ nhất, kiểm tra tính toàn vẹn và cho phép phục hồi đa luồng song song.
-
-```bash
-# 1. Sao lưu database 'appdb' ra file nén nhị phân (Custom format):
-docker exec -t postgres_pg16 pg_dump -U admin -d appdb -Fc -v -f /tmp/appdb_backup.dump
-docker cp postgres_pg16:/tmp/appdb_backup.dump ./appdb_backup_$(date +%Y%m%d_%H%M%S).dump
-
-# 2. Phục hồi dữ liệu siêu tốc bằng chế độ đa luồng (-j 4 dùng 4 CPU core song song):
-# Cờ --clean: Xóa các bảng cũ trước khi nạp lại
-# Cờ --if-exists: Không báo lỗi nếu bảng chưa có
-docker exec -i postgres_pg16 pg_restore -U admin -d appdb_new     --clean --if-exists     --no-owner --no-privileges     -j 4 /tmp/appdb_backup.dump
-
-# 3. Sao lưu toàn bộ máy chủ (bao gồm tất cả Database, Người dùng và Phân quyền toàn cục):
-docker exec -t postgres_pg16 pg_dumpall -U admin --globals-only > cluster_globals.sql
-```
-
----
-
-### 3. Sao lưu vật lý và Khôi phục về thời điểm bất kỳ trong quá khứ (Point-In-Time Recovery - PITR)
-
-**Tình huống thực tế:** Lúc **14:35:22** hôm nay, một kỹ sư lỡ tay chạy câu lệnh:
-```sql
-DELETE FROM orders; -- Quên mệnh đề WHERE, xóa sạch 10 triệu đơn hàng!
-```
-Nếu chỉ có file backup lúc 00:00 đêm qua, công ty sẽ bị mất toàn bộ đơn hàng phát sinh từ 00:00 đến 14:35 (mất hơn 14 tiếng giao dịch).
-
-**Giải pháp PITR:**
-1. Chụp bản sao lưu vật lý nền (`pg_basebackup`) định kỳ hàng tuần.
-2. Bật chế độ đẩy file WAL liên tục (`archive_mode = on`) sang kho lưu trữ bảo mật (như AWS S3).
-3. Khi xảy ra sự cố, nạp bản sao lưu vật lý gần nhất và đặt thông số thời gian dừng lại:
-   ```text
-   recovery_target_time = '2026-11-12 14:35:20+07' -- Dừng lại chính xác 2 giây trước khi lệnh DELETE chạy!
-   ```
-4. PostgreSQL sẽ phát lại nhật ký giao dịch và dừng lại đúng thời điểm vàng, cứu vãn 100% dữ liệu!
-
----
-
-### 4. Kịch bản Bash Script tự động hóa sao lưu hàng ngày (Crontab Production):
-
-Tạo file `/opt/scripts/backup_postgres.sh`:
-```bash
-#!/bin/bash
-set -e
-
-BACKUP_DIR="/var/backups/postgres"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILE="${BACKUP_DIR}/appdb_${TIMESTAMP}.dump"
-DAYS_TO_KEEP=14 # Tự động xóa bản sao lưu cũ quá 14 ngày
-
-mkdir -p ${BACKUP_DIR}
-
-echo "[$TIMESTAMP] Bắt đầu quá trình sao lưu cơ sở dữ liệu..."
-docker exec postgres_pg16 pg_dump -U admin -d appdb -Fc -f "/var/lib/postgresql/data/backup_temp.dump"
-docker cp postgres_pg16:/var/lib/postgresql/data/backup_temp.dump "${BACKUP_FILE}"
-docker exec postgres_pg16 rm -f /var/lib/postgresql/data/backup_temp.dump
-
-echo "[$TIMESTAMP] Sao lưu thành công: ${BACKUP_FILE} (Kích thước: $(du -h ${BACKUP_FILE} | cut -f1))"
-
-# Dọn dẹp các bản backup cũ để không làm tràn ổ cứng:
-find ${BACKUP_DIR} -name "appdb_*.dump" -mtime +${DAYS_TO_KEEP} -delete
-echo "[$TIMESTAMP] Đã dọn dẹp các bản sao lưu cũ hơn ${DAYS_TO_KEEP} ngày."
-```
-
----
-
-## 6.4 Checklist 10 quy tắc vàng an toàn cơ sở dữ liệu Production
-
-Dưới đây là 10 nguyên tắc bảo mật và vận hành sống còn mà mọi kỹ sư phần mềm và quản trị viên hệ thống bắt buộc phải kiểm tra trước khi đưa hệ thống vào vận hành thực tế:
-
-| STT | Quy tắc an toàn | Nguy cơ tiềm ẩn nếu vi phạm | Giải pháp kỹ thuật bắt buộc áp dụng |
-| :---: | :--- | :--- | :--- |
-| **1** | **Chống tấn công SQL Injection** | Hacker có thể đọc trộm toàn bộ mật khẩu, sửa đổi số dư tài khoản hoặc xóa sạch CSDL. | **Bắt buộc dùng Parameterized Query / Prepared Statement (`$1, $2`).** Tuyệt đối không bao giờ nối chuỗi SQL thủ công từ dữ liệu do người dùng nhập vào. |
-| **2** | **Bảo vệ cổng kết nối mạng** | Bị quét IP tự động và tấn công Brute-force vét cạn mật khẩu từ Internet. | **Không bao giờ mở cổng `5432` ra `0.0.0.0`**. Chỉ lắng nghe tại `127.0.0.1` hoặc trong dải mạng nội bộ riêng (VPC / Docker Network). Cấu hình chặt chẽ file `pg_hba.conf`. |
-| **3** | **Nguyên tắc quyền tối thiểu (Least Privilege)** | Nếu backend bị chiếm quyền điều khiển, hacker có toàn quyền xóa bảng, tắt DB. | Ứng dụng **tuyệt đối không dùng tài khoản `postgres` (Superuser)**. Tạo tài khoản ứng dụng riêng và chỉ cấp quyền `SELECT, INSERT, UPDATE, DELETE` trên các bảng cần thiết. |
-| **4** | **Cấu hình Timeout ngăn treo kết nối** | Một truy vấn bị treo khóa (Lock) có thể kéo theo hàng trăm truy vấn khác xếp hàng sau, làm cạn kiệt tài nguyên máy chủ. | Luôn đặt trong `postgresql.conf`:<br>- `statement_timeout = 30000` (ngắt câu lệnh chạy quá 30 giây).<br>- `idle_in_transaction_session_timeout = 60000` (ngắt transaction mở rồi bỏ quên quá 60s).<br>- `lock_timeout = 10000` (tối đa chờ khóa 10s). |
-| **5** | **Giữ thống kê luôn mới với ANALYZE** | Query Planner tính toán sai số dòng, chọn nhầm thuật toán quét tuần tự làm chậm hệ thống gấp nghìn lần. | Chạy `ANALYZE` ngay sau khi vừa nạp dữ liệu hàng loạt. Giám sát tiến trình Autovacuum đảm bảo nó hoạt động đều đặn. |
-| **6** | **Thử nghiệm an toàn khi thao tác DML** | Lỡ tay chạy lệnh `UPDATE` hoặc `DELETE` nhầm lẫn làm mất sạch dữ liệu khách hàng. | Khi viết lệnh sửa đổi dữ liệu quan trọng, luôn bọc trong khối giao dịch:<br>`BEGIN;`<br>`UPDATE orders SET status = 'cancelled' WHERE ...;`<br>`-- Kiểm tra số dòng affected trước khi gõ COMMIT hoặc ROLLBACK!` |
-| **7** | **Đánh Index đúng và đủ** | Quên index Khóa ngoại gây khóa bảng cha; tạo quá nhiều index thừa làm nghẽn thao tác ghi và tốn RAM. | **Bắt buộc đánh index cho mọi cột Khóa ngoại (`FOREIGN KEY`)**. Định kỳ chạy truy vấn tìm và xóa bỏ các Index không dùng đến (`idx_scan = 0`). |
-| **8** | **Bắt buộc dùng Connection Pooler** | Hàng ngàn kết nối đồng thời làm sập RAM máy chủ vì cạn kiệt bộ nhớ và nghẽn CPU do Context Switching. | Sử dụng **PgBouncer** (chế độ Transaction Pooling) đặt ở giữa ứng dụng và PostgreSQL. |
-| **9** | **Tuyệt đối không tắt Autovacuum** | Bảng bị phình to dữ liệu (Bloat) không kiểm soát và đối mặt với thảm họa cạn kiệt Transaction ID (Wraparound) làm DB tự ngắt kết nối. | Giữ `autovacuum = on`. Tinh chỉnh tham số `scale_factor` thấp xuống cho các bảng lớn có tần suất cập nhật cao. |
-| **10**| **Chiến lược sao lưu 3-2-1 & Diễn tập phục hồi** | Mất sạch dữ liệu vĩnh viễn khi trung tâm dữ liệu gặp sự cố cháy nổ hoặc ransomware mã hóa đĩa. | Giữ **3 bản sao**, trên **2 loại thiết bị lưu trữ khác nhau**, và có **1 bản sao offsite (đẩy lên Cloud S3)**. **Thực hiện diễn tập phục hồi (Disaster Recovery Drill) định kỳ hàng tháng.** |
