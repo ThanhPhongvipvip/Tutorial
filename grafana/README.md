@@ -53,6 +53,12 @@ cd Script/May_A
    sudo -E ./install-agent-v2.sh --config device.yaml
    ```
 
+Sau khi hoan thanh
+![1](img/1.png)
+![2](img/2.png)
+![3](img/3.png)
+
+
 ---
 
 ## Xem Tài Liệu Chi Tiết
