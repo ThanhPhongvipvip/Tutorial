@@ -16,7 +16,7 @@ device:
   # Ví dụ thay thế:
   #   id: "may-cnc-01"               (Máy gia công số 1)
   #   id: "robot-arm-02"             (Cánh tay robot số 2)
-  #   id: "devbox-cuonglq"           (Máy trạm cá nhân)
+  #   id: "devbox-client01"          (Máy trạm cá nhân)
   # ----------------------------------------------------------
 
 # 2. KẾT NỐI MÁY CHỦ INFLUXDB TRUNG TÂM (MÁY A)
@@ -97,7 +97,7 @@ csv:
   # ----------------------------------------------------------
   # Ví dụ thay thế:
   #   paths:
-  #     - "/home/cuonglq/test_grafana/*.csv"
+  #     - "/home/user/sensor_data/*.csv"
   #     - "/var/log/sensor_data/*.csv"
   #     - "/opt/app/exports/*.csv"
   # ----------------------------------------------------------

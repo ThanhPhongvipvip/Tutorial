@@ -24,8 +24,8 @@
   },
   
   "devices": {
-    "server_a": "Host A - Central server + Agent (Vi du: phongvt, server-01)",
-    "device_b": "Machine B - Agent only (Vi du: cuonglq, client-02)"
+    "server_a": "Host A - Central server + Agent (Vi du: server-01, master-node)",
+    "device_b": "Machine B - Agent only (Vi du: client-01, worker-node)"
   },
   
   "commands": {

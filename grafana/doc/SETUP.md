@@ -72,7 +72,7 @@ device:
   location: "Khu-Vuc-A"
   # Ví dụ thay thế:
   #   id: "may-cnc-01"
-  #   id: "devbox-cuonglq"
+  #   id: "devbox-client01"
 
 # 2. TRỎ VỀ MÁY CHỦ INFLUXDB (IP Máy A)
 influxdb:
@@ -138,7 +138,7 @@ csv:
     - "/path/to/your/data/*.csv"
   # Ví dụ thay thế:
   #   paths:
-  #     - "/home/cuonglq/test_grafana/*.csv"
+  #     - "/home/user/sensor_data/*.csv"
   #     - "/data/csv_exports/*.csv"
 
 docker:

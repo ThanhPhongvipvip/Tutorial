@@ -4,7 +4,7 @@ Thư mục này chứa các tệp phụ trợ, dữ liệu mẫu phục vụ m�
 
 ---
 
-## 1. Danh mục các tệp hiện có trong `Other/`
+## 1. Danh mục các tệp hiện có trong Other/
 
 | Đường dẫn tệp | Mục đích sử dụng | Đánh giá tính cần thiết |
 | :--- | :--- | :--- |

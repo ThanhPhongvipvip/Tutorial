@@ -1,4 +1,4 @@
-# Cẩm Nang Sử Dụng & Vận Hành Hệ Thống (USAGE GUIDE)
+# Sử Dụng & Vận Hành Hệ Thống (USAGE GUIDE)
 
 Tài liệu hướng dẫn chi tiết cách sử dụng các tính năng giám sát CSV, cơ sở dữ liệu PostgreSQL, sơ đồ quan hệ ERD và cách khắc phục sự cố vận hành.
 
@@ -20,17 +20,60 @@ Nhờ cấu hình đường dẫn động (`paths`), bạn không cần khai bá
    * Đánh chỉ mục dòng `row_id` từ 1 đến hết bằng Starlark processor.
 4. Mở Grafana, tại mục biến **Tập Tin CSV**, chọn `doanh_thu`, toàn bộ dữ liệu bảng sẽ xuất hiện ngay lập tức.
 
-### 1.2. Cách chuyển dữ liệu CSV sang dạng biểu đồ (Visualization)
-Muốn chuyển bảng CSV thành biểu đồ cột (Bar Chart) hoặc biểu đồ đường:
-1. Bấm vào nút dấu 3 chấm góc phải của bảng CSV trên Grafana -> Chọn **Edit**.
-2. Ở bảng bên phải (Panel options):
-   * Đổi loại hiển thị từ **Table** sang **Bar chart** (hoặc **Time series**).
-3. Chuyển sang tab **Transformations**:
-   * Thêm **Convert field type**: Chọn cột chứa số lượng (ví dụ `So_don_hang`) chuyển sang kiểu **Number** (hoặc Integer).
-4. Ở phần thiết lập trục X/Y:
-   * **X Column**: Chọn cột tên (ví dụ `Nhan_vien`).
-   * **Y Column**: Chọn cột số liệu vừa chuyển đổi (`So_don_hang`).
-5. Bấm **Apply** để lưu lại biểu đồ.
+### 1.2. Hướng dẫn chi tiết từng bước: Chuyển từ Table sang Bar Chart (Biểu Đồ Cột)
+
+Mặc định, Panel dữ liệu CSV hiển thị dưới dạng **Bảng dữ liệu (Table)** để bạn có thể xem đầy đủ mọi dòng và cột của bất kỳ file CSV nào. Khi bạn muốn trực quan hóa dữ liệu (ví dụ: biểu đồ số lượng đơn hàng theo nhân viên, biểu đồ doanh thu theo phòng ban...), bạn có thể chuyển đổi sang **Bar chart** (hoặc **Time series**) chỉ với vài thao tác đơn giản theo các bước sau:
+
+#### Lưu ý kỹ thuật quan trọng trước khi làm
+Để hệ thống có thể hiển thị linh hoạt mọi file CSV với cấu trúc cột tùy ý mà không bị xung đột kiểu dữ liệu (Schema Collision), câu lệnh truy vấn Flux đã chuẩn hóa các trường về dạng văn bản (`String`). Do đó, khi vẽ biểu đồ số liệu (cột Bar chart), bạn **cần thêm 1 bước Transformation để chỉ định cột nào là số (Number)** như hướng dẫn ở Bước 3.
+
+---
+
+#### BƯỚC 1: Vào chế độ chỉnh sửa Panel (Edit Panel)
+1. Trên Dashboard Grafana, di chuột đến tiêu đề của panel CSV: **"Bảng Dữ Liệu CSV Chi Tiết"**.
+2. Chọn Edit.
+
+---
+
+#### BƯỚC 2: Đổi Visualization sang Bar Chart
+1. Nhìn sang góc trên cùng bên phải màn hình (khung cấu hình Visualization).
+2. Nhấp vào loại hiển thị hiện tại (đang là **Table**).
+3. Trong ô tìm kiếm hoặc danh sách hiện ra, chọn **Bar chart**.
+   *(Lúc này Grafana có thể báo cảnh báo chưa thấy cột số liệu phù hợp vì các cột CSV đang mang kiểu String, bạn sang Bước 3 để định kiểu)*.
+
+---
+
+#### BƯỚC 3: Chuyển đổi cột số liệu từ String sang Number (Transformations)
+1. Ở khu vực giữa màn hình (phía dưới khung xem trước biểu đồ), nhấp vào tab **Transformations** (nằm cạnh tab **Query**).
+2. Nhấp vào nút **Add transformation** (hoặc gõ tìm kiếm):
+   * Tìm và chọn bộ biến đổi tên là: **Convert field type**.
+3. Trong cấu hình của **Convert field type**:
+   * Mục **Field**: Chọn tên cột chứa số liệu bạn muốn vẽ lên trục tung Y (Ví dụ: `So_don_hang`, `Doanh_so`, `So_luong`...).
+   * Mục **as**: Chọn **Numeric** (hoặc **Integer** / **Number**).
+   *(Ngay khi chọn xong, dữ liệu cột đó sẽ chuyển thành số và biểu đồ Bar Chart sẽ lập tức hiển thị các cột)*.
+
+---
+
+#### BƯỚC 4: Tinh chỉnh trục X và cách hiển thị (Panel Options)
+Ở thanh cài đặt bên phải màn hình (mục **Bar chart**):
+1. **X Column (Trục hoành):**
+   * Chọn cột chứa nhãn tên bạn muốn đặt ở đáy biểu đồ (Ví dụ: `Nhan_vien`, `Bo_phan` hoặc `Thang`).
+2. **Orientation (Hướng cột):**
+   * **Vertical**: Cột dọc truyền thống.
+   * **Horizontal**: Cột ngang (rất thích hợp nếu tên nhân viên hoặc nhãn quá dài).
+3. **Show values (Hiện số liệu trên đỉnh cột):**
+   * Chọn **Always** để số lượng (ví dụ 125, 98, 143...) luôn hiện rõ trên đầu mỗi cột mà không cần rê chuột.
+4. **Color scheme (Màu sắc):**
+   * Chọn **Single color** hoặc **By value** / **Palette classic** tùy ý thích.
+
+---
+
+#### BƯỚC 5: Lưu và Hoàn tất
+1. Nhấp nút **Apply** màu xanh ở góc trên bên phải để áp dụng thay đổi vào Dashboard.
+2. Nhấp vào biểu tượng **Lưu (Save dashboard)** (hình đĩa mềm ở thanh công cụ trên cùng) hoặc nhấn tổ hợp `Ctrl + S`.
+3. Nhập ghi chú lưu (ví dụ: `Chuyển bảng CSV sang Bar chart`) rồi bấm **Save**.
+
+*Mẹo: Nếu bạn muốn vừa giữ bảng Table, vừa có thêm biểu đồ Bar chart, bạn chỉ cần bấm 3 chấm ở panel Table -> **More...** -> **Duplicate**, sau đó chuyển bản sao thành Bar chart!*
 
 ---
 
@@ -70,7 +113,7 @@ Nếu bạn vừa tạo thêm bảng mới hoặc tạo database mới trong Pos
 * **Chọn Database:** Dùng dropdown **Cơ Sở Dữ Liệu** trên đỉnh dashboard Grafana để chuyển đổi giữa các DB.
 * **Tự Động Xếp (ELK):** Bấm nút **"Tự Động Xếp (ELK)"** để thuật toán tự tính toán khoảng cách và vẽ lại dây liên kết khóa ngoại tối ưu, không bị đè lên nhau.
 * **Căn Giữa / Phóng To / Thu Nhỏ:** Sử dụng các nút điều khiển hoặc lăn chuột để tương tác với canvas.
-* **Xuất Ảnh PNG:** Bấm nút **"Xuất PNG"** để tải sơ đồ chất lượng cao về máy tính phục vụ báo cáo.
+* **Xuất Ảnh PNG:** Bấm nút **"Xuất PNG"** để tải sơ đồ chất lượng cao (độ phân giải 2x - 4x) về máy tính phục vụ báo cáo. Hệ thống sử dụng công nghệ kết xuất `html2canvas` giúp tự động căn chỉnh và lưu đầy đủ cả các bảng dữ liệu (tên bảng, cột, khóa PK/FK) lẫn các đường liên kết quan hệ. Lưu ý: Hãy bấm **F5** trên trình duyệt để tải lại trang nếu đang mở sẵn.
 
 ---
 
@@ -101,13 +144,4 @@ sudo systemctl restart telegraf
 telegraf --config /etc/telegraf/telegraf.d/90-device-agent.conf --test
 ```
 
----
 
-## 4. XỬ LÝ SỰ CỐ THƯỜNG GẶP (TROUBLESHOOTING)
-
-| Hiện tượng | Nguyên nhân | Cách khắc phục |
-| :--- | :--- | :--- |
-| **Khung ERD báo "Unable to connect at <IP_MAY_A>:8088"** | Dịch vụ `erd-viewer` trên Máy A chưa chạy hoặc firewall chặn port 8088. | Trên Máy A, chạy: `sudo systemctl restart erd-viewer`. Kiểm tra `curl -I http://127.0.0.1:8088`. |
-| **Bảng CSV chỉ hiện 1 dòng hoặc tiêu đề cột có dạng `{csv_name=...}`** | Tab trình duyệt Grafana vẫn đang giữ truy vấn cũ trong bộ nhớ RAM. | Bấm **F5** (hoặc `Ctrl + R`) để tải lại toàn bộ trang web trên trình duyệt. |
-| **Không thấy Database mới tạo trong danh sách chọn** | Cronjob chưa đến chu kỳ quét 5 phút. | Chạy lệnh quét thủ công: `python3 manage.py collect device.yaml`. |
-| **Lỗi kết nối PostgreSQL khi cài Agent** | Mật khẩu sai hoặc PostgreSQL chưa cấu hình cho phép kết nối trong `pg_hba.conf`. | Mở `/etc/postgresql/*/main/pg_hba.conf`, đảm bảo dòng `host all all 127.0.0.1/32 md5` hoặc `scram-sha-256` được cho phép, sau đó reload PostgreSQL. |

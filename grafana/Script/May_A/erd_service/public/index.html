@@ -8,6 +8,7 @@
   <script src="/libs/elk.bundled.js"></script>
   <script src="/libs/cytoscape-elk.js"></script>
   <script src="/libs/cytoscape-node-html-label.min.js"></script>
+  <script src="/libs/html2canvas.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body, html {
@@ -131,15 +132,15 @@
   <div id="canvas-container">
     <div class="top-bar">
       <div class="brand">
-        <span> pgAdmin 4 ERD Viewer</span>
+        <span>pgAdmin 4 ERD Viewer</span>
         <span class="db-badge" id="info-badge">Đang tải...</span>
       </div>
       <div class="actions">
-        <button class="btn" onclick="fitView()"> Căn Giữa</button>
-        <button class="btn" onclick="relayout()"> Tự Động Xếp (ELK)</button>
-        <button class="btn" onclick="zoomIn()"> Phóng To</button>
-        <button class="btn" onclick="zoomOut()"> Thu Nhỏ</button>
-        <button class="btn" onclick="exportPng()"> Xuất PNG</button>
+        <button class="btn" onclick="fitView()">Căn Giữa</button>
+        <button class="btn" onclick="relayout()">Tự Động Xếp (ELK)</button>
+        <button class="btn" onclick="zoomIn()">Phóng To</button>
+        <button class="btn" onclick="zoomOut()">Thu Nhỏ</button>
+        <button class="btn" id="btn-export" onclick="exportPng()">Xuất PNG</button>
       </div>
     </div>
     <div id="cy"></div>
@@ -209,7 +210,7 @@
         const html = `
           <div class="erd-table">
             <div class="erd-header ${headerClass}">
-              <span> ${t.schema_name}.${t.table_name}</span>
+              <span>${t.schema_name}.${t.table_name}</span>
               <span class="erd-count">${cols.length} cols</span>
             </div>
             <div class="erd-columns">
@@ -333,13 +334,58 @@
     }
     function zoomIn() { if (cy) cy.zoom(cy.zoom() * 1.2); }
     function zoomOut() { if (cy) cy.zoom(cy.zoom() * 0.8); }
-    function exportPng() {
-      if (cy) {
-        const png = cy.png({ bg: '#f8fafc', full: true, scale: 2 });
-        const a = document.createElement('a');
-        a.href = png;
-        a.download = `ERD_${device}_${db}.png`;
-        a.click();
+    async function exportPng() {
+      if (!cy) return;
+      const btn = document.getElementById('btn-export');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = ' Đang xuất PNG...';
+      }
+
+      const origZoom = cy.zoom();
+      const origPan = Object.assign({}, cy.pan());
+
+      try {
+        // Tự động căn chỉnh toàn bộ sơ đồ vào giữa khung hình với khoảng đệm chuẩn
+        cy.fit(40);
+        await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 200)));
+
+        const fitZoom = cy.zoom();
+        // Tự động tính toán scale để đảm bảo độ sắc nét cao (tối thiểu 2x, lên tới 4x nếu sơ đồ lớn)
+        const exportScale = Math.min(4, Math.max(2, 1.5 / (fitZoom || 1)));
+
+        const cyContainer = document.getElementById('cy');
+        const canvas = await html2canvas(cyContainer, {
+          backgroundColor: '#f8fafc',
+          scale: exportScale,
+          useCORS: true,
+          logging: false
+        });
+
+        const link = document.createElement('a');
+        link.download = `ERD_${device || 'device'}_${db || 'database'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        console.error('Lỗi khi xuất ảnh PNG bằng html2canvas:', err);
+        try {
+          const png = cy.png({ bg: '#f8fafc', full: true, scale: 2 });
+          const a = document.createElement('a');
+          a.href = png;
+          a.download = `ERD_${device || 'device'}_${db || 'database'}.png`;
+          a.click();
+        } catch (e) {
+          alert('Không thể xuất ảnh PNG: ' + err.message);
+        }
+      } finally {
+        // Khôi phục lại góc nhìn ban đầu của người dùng
+        cy.zoom(origZoom);
+        cy.pan(origPan);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       }
     }
   </script>

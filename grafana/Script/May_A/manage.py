@@ -585,7 +585,8 @@ def generate_dashboard_data():
                 '  |> toString()\n'
                 '  |> group(columns: ["device", "csv_name"])\n'
                 '  |> pivot(rowKey: ["row_id"], columnKey: ["_field"], valueColumn: "_value")\n'
-                '  |> drop(columns: ["_start", "_stop", "_measurement", "host", "device_name", "location", "source_file", "row_id"])\n'
+                '  |> drop(columns: ["_start", "_stop", "_measurement", "host", "device_name", "location", "source_file", "row_id", "device", "csv_name"])\n'
+                '  |> group()\n'
                 '  |> limit(n: 500)'
             )
         }],
@@ -594,12 +595,10 @@ def generate_dashboard_data():
             "footer": {"show": True, "enablePagination": True, "pagination": {"itemsPerPage": 20}}
         },
         "fieldConfig": {
-            "defaults": {},
-            "overrides": [
-                {"matcher": {"id": "byName", "options": "_time"}, "properties": [{"id": "custom.displayName", "value": "Thời Gian"}]},
-                {"matcher": {"id": "byName", "options": "device"}, "properties": [{"id": "custom.displayName", "value": "Thiết Bị"}]},
-                {"matcher": {"id": "byName", "options": "csv_name"}, "properties": [{"id": "custom.displayName", "value": "Tập Tin"}]}
-            ]
+            "defaults": {
+                "displayName": "${__field.name}"
+            },
+            "overrides": []
         }
     })
 
