@@ -20,8 +20,6 @@ def run_psql(sql):
     hosts = [CATALOG_HOST]
     if CATALOG_HOST != "127.0.0.1":
         hosts.append("127.0.0.1")
-    if CATALOG_HOST != "192.168.1.53":
-        hosts.append("192.168.1.53")
 
     for h in hosts:
         cmd = [
@@ -98,8 +96,8 @@ class ERDHandler(SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path == "/api/erd":
             params = urllib.parse.parse_qs(parsed.query)
-            device = params.get("device", ["cuonglq"])[0]
-            db = params.get("db", ["erd_demo"])[0]
+            device = params.get("device", [""])[0]
+            db = params.get("db", [""])[0]
 
             data = query_catalog(device, db)
             body = json.dumps(data).encode("utf-8")

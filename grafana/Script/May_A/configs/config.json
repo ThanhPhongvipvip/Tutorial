@@ -3,7 +3,7 @@
   "last_updated": "2026-11-11",
   
   "central_server": {
-    "ip": "192.168.1.53",
+    "ip": "192.168.1.100",
     "influxdb": {
       "port": 8086,
       "organization": "monitoring",
@@ -24,8 +24,8 @@
   },
   
   "devices": {
-    "phongvt": "Host A - Central server + Agent",
-    "cuonglq": "Machine B - Agent only"
+    "server_a": "Host A - Central server + Agent (Vi du: phongvt, server-01)",
+    "device_b": "Machine B - Agent only (Vi du: cuonglq, client-02)"
   },
   
   "commands": {

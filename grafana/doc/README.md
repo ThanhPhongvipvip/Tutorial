@@ -21,7 +21,7 @@ flowchart TD
         MB_PG -.-> MB_Cron
     end
 
-    subgraph CentralServer ["Máy Chủ Trung Tâm (Máy A - 192.168.1.53)"]
+    subgraph CentralServer ["Máy Chủ Trung Tâm (Máy A - <IP_MAY_A>)"]
         MA_Influx["InfluxDB 2.x (:8086)\n• system_metrics\n• device_csv\n• device_database"]
         MA_Catalog["Central Catalog PostgreSQL (:5432)\n• monitoring_catalog"]
         MA_ERD["ERD Viewer Microservice (:8088)\n• systemd: erd-viewer.service\n• Cytoscape.js + ELK layout"]

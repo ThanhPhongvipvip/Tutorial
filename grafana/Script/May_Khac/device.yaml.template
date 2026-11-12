@@ -27,7 +27,7 @@ schema_version: 2
 # ============================================================
 device:
   # ID thiết bị: Điền 'auto' để tự động lấy tên máy (hostname -s),
-  # hoặc đặt tên tùy chỉnh (vd: cuonglq, server-ai-01, devbox)
+  # hoặc đặt tên tùy chỉnh (vd: may-cnc-01, robot-02, devbox)
   id: auto
   
   # Tên hiển thị (auto = tự động lấy hostname)
@@ -46,8 +46,9 @@ influxdb:
   # Bật/tắt gửi metrics lên InfluxDB
   enabled: true
   
-  # URL máy chủ InfluxDB (THAY ĐỔI IP NẾU CẦN)
-  url: "http://192.168.1.53:8086"
+  # URL máy chủ InfluxDB (Thay thế bằng IP máy chủ của bạn)
+  # Ví dụ: url: "http://192.168.1.53:8086" hoặc "http://localhost:8086"
+  url: "http://192.168.1.100:8086"
   
   # Organization trong InfluxDB
   organization: "monitoring"
@@ -65,8 +66,9 @@ influxdb:
 # 3. KẾT NỐI KHO METADATA ERD TẬP TRUNG
 # ============================================================
 central_catalog:
-  # IP máy chủ PostgreSQL chứa monitoring_catalog (THAY ĐỔI NẾU CẦN)
-  host: "192.168.1.53"
+  # IP máy chủ PostgreSQL chứa monitoring_catalog (Thay bằng IP máy A)
+  # Ví dụ: host: "192.168.1.53" hoặc "localhost"
+  host: "192.168.1.100"
   
   # Port PostgreSQL
   port: 5432
@@ -137,20 +139,21 @@ postgresql:
   # Danh sách các PostgreSQL instances
   instances:
     - name: "pg_instance_1"
-      host: "localhost"                 # hoặc IP máy B: 192.168.1.60
+      host: "localhost"                 # localhost hoặc IP máy chứa DB (ví dụ: 192.168.1.60)
       port: 5432
       username: "postgres"
       password: "1"                     # Mật khẩu user postgres
       databases:
-        - "erd_demo"                    # Database thứ nhất
-        # - "myapp_prod"                # Thêm database mới vào đây
-        # - "auto"                      # Hoặc điền "auto" để tự động quét TẤT CẢ database
+        - "auto"                        # "auto": Tự động phát hiện toàn bộ Database người dùng
+        # Hoặc liệt kê cụ thể:
+        # - "app_db"
+        # - "order_db"
       sslmode: "disable"
 
 # ============================================================
 # 7. GIÁM SÁT FILE CSV (Tùy chọn)
 # ============================================================
-# Hỗ trợ khai báo từng file cụ thể (files) HOẶC quét thư mục (paths)
+# Hỗ trợ quét thư mục (paths) HOẶC khai báo từng file cụ thể (files)
 csv:
   # Bật/tắt giám sát file CSV
   enabled: true
@@ -158,19 +161,19 @@ csv:
   # Tần suất đọc dữ liệu CSV
   interval: "1m"
   
-  # CÁCH 1: Khai báo từng tệp CSV cụ thể
-  files:
-    - name: "language"
-      path: "/home/cuonglq/test_grafana/language.csv"
-      header: true
-      delimiter: ","
-      timestamp_column: ""
-      timestamp_format: ""
+  # CÁCH 1 (Khuyên dùng): Tự động quét toàn bộ file *.csv trong thư mục
+  paths:
+    - "/path/to/your/data/*.csv"
+    # Ví dụ thực tế:
+    # - "/home/user/my_csv_data/*.csv"
+    # - "/var/log/sensor_data/*.csv"
 
-  # CÁCH 2: Tự động quét toàn bộ file *.csv trong thư mục (tiện lợi khi thêm file mới)
-  # paths:
-  #   - "/home/cuonglq/test_grafana/*.csv"
-  #   - "/data/csv_exports/*.csv"
+  # CÁCH 2: Khai báo từng tệp CSV cụ thể (nếu muốn cấu hình riêng biệt)
+  # files:
+  #   - name: "sales_report"
+  #     path: "/path/to/sales_report.csv"
+  #     header: true
+  #     delimiter: ","
 
 # ============================================================
 # 8. GIÁM SÁT DOCKER (Tùy chọn)

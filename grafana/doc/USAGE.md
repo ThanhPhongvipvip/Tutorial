@@ -8,7 +8,7 @@ Tài liệu hướng dẫn chi tiết cách sử dụng các tính năng giám s
 
 ### 1.1. Thêm một file CSV mới vào hệ thống
 Nhờ cấu hình đường dẫn động (`paths`), bạn không cần khai báo từng cột hay sửa file cấu hình mỗi khi có file mới:
-1. Sao chép file `.csv` mới của bạn vào thư mục giám sát trên máy client (ví dụ `/home/cuonglq/test_grafana/doanh_thu.csv`).
+1. Sao chép file `.csv` mới của bạn vào thư mục giám sát trên máy client (ví dụ: `/path/to/data/doanh_thu.csv`).
 2. Chạy lại lệnh nạp agent trên máy client:
    ```bash
    sudo -E ./install-agent-v2.sh --config device.yaml
@@ -107,7 +107,7 @@ telegraf --config /etc/telegraf/telegraf.d/90-device-agent.conf --test
 
 | Hiện tượng | Nguyên nhân | Cách khắc phục |
 | :--- | :--- | :--- |
-| **Khung ERD báo "Unable to connect at 192.168.1.53:8088"** | Dịch vụ `erd-viewer` trên Máy A chưa chạy hoặc firewall chặn port 8088. | Trên Máy A, chạy: `sudo systemctl restart erd-viewer`. Kiểm tra `curl -I http://127.0.0.1:8088`. |
+| **Khung ERD báo "Unable to connect at <IP_MAY_A>:8088"** | Dịch vụ `erd-viewer` trên Máy A chưa chạy hoặc firewall chặn port 8088. | Trên Máy A, chạy: `sudo systemctl restart erd-viewer`. Kiểm tra `curl -I http://127.0.0.1:8088`. |
 | **Bảng CSV chỉ hiện 1 dòng hoặc tiêu đề cột có dạng `{csv_name=...}`** | Tab trình duyệt Grafana vẫn đang giữ truy vấn cũ trong bộ nhớ RAM. | Bấm **F5** (hoặc `Ctrl + R`) để tải lại toàn bộ trang web trên trình duyệt. |
 | **Không thấy Database mới tạo trong danh sách chọn** | Cronjob chưa đến chu kỳ quét 5 phút. | Chạy lệnh quét thủ công: `python3 manage.py collect device.yaml`. |
 | **Lỗi kết nối PostgreSQL khi cài Agent** | Mật khẩu sai hoặc PostgreSQL chưa cấu hình cho phép kết nối trong `pg_hba.conf`. | Mở `/etc/postgresql/*/main/pg_hba.conf`, đảm bảo dòng `host all all 127.0.0.1/32 md5` hoặc `scram-sha-256` được cho phép, sau đó reload PostgreSQL. |

@@ -36,7 +36,7 @@ Máy A đóng vai trò trung tâm lưu trữ toàn bộ chỉ số giám sát, c
 ### 1.3. Chạy Script Thiết Lập Trọn Gói Máy A
 Di chuyển vào thư mục script của Máy A:
 ```bash
-cd /home/phongvt/phong/Tong_hop/grafana/Script/May_A
+cd Script/May_A
 ./setup.sh --central-server
 ```
 
@@ -51,43 +51,51 @@ cd /home/phongvt/phong/Tong_hop/grafana/Script/May_A
 ## PHẦN 2: CÀI ĐẶT AGENT TRÊN THIẾT BỊ CLIENT (MÁY B, MÁY C...)
 
 ### 2.1. Chuẩn bị file trên máy client
-Sao chép toàn bộ thư mục `Script/May_Khac` sang máy client (ví dụ sang thư mục `/home/cuonglq/test_grafana/` trên Máy B):
+Sao chép toàn bộ thư mục `Script/May_Khac` sang máy client (ví dụ sang thư mục `/home/user/agent/` trên máy client):
 ```bash
-# Thực hiện từ Máy A:
-scp -r /home/phongvt/phong/Tong_hop/grafana/Script/May_Khac/* cuonglq@192.168.1.60:/home/cuonglq/test_grafana/
+# Thực hiện từ Máy A (hoặc copy trực tiếp qua USB/SSH):
+# Ví dụ: scp -r Script/May_Khac user@192.168.1.60:/home/user/agent/
+scp -r Script/May_Khac <tai_khoan>@<IP_MAY_CLIENT>:/duong/dan/thu_muc_cai_dat/
 ```
 
 ### 2.2. Kiểm tra và chỉnh sửa file `device.yaml` trên máy client
-Mở file `/home/cuonglq/test_grafana/device.yaml` và kiểm tra các thông số:
+Mở file `device.yaml` trên máy client và kiểm tra các thông số:
 
 ```yaml
 schema_version: 2
 
 # 1. TÊN ĐỊNH DANH THIẾT BỊ
 device:
-  id: "cuonglq"             # Tên hiển thị trên menu Grafana (ví dụ: cuonglq, robot-01...)
-  name: auto
-  description: "Máy B - cuonglq"
-  location: "Factory-B"
+  id: "my_device"             # Tên hiển thị trên menu Grafana (chữ cái, số, gạch ngang)
+  name: auto                  # auto: tự động lấy hostname
+  description: "Thiet bi giam sat"
+  location: "Khu-Vuc-A"
+  # Ví dụ thay thế:
+  #   id: "may-cnc-01"
+  #   id: "devbox-cuonglq"
 
 # 2. TRỎ VỀ MÁY CHỦ INFLUXDB (IP Máy A)
 influxdb:
   enabled: true
-  url: "http://192.168.1.53:8086"
+  url: "http://<IP_MAY_A>:8086"
   organization: "monitoring"
   token_env: "INFLUX_TOKEN"
   buckets:
     system: "system_metrics"
     csv: "device_csv"
     database: "device_database"
+  # Ví dụ thay thế:
+  #   url: "http://192.168.1.53:8086"
 
 # 3. KHO METADATA ERD TẬP TRUNG (IP Máy A)
 central_catalog:
-  host: "192.168.1.53"
+  host: "<IP_MAY_A>"
   port: 5432
   user: "grafana_reader"
   password: "1"
   database: "monitoring_catalog"
+  # Ví dụ thay thế:
+  #   host: "192.168.1.53"
 
 agent:
   interval: "10s"
@@ -111,21 +119,27 @@ monitoring:
 postgresql:
   enabled: true
   instances:
-    - name: "cuonglq_pg"
-      host: "localhost"       # Kết nối PostgreSQL cục bộ trên Máy B
+    - name: "my_pg"
+      host: "localhost"       # Kết nối PostgreSQL cục bộ trên máy này
       port: 5432
       username: "postgres"
-      password: "1"
+      password: "YOUR_DB_PASSWORD"
       databases:
         - "auto"              # <-- Tự động tìm mọi database người dùng
       sslmode: "disable"
+  # Ví dụ thay thế:
+  #   password: "1"
 
 # 5. TỰ ĐỘNG GIÁM SÁT MỌI TẬP TIN CSV TRONG THƯ MỤC
 csv:
   enabled: true
   interval: "1m"
   paths:
-    - "/home/cuonglq/test_grafana/*.csv"
+    - "/path/to/your/data/*.csv"
+  # Ví dụ thay thế:
+  #   paths:
+  #     - "/home/cuonglq/test_grafana/*.csv"
+  #     - "/data/csv_exports/*.csv"
 
 docker:
   enabled: false
@@ -137,7 +151,7 @@ applications:
 ### 2.3. Khởi chạy cài đặt Agent
 Trên máy client, thực hiện lệnh:
 ```bash
-cd /home/cuonglq/test_grafana
+cd /duong/dan/thu_muc_cai_dat
 sudo -E ./install-agent-v2.sh --config device.yaml
 ```
 
@@ -153,10 +167,10 @@ sudo -E ./install-agent-v2.sh --config device.yaml
 ## PHẦN 3: KIỂM TRA VÀ XÁC NHẬN HOẠT ĐỘNG
 
 1. **Truy cập Grafana:**
-   * URL: `http://192.168.1.53:3000/d/monitoring`
+   * URL: `http://<IP_MAY_A>:3000/d/monitoring` (Ví dụ: `http://192.168.1.53:3000/d/monitoring` hoặc `http://localhost:3000/d/monitoring`)
    * Tài khoản: `admin` / `admin`
 2. **Kiểm tra dữ liệu:**
-   * Chọn `Thiết Bị (Device)`: Chọn máy vừa cài đặt (`cuonglq` hoặc `phongvt`).
+   * Chọn `Thiết Bị (Device)`: Chọn tên máy vừa cài đặt (ví dụ `my_device` hoặc hostname máy).
    * Kiểm tra các biểu đồ CPU, RAM, Disk, GPU xem có đường dữ liệu vẽ theo thời gian thực không.
    * Chọn tập tin CSV ở menu `Tập Tin CSV` để xem bảng dữ liệu đã hiển thị đầy đủ dòng chưa.
    * Chọn cơ sở dữ liệu ở menu `Cơ Sở Dữ Liệu` để kiểm tra sơ đồ ERD trực quan bên dưới.

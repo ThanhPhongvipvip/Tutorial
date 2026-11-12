@@ -42,8 +42,8 @@ grafana/
 cd Script/May_A
 ./setup.sh --central-server
 ```
-* **Grafana Dashboard:** `http://192.168.1.53:3000/d/monitoring` (`admin` / `admin`)
-* **ERD Viewer:** `http://192.168.1.53:8088` (chạy ngầm qua `erd-viewer.service`)
+* **Grafana Dashboard:** `http://localhost:3000/d/monitoring` hoặc `http://<IP_MAY_A>:3000/d/monitoring` (`admin` / `admin`)
+* **ERD Viewer:** `http://localhost:8088` hoặc `http://<IP_MAY_A>:8088` (chạy ngầm qua `erd-viewer.service`)
 
 ### 2. Trên Máy Con Cần Giám Sát (Máy B, Máy C...)
 1. Copy thư mục `Script/May_Khac` sang máy con.

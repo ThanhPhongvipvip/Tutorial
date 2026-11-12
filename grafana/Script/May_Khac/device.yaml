@@ -1,41 +1,59 @@
 # ============================================================
-# device.yaml - Cấu hình giám sát thiết bị cuonglq (Máy B)
+# device.yaml - Cấu hình giám sát thiết bị Client (Agent)
 # ============================================================
+# Hướng dẫn: Thay đổi các thông số dưới đây theo môi trường của bạn.
+# Các mục đều có phần ví dụ mẫu ghi chú bên dưới để dễ dàng thay thế.
 
 schema_version: 2
 
 # 1. ĐỊNH DANH THIẾT BỊ
 device:
-  id: "cuonglq"
-  name: auto
-  description: "Máy B - cuonglq (PostgreSQL erd_demo + GPU RTX A2000)"
-  location: "Factory-B"
+  id: "my_device"                     # Tên thiết bị (chữ cái, số, gạch nối, gạch dưới)
+  name: auto                         # auto: tự động lấy tên máy tính (hostname)
+  description: "Thiết bị giám sát"   # Mô tả thông tin thiết bị
+  location: "Khu-Vuc-A"              # Vị trí lắp đặt
+  # ----------------------------------------------------------
+  # Ví dụ thay thế:
+  #   id: "may-cnc-01"               (Máy gia công số 1)
+  #   id: "robot-arm-02"             (Cánh tay robot số 2)
+  #   id: "devbox-cuonglq"           (Máy trạm cá nhân)
+  # ----------------------------------------------------------
 
-# 2. KẾT NỐI MÁY CHỦ INFLUXDB TRUNG TÂM (Máy A)
+# 2. KẾT NỐI MÁY CHỦ INFLUXDB TRUNG TÂM (MÁY A)
 influxdb:
   enabled: true
-  url: "http://192.168.1.53:8086"
+  url: "http://192.168.1.100:8086"    # Địa chỉ IP của Máy Chủ Trung Tâm (Máy A)
   organization: "monitoring"
-  token_env: "INFLUX_TOKEN"
+  token_env: "INFLUX_TOKEN"           # Lấy token từ biến môi trường hoặc file config
   buckets:
     system: "system_metrics"
     csv: "device_csv"
     database: "device_database"
+  # ----------------------------------------------------------
+  # Ví dụ thay thế:
+  #   url: "http://192.168.1.53:8086"   (Nếu Máy A có IP là 192.168.1.53)
+  #   url: "http://localhost:8086"      (Nếu chạy Agent ngay trên Máy A)
+  # ----------------------------------------------------------
 
-# 3. KHO METADATA ERD TẬP TRUNG (Máy A)
+# 3. KHO METADATA ERD TẬP TRUNG (MÁY A)
 central_catalog:
-  host: "192.168.1.53"
+  host: "192.168.1.100"               # Địa chỉ IP máy chủ PostgreSQL chứa kho Catalog (Máy A)
   port: 5432
   user: "grafana_reader"
-  password: "1"
+  password: "1"                       # Mật khẩu user grafana_reader đã tạo trên Máy A
   database: "monitoring_catalog"
+  # ----------------------------------------------------------
+  # Ví dụ thay thế:
+  #   host: "192.168.1.53"              (Nếu Máy A có IP là 192.168.1.53)
+  #   host: "localhost"                 (Nếu chạy ngay trên Máy A)
+  # ----------------------------------------------------------
 
 # 4. THÔNG SỐ AGENT
 agent:
-  interval: "10s"
+  interval: "10s"                     # Tần suất thu thập dữ liệu phần cứng
   flush_interval: "10s"
 
-# 5. GIÁM SÁT HỆ THỐNG
+# 5. GIÁM SÁT HỆ THỐNG PHẦN CỨNG
 monitoring:
   system:
     enabled: true
@@ -50,38 +68,44 @@ monitoring:
     enabled: true
     interval: "10s"
 
-# 6. GIÁM SÁT POSTGRESQL & VẼ SƠ ĐỒ ERD (Máy B)
+# 6. GIÁM SÁT POSTGRESQL & VẼ SƠ ĐỒ ERD
 postgresql:
   enabled: true
   instances:
-    - name: "cuonglq_pg"
-      host: "192.168.1.60"
+    - name: "my_pg"
+      host: "localhost"               # Kết nối cơ sở dữ liệu trên chính máy này
       port: 5432
       username: "postgres"
-      password: "1"
+      password: "1"                   # Mật khẩu tài khoản postgres máy này
       databases:
-        - "auto"
+        - "auto"                      # auto: Tự động phát hiện toàn bộ Database người dùng
       sslmode: "disable"
+  # ----------------------------------------------------------
+  # Ví dụ thay thế:
+  #   host: "localhost"               (Cơ sở dữ liệu cài cục bộ)
+  #   host: "192.168.1.60"            (Nếu giám sát DB từ máy khác trong mạng LAN)
+  #   databases: ["auto"]             (Tự động nhận hết) hoặc ["app_db", "order_db"]
+  # ----------------------------------------------------------
 
-# 7. GIÁM SÁT DỮ LIỆU CSV (Máy B)
-# Cách 1: Tự động giám sát toàn bộ file CSV trong thư mục (tiện nhất khi thêm file mới)
+# 7. GIÁM SÁT DỮ LIỆU CSV TỰ ĐỘNG
+# Hệ thống sẽ tự động quét toàn bộ file CSV trong thư mục, tự gán row_id và chống lặp dòng
 csv:
   enabled: true
   interval: "1m"
   paths:
-    - "/home/cuonglq/test_grafana/*.csv"
+    - "/path/to/your/data/*.csv"      # Đường dẫn thư mục chứa các file CSV cần theo dõi
+  # ----------------------------------------------------------
+  # Ví dụ thay thế:
+  #   paths:
+  #     - "/home/cuonglq/test_grafana/*.csv"
+  #     - "/var/log/sensor_data/*.csv"
+  #     - "/opt/app/exports/*.csv"
+  # ----------------------------------------------------------
 
-  # Cách 2: Khai báo từng file cụ thể (nếu muốn)
-  # files:
-  #   - name: "language"
-  #     path: "/home/cuonglq/test_grafana/language.csv"
-  #   - name: "sample_bar_chart"
-  #     path: "/home/cuonglq/test_grafana/sample_bar_chart.csv"
-
-# 8. DOCKER
+# 8. DOCKER (Tùy chọn)
 docker:
   enabled: false
 
-# 9. DỊCH VỤ HỆ THỐNG
+# 9. DỊCH VỤ HỆ THỐNG (SYSTEMD)
 applications:
-  enabled: auto
+  enabled: auto                       # auto: tự động phát hiện các dịch vụ đang chạy

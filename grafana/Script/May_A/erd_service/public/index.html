@@ -147,8 +147,8 @@
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const device = urlParams.get('device') || 'cuonglq';
-    const db = urlParams.get('db') || 'erd_demo';
+    const device = urlParams.get('device') || '';
+    const db = urlParams.get('db') || '';
 
     document.getElementById('info-badge').innerText = `${device} / ${db}`;
 

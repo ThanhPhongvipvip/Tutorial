@@ -5,7 +5,7 @@
 # Chỉ cần chạy DUY NHẤT file này để cài đặt toàn bộ hệ thống từ đầu đến cuối:
 # ./setup.sh                         # Menu tương tác (hoặc cài đặt Máy Chủ Trung Tâm)
 # ./setup.sh --central-server        # Setup Máy Chủ Trung Tâm (Grafana, InfluxDB, PostgreSQL, ERD Viewer)
-# sudo -E ./setup.sh <device-name>   # Setup Agent Giám Sát trên máy client (cuonglq)
+# sudo -E ./setup.sh <device-name>   # Setup Agent Giám Sát trên máy client (Ví dụ: my-device-01)
 # sudo -E ./setup.sh --agent <file>  # Setup Agent từ file device.yaml có sẵn
 # =============================================================================
 
@@ -37,7 +37,7 @@ Cách sử dụng:
 
 Ví dụ:
   ./setup.sh --central-server
-  sudo -E ./setup.sh cuonglq
+  sudo -E ./setup.sh my-device-01
 ================================================================================
 EOF
 }
@@ -328,7 +328,7 @@ if [[ $# -eq 0 ]]; then
   case "$CHOICE" in
     1) setup_central_server ;;
     2)
-      read -rp "Nhập tên thiết bị này (Ví dụ: cuonglq): " DEV
+      read -rp "Nhập tên thiết bị này (Ví dụ: my-device-01): " DEV
       DEV="${DEV:-my_device}"
       DEVICE_NAME="$DEV"
       setup_agent_auto

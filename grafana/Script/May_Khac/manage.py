@@ -42,25 +42,25 @@ if (!dom) {
   dom = document.querySelector('[data-panelid="61"]');
 }
 
-let deviceName = 'cuonglq';
-let dbName = 'erd_demo';
+let deviceName = '';
+let dbName = '';
 
 try {
   if (typeof replaceVariables === 'function') {
-    deviceName = replaceVariables('${device}') || 'cuonglq';
-    dbName = replaceVariables('${db_name}') || 'erd_demo';
+    deviceName = replaceVariables('${device}') || '';
+    dbName = replaceVariables('${db_name}') || '';
   } else if (typeof context !== 'undefined' && context.grafana && typeof context.grafana.replaceVariables === 'function') {
-    deviceName = context.grafana.replaceVariables('${device}') || 'cuonglq';
-    dbName = context.grafana.replaceVariables('${db_name}') || 'erd_demo';
+    deviceName = context.grafana.replaceVariables('${device}') || '';
+    dbName = context.grafana.replaceVariables('${db_name}') || '';
   } else if (typeof context !== 'undefined' && context.panel && context.panel.scopedVars) {
-    deviceName = context.panel.scopedVars.device?.value || 'cuonglq';
-    dbName = context.panel.scopedVars.db_name?.value || 'erd_demo';
+    deviceName = context.panel.scopedVars.device?.value || '';
+    dbName = context.panel.scopedVars.db_name?.value || '';
   }
 } catch (e) {
   console.warn('Error reading Grafana variables:', e);
 }
 
-const host = window.location.hostname || '192.168.1.53';
+const host = window.location.hostname || 'localhost';
 const iframeUrl = 'http://' + host + ':8088/?device=' + encodeURIComponent(deviceName) + '&db=' + encodeURIComponent(dbName);
 
 if (dom) {
@@ -719,11 +719,7 @@ SELECT * FROM edges;"""
                     "multi": False,
                     "includeAll": False,
                     "hide": 0,
-                    "current": {
-                        "selected": True,
-                        "text": "cuonglq",
-                        "value": "cuonglq"
-                    },
+                    "current": {},
                     "options": [],
                     "skipUrlSync": False
                 },
@@ -873,7 +869,7 @@ def cmd_import(args=None):
             print("\n Cách 1: Chạy lại lệnh kèm thông tin đăng nhập của bạn:")
             print("   python3 manage.py import --user <ten_dang_nhap> --pass <mat_khau_cua_ban>")
             print("\n Cách 2: Import trực tiếp qua giao diện Web Grafana (cực nhanh):")
-            print("   1. Truy cập trình duyệt: http://192.168.1.53:3000 (hoặc http://localhost:3000)")
+            print("   1. Truy cập trình duyệt: http://localhost:3000 (hoặc http://<IP_MAY_A>:3000)")
             print("   2. Vào mục: Dashboards -> New -> Import")
             print("   3. Bấm 'Upload dashboard JSON file' và chọn:")
             print(f"      {json_path}")
@@ -938,10 +934,10 @@ def cmd_collect(args=None):
 
     # Central Catalog
     central_cfg = cfg.get("central_catalog", {})
-    influx_url = cfg.get("influxdb", {}).get("url", "http://192.168.1.53:8086")
+    influx_url = cfg.get("influxdb", {}).get("url", "http://localhost:8086")
     import urllib.parse
     parsed = urllib.parse.urlparse(influx_url)
-    default_central_host = parsed.hostname or "192.168.1.53"
+    default_central_host = parsed.hostname or "127.0.0.1"
 
     central_host = central_cfg.get("host", default_central_host)
     central_port = central_cfg.get("port", 5432)
