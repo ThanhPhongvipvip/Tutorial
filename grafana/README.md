@@ -30,7 +30,6 @@ grafana/
 │
 └── Other/                           ← Tệp dữ liệu mẫu & báo cáo dọn dẹp
     ├── sample_data/                 ← Các tệp CSV mẫu để kiểm tra tính năng vẽ biểu đồ
-    └── README.md                    ← Thuyết minh mục đích & báo cáo kiểm kê tệp
 ```
 
 ---
