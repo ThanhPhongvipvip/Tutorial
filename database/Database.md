@@ -731,7 +731,7 @@ BẢNG: employees
 
 ---
 
-## 3.6 Truy vấn: Subquery, CTE, UPSERT, Set Operations
+## 3.6 Kỹ thuật truy vấn nâng cao (Subquery, CTE, UPSERT, Set Operations)
 
 | Kỹ thuật | Cú pháp mẫu | Mục đích & Ứng dụng thực tế |
 | :--- | :--- | :--- |
@@ -821,7 +821,7 @@ CREATE INDEX idx_user_logs_payload ON user_logs USING gin (payload);
 
 ---
 
-# Phần 4: Transaction, Kiểm Soát Đồng Thời & MVCC
+# Phần 4: Giao Dịch (Transaction), Kiểm Soát Đồng Thời & MVCC
 
 ## 4.1 Tính chất ACID của Transaction
 
@@ -850,7 +850,7 @@ sequenceDiagram
 
 ---
 
-## 4.2 MVCC:
+## 4.2 MVCC: Tại sao đọc không chặn ghi, ghi không chặn đọc?
 
 PostgreSQL kiểm soát truy cập đồng thời bằng cơ chế **MVCC (Multi-Version Concurrency Control)**. Khi một câu lệnh `UPDATE` hoặc `DELETE` diễn ra, PostgreSQL **không bao giờ ghi đè trực tiếp** lên ô nhớ của bản ghi cũ, mà thực hiện:
 1. Đánh dấu bản ghi cũ là đã hết hiệu lực (Dead Tuple).
@@ -932,516 +932,165 @@ COMMIT;
 ---
 
 
-# Phần 5: Nghệ Thuật Tối Ưu Hóa Truy Vấn (Query Optimization)
+# Phần 5: Tối Ưu Hóa Truy Vấn (Query Optimization)
 
-Tối ưu hóa truy vấn không đơn thuần là việc "thêm một vài cái Index", mà là sự thấu hiểu sâu sắc về cách thức PostgreSQL tổ chức dữ liệu dưới đĩa cứng, cách nạp dữ liệu vào bộ nhớ đệm (RAM) và thuật toán mà bộ lập kế hoạch (Query Planner) lựa chọn để tìm kiếm dữ liệu với chi phí I/O thấp nhất.
+Tối ưu hóa truy vấn thực chất là **giảm thiểu số lần đọc ổ cứng (I/O)** và tận dụng tối đa bộ nhớ đệm (RAM). Dưới đây là các kiến thức cốt lõi được đúc kết cô đọng, dễ hiểu nhất.
 
 ---
 
 ## 5.1 Bản chất Chỉ mục (Index) & Cơ chế hoạt động (B-Tree vs Sequential Scan)
 
-### 1. Bản chất lưu trữ vật lý: Khối dữ liệu (8KB Page) và con trỏ `ctid`
+### 1. Hình dung trực quan: Mục lục sách vs Lật từng trang
+- **Sequential Scan (`Seq Scan`):** Đọc tuần tự từ trang 1 đến trang cuối cùng của bảng. Nếu bảng có 10 triệu dòng, máy tính phải nạp cả 10 triệu dòng lên RAM để kiểm tra -> **Cực kỳ chậm khi dữ liệu lớn**.
+- **B-Tree Index (`Index Scan`):** Tương tự như **Mục lục ở đầu cuốn sách**. Mục lục lưu các cặp `(Giá trị tìm kiếm -> Vị trí trang trên đĩa ctid)`. 
+  - Thay vì lật 10 triệu trang, cây B-Tree chỉ mất **3 - 4 bước so sánh** trên RAM là nhảy thẳng tới đúng dòng cần đọc!
 
-Để hiểu tại sao Index lại nhanh, trước hết cần hiểu cách PostgreSQL lưu trữ bảng dữ liệu:
-- **Tệp bảng (Heap File):** Mọi bảng dữ liệu trong PostgreSQL được chia nhỏ thành các trang nhớ vật lý có kích thước cố định là **8 KB** (gọi là *Page* hoặc *Block*). Một bảng 10 GB sẽ gồm khoảng 1,300,000 trang 8KB xếp nối tiếp nhau trên đĩa cứng.
-- **Địa chỉ vật lý (`ctid` / Tuple ID):** Mỗi hàng dữ liệu (bản ghi) trong bảng được định vị chính xác bởi một tọa độ nhị phân gọi là `ctid = (Block_Number, Offset_Index)`.
-  - *Ví dụ:* `ctid = (42, 5)` nghĩa là bản ghi này nằm ở **Trang thứ 42**, vị trí hàng thứ **5** trong trang đó.
-
-```text
-CẤU TRÚC TRANG BẢNG (8KB HEAP PAGE) DƯỚI ĐĨA CỨNG:
-+---------------------------------------------------------------------------------+
-| Page Header: Thông tin quản lý trang (LSN, vị trí vùng trống, tổng số con trỏ) |
-+---------------------------------------------------------------------------------+
-| Con trỏ mục 1 (Offset 1) | Con trỏ mục 2 (Offset 2) | Con trỏ mục 3 (Offset 3)...|
-+---------------------------------------------------------------------------------+
-| ... (Vùng trống chưa sử dụng - Free Space) ...                                  |
-+---------------------------------------------------------------------------------+
-| [Hàng 3: ctid=(42,3)] | [Hàng 2: ctid=(42,2)] | [Hàng 1: ctid=(42,1)]          |
-+---------------------------------------------------------------------------------+
+```mermaid
+graph TD
+    Root["Gốc B-Tree: [Mã 50]"] --> Left["Nhánh Trái: [Mã 20]"]
+    Root --> Right["Nhánh Phải: [Mã 80]"]
+    Left --> Leaf1["Lá: [Mã 10, 15] -> Trang 1"]
+    Left --> Leaf2["Lá: [Mã 25, 30] -> Trang 4"]
+    Right --> Leaf3["Lá: [Mã 60, 70] -> Trang 9"]
+    Right --> Leaf4["Lá: [Mã 85, 95] -> Trang 12"]
 ```
-
-### 2. Cây B-Tree liên kết với Heap Page như thế nào?
-
-Chỉ mục **B-Tree** (Balanced Tree) là một cấu trúc dữ liệu hình cây tự cân bằng được lưu trong một tệp riêng biệt. Cây này lưu các cặp giá trị: `(Giá trị cột được đánh index, Con trỏ ctid tương ứng)`.
-
-```text
-               [ GỐC (ROOT) ]
-               |-- Khóa: 50 --|
-              /                      [ NHÁNH (INTERNAL) ]    [ NHÁNH (INTERNAL) ]
-      |-- Khóa: 20 --|        |-- Khóa: 80 --|
-     /                \      /                 [ LÁ: 10, 15 ]   [ LÁ: 25, 30 ]  [ LÁ: 60, 70 ]  [ LÁ: 85, 95 ]
-       |
-       +---> ctid = (0, 1)  -----> Nhảy thẳng tới Trang 0, Dòng 1 trên đĩa!
-       +---> ctid = (42, 5) -----> Nhảy thẳng tới Trang 42, Dòng 5 trên đĩa!
-```
-
-- **Độ phức tạp thuật toán:** $O(\log N)$. Với một bảng có **100 triệu dòng**, chiều cao của cây B-Tree thường chỉ từ **3 đến 4 tầng**. Database chỉ mất đúng 3-4 phép so sánh trên RAM là đã tìm ra địa chỉ `ctid` của dòng cần tìm, thay vì phải quét 100 triệu dòng!
 
 ---
 
-### 3. Phân biệt 4 chiến lược quét dữ liệu (Scan Strategies) trong PostgreSQL
+### 2. So sánh 3 chiến lược quét dữ liệu phổ biến nhất
 
-Khi thực thi câu lệnh SQL, Query Planner sẽ chọn 1 trong 4 chiến lược đọc dữ liệu sau:
+| Kiểu quét | Bản chất dễ hiểu | Khi nào DB chọn? | Tốc độ |
+| :--- | :--- | :--- | :---: |
+| **`Seq Scan`** | Quét tuần tự toàn bộ bảng từ đầu đến cuối. | Bảng nhỏ (< vài trăm dòng) hoặc khi câu truy vấn lấy > 25% số dòng của bảng. | 🐢 Chậm nhất |
+| **`Index Scan`** | Tra cây B-Tree để lấy vị trí `ctid`, sau đó lật đến trang bảng để đọc dữ liệu. | Điều kiện lọc tìm kiếm ít dòng (< 5% số dòng). | 🚗 Rất nhanh |
+| **`Index Only Scan`** | **Đỉnh cao tốc độ:** Mọi cột cần lấy (`SELECT`, `WHERE`) đều nằm sẵn trong Index. DB **không cần chạm vào bảng chính**, chỉ đọc trên RAM. | Khi dùng Covering Index (`INCLUDE`) hoặc chỉ `SELECT` cột đã được đánh index. | 🚀 Siêu tốc |
 
-```mermaid
-flowchart TD
-    Q["Câu lệnh SQL (SELECT / UPDATE / DELETE)"] --> Planner{"Query Planner
-Tính toán chi phí (Cost)"}
-    Planner -->|"Bảng nhỏ OR Lấy > 25% số dòng"| Seq["1. Sequential Scan (Seq Scan)
-Đọc tuần tự toàn bộ 8KB Pages"]
-    Planner -->|"Tìm ít dòng (< 5%) & Có B-Tree"| Idx["2. Index Scan
-Duyệt B-Tree -> Lấy ctid -> Đọc Heap Page"]
-    Planner -->|"Cột cần lấy NẰM TRỌN trong Index"| IdxOnly["3. Index Only Scan (Nhanh nhất)
-Chỉ đọc Index trên RAM, KHÔNG chạm Heap"]
-    Planner -->|"Lấy 5% - 20% dòng từ nhiều trang"| Bitmap["4. Bitmap Index Scan + Heap Scan
-Tạo Bitmap trang khớp -> Đọc gom đĩa"]
-```
-
-| Chiến lược quét | Cơ chế hoạt động chi tiết | Khi nào Query Planner lựa chọn? | Chi phí I/O & Đánh giá |
-| :--- | :--- | :--- | :--- |
-| **1. Sequential Scan (`Seq Scan`)** | Đọc tuần tự từng trang 8KB từ đầu file đến cuối file và áp bộ lọc `Filter`. | - Bảng rất nhỏ (< vài trăm dòng).<br>- Không có Index nào phù hợp.<br>- Điều kiện lọc trả về hơn **20% - 30%** tổng số dòng của bảng. | Đọc I/O tuần tự (Sequential I/O). Rất chậm khi bảng lớn (hàng triệu dòng). |
-| **2. Index Scan** | Tra cứu cây B-Tree để lấy danh sách `ctid`, sau đó với mỗi `ctid`, nhảy đến đúng trang Heap để đọc toàn bộ hàng. | - Điều kiện lọc chọn lọc cao (Selective: trả về dưới **1% - 5%** số dòng).<br>- Có Index trên cột trong `WHERE`. | Gây ra **Random I/O** (đầu đọc nhảy lung tung giữa các trang). Nhanh vượt trội với tập kết quả nhỏ. |
-| **3. Index Only Scan** *(Đỉnh cao tốc độ)* | Tất cả các cột nằm trong `SELECT`, `WHERE`, `ORDER BY` đều có sẵn trong Index. Database **không cần đọc file Heap một lần nào cả**. | - Truy vấn chỉ cần các cột đã được đánh Index (hoặc dùng Covering Index `INCLUDE`).<br>- Trang dữ liệu trong Visibility Map đã sạch (đã Vacuum). | **Tốc độ đọc nhanh nhất có thể**, hoàn toàn xử lý trên bộ đệm RAM của Index, loại bỏ 100% Random I/O Heap. |
-| **4. Bitmap Index Scan** | Tra cứu Index để thu thập toàn bộ `ctid`, sau đó dựng một "bản đồ bit" (Bitmap) các trang cần đọc. Cuối cùng thực hiện `Bitmap Heap Scan` để đọc các trang đó theo thứ tự vật lý trên đĩa. | - Điều kiện lọc trả về khoảng **5% - 20%** số dòng.<br>- Kết hợp nhiều Index cùng lúc (`idx_a AND idx_b`). | Biến Random I/O thành Sequential I/O trên tập trang đã chọn, tránh đọc lặp lại cùng một trang nhiều lần. |
+> **Nguyên tắc chi phí:** Bảng nhỏ (< 500 dòng) thì quét toàn bảng (`Seq Scan`) lại nhanh hơn dùng Index vì không mất công nạp thêm cây B-Tree. Nhưng với bảng hàng triệu dòng, Index giúp giảm thời gian từ **vài chục giây xuống dưới 1 mili-giây**!
 
 ---
 
 ## 5.2 Bảng tra cứu các loại Index trong PostgreSQL
 
-PostgreSQL cung cấp hệ thống loại chỉ mục phong phú nhất trong thế giới RDBMS. Chọn đúng loại Index là chìa khóa để hệ thống chịu tải hàng triệu người dùng.
+| Loại Index | Khi nào nên dùng? (Bản chất dễ hiểu) | Cú pháp mẫu |
+| :--- | :--- | :--- |
+| **B-Tree** *(Mặc định)* | Tìm kiếm `=`, `<`, `>`, `BETWEEN`, `IN`, sắp xếp `ORDER BY`, tìm tiền tố `LIKE abc%`. | `CREATE INDEX idx_users_email ON users(email);` |
+| **Composite** *(Nhiều cột)* | Thường xuyên lọc đồng thời: `WHERE user_id = ? AND status = ?`.<br>*(Quy tắc: Cột so sánh bằng đặt trước, cột khoảng/sắp xếp đặt sau).* | `CREATE INDEX idx_orders_u_s ON orders(user_id, status);` |
+| **Covering (`INCLUDE`)** | Đính kèm thêm cột phụ vào lá của Index để đạt **`Index Only Scan`** mà không làm nặng cây B-Tree. | `CREATE INDEX idx_orders_covering ON orders(user_id) INCLUDE (total_amount);` |
+| **Partial Index** *(Một phần)* | Chỉ đánh index cho tập dữ liệu con thường xuyên truy vấn (ví dụ: chỉ 5% đơn `pending`). Tiết kiệm 95% RAM! | `CREATE INDEX idx_orders_pending ON orders(created_at) WHERE status = pending;` |
+| **Expression Index** | Đánh index trên kết quả của hàm khi thường xuyên tìm kiếm không phân biệt hoa thường. | `CREATE INDEX idx_users_lower_email ON users(lower(email));`<br>Truy vấn: `WHERE lower(email) = abc@gmail.com` |
+| **GIN Index** | Tìm kiếm trong cột mảng (`text[]`), dữ liệu JSONB (`@>`), hoặc tìm kiếm toàn văn Full-Text Search. | `CREATE INDEX idx_events_json ON events USING gin (payload);` |
+| **BRIN Index** | Bảng Log, Time-series khổng lồ (hàng trăm triệu dòng) ghi liên tục theo thời gian. Dung lượng cực nhỏ (< 5MB). | `CREATE INDEX idx_logs_brin ON logs USING brin (created_at);` |
 
-### Bảng tổng hợp các loại Index:
-
-| Loại Index | Cấu trúc bên dưới | Toán tử hỗ trợ | Trường hợp sử dụng tối ưu |
-| :--- | :--- | :--- | :--- |
-| **B-Tree** *(Mặc định)* | Cây cân bằng đa phân bậc cao | `=`, `<`, `<=`, `>`, `>=`, `BETWEEN`, `IN`, `IS NULL`, `LIKE 'prefix%'` | 90% các nhu cầu thông thường: ID, ngày tháng, mã trạng thái, sắp xếp `ORDER BY`. |
-| **Composite Index** | B-Tree đa cột | Tùy thuộc vào cột đầu tiên bên trái (Leftmost Prefix) | Lọc nhiều điều kiện kết hợp: `WHERE shop_id = ? AND status = ?`. |
-| **Covering Index (`INCLUDE`)** | B-Tree + Dữ liệu phụ ở lá | Như B-Tree | Tạo điều kiện đạt `Index Only Scan` mà không làm tăng độ sâu cây B-Tree. |
-| **Partial Index** | B-Tree có mệnh đề `WHERE` | Như B-Tree trên tập con | Bảng lớn nhưng chỉ thường xuyên truy vấn một tập dữ liệu nhỏ (ví dụ: chỉ đơn 'pending'). |
-| **Expression Index** | B-Tree trên kết quả của hàm | Như B-Tree | Tìm kiếm không phân biệt hoa thường (`lower(email)`), trích xuất ngày (`date(created_at)`). |
-| **GIN Index** | Bảng băm ngược (Inverted Index) | `@>`, `?`, `?&`, `?\|`, `@@` (Full-Text) | Cột mảng (`text[]`), tài liệu bán cấu trúc `jsonb`, tìm kiếm toàn văn Full-Text Search. |
-| **BRIN Index** | Dải khối trang (Block Range) | `=`, `<`, `>`, `BETWEEN` | Bảng log, time-series cực lớn (hàng trăm triệu dòng) có dữ liệu tăng dần tự nhiên theo thời gian. |
-
----
-
-### Phân tích chi tiết & Cú pháp từng loại Index:
-
-#### 1. Composite Index & Quy tắc sống còn "Leftmost Prefix"
-Khi tạo chỉ mục trên nhiều cột `(col_a, col_b, col_c)`, PostgreSQL sắp xếp dữ liệu ưu tiên từ trái qua phải:
-```sql
-CREATE INDEX idx_orders_user_status_date ON orders(user_id, status, created_at);
-```
-- **Quy tắc Leftmost Prefix:**
-  - ✅ `WHERE user_id = 1` -> DÙNG ĐƯỢC INDEX.
-  - ✅ `WHERE user_id = 1 AND status = 'pending'` -> DÙNG ĐƯỢC INDEX.
-  - ✅ `WHERE user_id = 1 AND status = 'pending' AND created_at >= '2026-01-01'` -> DÙNG ĐƯỢC TOÀN BỘ INDEX.
-  - ❌ `WHERE status = 'pending'` -> **KHÔNG DÙNG ĐƯỢC INDEX** (vì thiếu cột ngoài cùng bên trái `user_id`).
-  - ❌ `WHERE created_at >= '2026-01-01'` -> **KHÔNG DÙNG ĐƯỢC INDEX**.
-> **Quy tắc thiết kế:** Luôn đặt cột có **điều kiện so sánh bằng (`=`) và độ chọn lọc cao ở bên trái**, các cột lọc theo khoảng (`<`, `>`, `BETWEEN`) hoặc sắp xếp (`ORDER BY`) đặt ở bên phải.
-
-#### 2. Covering Index với mệnh đề `INCLUDE` (PostgreSQL 11+)
-Giả sử ứng dụng thường xuyên chạy:
-```sql
-SELECT id, total_amount, shipping_address FROM orders WHERE user_id = 100;
-```
-Nếu tạo `INDEX ON orders(user_id)`, DB vẫn phải nhảy vào Heap để đọc `total_amount` và `shipping_address` (Index Scan thông thường). Nếu tạo `INDEX ON orders(user_id, total_amount, shipping_address)`, cây B-Tree sẽ rất cồng kềnh vì phải sắp xếp cả 3 cột.
-
-**Giải pháp với `INCLUDE`:**
-```sql
-CREATE INDEX idx_orders_user_covering 
-ON orders(user_id) 
-INCLUDE (total_amount, shipping_address);
-```
-- Cột `user_id` dùng để sắp xếp và điều hướng cây B-Tree.
-- Cột `total_amount` và `shipping_address` chỉ được "đính kèm" ở tầng lá (Leaf Node) dưới dạng dữ liệu mang theo.
-- **Kết quả:** Đạt được **`Index Only Scan`** 100% trên RAM, tốc độ tăng gấp 5 - 10 lần!
-
-#### 3. Partial Index (Chỉ mục một phần - Tiết kiệm RAM vượt trội)
-Trong bảng thương mại điện tử 20 triệu đơn hàng:
-- 19.5 triệu đơn có trạng thái `'delivered'` (đã giao xong, rất ít khi truy vấn lại).
-- 500 nghìn đơn có trạng thái `'processing'` hoặc `'pending'` (nhân viên kiểm tra và cập nhật liên tục).
-
-Thay vì đánh index cho toàn bộ 20 triệu dòng:
-```sql
-CREATE INDEX idx_orders_active_processing 
-ON orders(created_at) 
-WHERE status IN ('processing', 'pending');
-```
-- **Lợi ích:** Kích thước Index giảm từ 1.2 GB xuống còn **30 MB** (vừa vặn nằm gọn trong bộ đệm RAM Shared Buffers). Thao tác `INSERT/UPDATE` cho các đơn hàng cũ hoàn toàn không tốn chi phí cập nhật Index này!
-
-#### 4. GIN Index (Generalized Inverted Index) cho JSONB và Mảng
-GIN hoạt động giống như mục lục ở cuối sách giáo khoa: nó tách rời từng phần tử bên trong mảng hoặc JSONB ra và tạo danh sách con trỏ trỏ ngược về các dòng chứa phần tử đó.
+### 2 câu lệnh SQL bỏ túi kiểm tra Index của DBA:
 
 ```sql
--- Đánh index cho toàn bộ tài liệu JSONB:
-CREATE INDEX idx_products_attributes ON products USING gin (attributes);
+-- 1. Tìm các Index thừa KHÔNG BAO GIỜ được dùng (để xóa bớt, tăng tốc ghi INSERT/UPDATE):
+SELECT relname AS ten_bang, indexrelname AS ten_index, idx_scan AS so_lan_dung
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0 AND indisunique = false;
 
--- Truy vấn tìm sản phẩm có màu 'black' và hỗ trợ 'bluetooth':
-SELECT id, name FROM products 
-WHERE attributes @> '{"color": "black", "bluetooth": true}';
-```
-
-#### 5. BRIN Index (Block Range Index - Cứu tinh của Big Data / Time-Series)
-Với bảng ghi nhận nhật ký hệ thống (`iot_sensor_logs`) mỗi ngày sinh ra 50 triệu dòng mới. Nếu dùng B-Tree, tệp Index sẽ chiếm hàng chục Gigabytes.
-
-**Nguyên lý của BRIN:** Không lưu từng dòng, mà gom **128 trang dữ liệu (khoảng 1 MB trên đĩa)** thành 1 dãy (Range) và chỉ lưu đúng 2 giá trị: `(Min_Time, Max_Time)`.
-```sql
-CREATE INDEX idx_iot_logs_brin ON iot_sensor_logs USING brin (recorded_at);
-```
-- Khi truy vấn `WHERE recorded_at BETWEEN '2026-11-01' AND '2026-11-02'`, PostgreSQL chỉ cần đọc BRIN Index để biết dãy trang nào chắc chắn **không chứa dữ liệu** và nhảy cóc qua chúng, chỉ đọc đúng các dải trang thỏa mãn.
-- **Dung lượng:** BRIN Index cho 100 triệu dòng chỉ tốn khoảng **5 MB** (so với 2.5 GB của B-Tree)!
-
----
-
-### Bộ công cụ SQL dành cho Quản trị viên (DBA Toolkit)
-
-#### 1. Truy vấn phát hiện các Index thừa không bao giờ được dùng (Gây chậm thao tác ghi):
-```sql
-SELECT 
-    schemaname || '.' || relname AS ten_bang,
-    indexrelname AS ten_index,
-    pg_size_pretty(pg_relation_size(i.indexrelid)) AS dung_luong_index,
-    idx_scan AS so_lan_duoc_dung
-FROM pg_stat_user_indexes ui
-JOIN pg_index i ON ui.indexrelid = i.indexrelid
-WHERE idx_scan = 0                           -- Chưa từng được dùng lần nào từ lúc DB khởi động
-  AND indisunique = false                   -- Không phải là ràng buộc UNIQUE/PK
-ORDER BY pg_relation_size(i.indexrelid) DESC;
-```
-> **Hành động:** Nếu một Index có dung lượng hàng trăm Megabytes mà `idx_scan = 0` sau nhiều tháng chạy Production, hãy cân nhắc chạy `DROP INDEX tên_index;` để giải phóng RAM và tăng tốc lệnh `INSERT/UPDATE`!
-
-#### 2. Truy vấn phát hiện các Khóa ngoại (Foreign Key) bị quên đánh Index:
-Quên đánh index trên cột Khóa ngoại (`FOREIGN KEY`) là nguyên nhân số 1 gây hiện tượng **Deadlock** và khóa chết bảng cha khi có thao tác `DELETE` hoặc `UPDATE`!
-```sql
-SELECT 
-    conrelid::regclass AS bang_con,
-    conname AS ten_khoa_ngoai,
-    pg_get_constraintdef(c.oid) AS dinh_nghia
+-- 2. Tìm các Khóa ngoại (Foreign Key) bị quên đánh Index (nguyên nhân gây treo Deadlock):
+SELECT conrelid::regclass AS bang_con, conname AS ten_khoa_ngoai
 FROM pg_constraint c
-WHERE contype = 'f' 
-  AND NOT EXISTS (
-      SELECT 1 FROM pg_index i
-      WHERE i.indrelid = c.conrelid
-        AND (i.indkey::int2[])[0] = (c.conkey)[1]
-  );
+WHERE contype = f AND NOT EXISTS (
+    SELECT 1 FROM pg_index i WHERE i.indrelid = c.conrelid AND (i.indkey::int2[])[0] = (c.conkey)[1]
+);
 ```
 
 ---
 
 ## 5.3 Giải mã kế hoạch thực thi với EXPLAIN (ANALYZE, BUFFERS)
 
-`EXPLAIN` là công cụ duy nhất giúp bạn nhìn thấu suy nghĩ của PostgreSQL Query Planner.
+`EXPLAIN` là công cụ soi vào "bộ não" của PostgreSQL để xem câu lệnh được thực thi như thế nào.
 
-### Cú pháp chuẩn khi tối ưu hóa hiệu năng:
 ```sql
-EXPLAIN (ANALYZE, BUFFERS, SETTINGS, TIMING)
-SELECT u.name, count(o.id) AS total_orders
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id
-WHERE u.created_at >= '2026-01-01'
-GROUP BY u.name;
+-- Cú pháp chuẩn khi kiểm tra hiệu năng:
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM orders WHERE user_id = 100;
 ```
 
-> **Lưu ý an toàn:**
-> - `EXPLAIN` (không có `ANALYZE`): Chỉ tính toán mô phỏng lý thuyết dựa trên thống kê, **không thực sự chạy câu lệnh**, an toàn 100% với `UPDATE/DELETE`.
-> - `EXPLAIN ANALYZE`: **Thực sự chạy câu lệnh trong DB** để đo thời gian chạy và lượng RAM/Disk tiêu tốn. Nếu chạy với `DELETE/UPDATE`, dữ liệu sẽ bị sửa đổi thật! Luôn bọc trong khối `BEGIN; EXPLAIN ANALYZE ...; ROLLBACK;`.
+> **Lưu ý an toàn:** Thêm `ANALYZE` nghĩa là câu lệnh **thực sự chạy trong database**. Nếu thử nghiệm với `UPDATE/DELETE`, hãy bọc trong `BEGIN; ... ROLLBACK;` để không làm mất dữ liệu!
 
----
-
-### Mẫu kết quả EXPLAIN thực tế và giải mã từng dòng:
+### 4 thông số cốt lõi cần đọc:
 
 ```text
-HashAggregate  (cost=125.40..127.40 rows=200 width=40) (actual time=2.150..2.180 rows=150 loops=1)
-  Group Key: u.name
-  Batches: 1  Memory Usage: 40kB
-  ->  Hash Right Join  (cost=35.50..123.90 rows=300 width=36) (actual time=0.450..1.850 rows=280 loops=1)
-        Hash Cond: (o.user_id = u.id)
-        ->  Seq Scan on orders o  (cost=0.00..75.00 rows=2500 width=8) (actual time=0.010..0.520 rows=2500 loops=1)
-        ->  Hash  (cost=32.50..32.50 rows=240 width=32) (actual time=0.410..0.410 rows=240 loops=1)
-              Buckets: 1024  Batches: 1  Memory Usage: 22kB
-              ->  Index Scan using idx_users_created_at on users u  (cost=0.28..32.50 rows=240 width=32) (actual time=0.035..0.320 rows=240 loops=1)
-                    Index Cond: (created_at >= '2026-01-01'::timestamptz)
-                    Buffers: shared hit=8 read=2
-Planning Time: 0.185 ms
-Execution Time: 2.250 ms
+Index Scan using idx_orders_user_id on orders  (cost=0.42..8.44 rows=1 width=16)
+                                                (actual time=0.035..0.036 rows=2 loops=1)
+  Buffers: shared hit=4 read=0
+Planning Time: 0.085 ms
+Execution Time: 0.052 ms
 ```
 
-### Bảng giải thích chi tiết các thông số kỹ thuật:
-
-| Thông số trong EXPLAIN | Ý nghĩa kỹ thuật | Ngưỡng cảnh báo & Hành động tối ưu |
-| :--- | :--- | :--- |
-| **`cost=125.40..127.40`** | Điểm chi phí ước tính của Planner.<br>- `125.40` (Startup cost): Chi phí để sinh ra dòng đầu tiên.<br>- `127.40` (Total cost): Chi phí để hoàn tất câu truy vấn. | Dùng để Planner so sánh giữa các thuật toán. Con số này không có đơn vị đo cụ thể, tương đối với cấu hình I/O. |
-| **`rows=200` vs `actual rows=150`** | `rows=200`: Số dòng mà Planner **dự đoán**.<br>`actual rows=150`: Số dòng **thực tế** chạy ra. | **Quy tắc vàng:** Nếu 2 con số này chênh lệch nhau trên **10 lần** (ví dụ: dự đoán 1 dòng nhưng thực tế ra 100,000 dòng) -> Thống kê của DB đang bị cũ! Cần chạy ngay lệnh: `ANALYZE tên_bảng;`. |
-| **`loops=1`** | Số lần bước xử lý này được lặp lại. | Nếu một node con nằm dưới `Nested Loop` có `loops=1000` và `actual time=2ms`, tổng thời gian node đó tiêu tốn là $1000 	imes 2	ext{ms} = 2000	ext{ms}$ (2 giây)! |
-| **`Buffers: shared hit=8 read=2`** | Đo lường mức độ sử dụng bộ nhớ RAM:<br>- `hit=8`: 8 trang (64KB) được đọc trực tiếp từ RAM Shared Buffers.<br>- `read=2`: 2 trang (16KB) phải đọc từ ổ cứng đĩa vật lý. | **Nguyên tắc:** Càng nhiều `hit` càng tốt; nếu `read` chiếm đa số thì truy vấn đang bị nghẽn tốc độ đọc I/O đĩa cứng. |
-
----
-
-### Hiểu rõ 3 thuật toán JOIN vật lý bên dưới của PostgreSQL
-
-Khi bạn viết `JOIN`, PostgreSQL sẽ tự động chuyển nó thành 1 trong 3 thuật toán vật lý sau:
-
-```mermaid
-flowchart TD
-    subgraph NL ["1. Nested Loop Join"]
-        NL_Desc["Hai vòng lặp lồng nhau
-Với mỗi dòng bảng A, tra Index bảng B
--> Tối ưu khi: Bảng A rất nhỏ & Bảng B có Index"]
-    end
-    subgraph HJ ["2. Hash Join"]
-        HJ_Desc["Băm toàn bộ bảng nhỏ vào RAM (Hash Table)
-Quét bảng lớn một lần để tìm kiếm đối chiếu
--> Tối ưu khi: Bảng lớn, không có index sẵn"]
-    end
-    subgraph MJ ["3. Merge Join"]
-        MJ_Desc["Cả 2 bảng đều được sắp xếp theo khóa Join
-Duyệt đồng thời 2 con trỏ như zip kéo khóa
--> Tối ưu khi: Hai bảng cực lớn đã có sẵn Index sắp xếp"]
-    end
-```
-
-### Danh sách 5 "Cờ đỏ" (Red Flags) cần xử lý ngay khi đọc kết quả EXPLAIN:
-
-1. **`Seq Scan` trên bảng có trên 100,000 dòng kèm theo `Rows Removed by Filter` rất cao:**
-   - *Nguyên nhân:* Câu lệnh lọc không sử dụng được Index nào.
-   - *Hành động:* Tạo B-Tree Index cho các cột xuất hiện trong mệnh đề `WHERE` hoặc `JOIN`.
-2. **`Sort Method: external merge Disk`:**
-   - *Nguyên nhân:* Bộ nhớ cấp phát cho việc sắp xếp dữ liệu (`work_mem`) quá nhỏ, khiến dữ liệu bị tràn từ RAM xuống ổ đĩa tạm để sắp xếp.
-   - *Hành động:* Tăng tham số `work_mem` lên (ví dụ: `SET work_mem = '64MB';`).
-3. **`Rows estimate` lệch hàng trăm lần so với `actual rows`:**
-   - *Nguyên nhân:* Bảng phân phối thống kê (`pg_statistic`) quá cũ hoặc tham số lấy mẫu thống kê quá thấp.
-   - *Hành động:* Chạy `ANALYZE tên_bảng;` hoặc tăng mức thống kê: `ALTER TABLE tên_bảng ALTER COLUMN cột SET STATISTICS 500;`.
-4. **`Nested Loop` với bảng ngoài có số dòng thực tế quá lớn:**
-   - *Hậu quả:* Dẫn đến hàng triệu vòng lặp con, làm đơ CPU máy chủ trong nhiều phút.
-5. **Node `Filter` loại bỏ hơn 99% dữ liệu sau khi thực hiện `Index Scan`:**
-   - *Nguyên nhân:* Index đang dùng không đủ điều kiện (chỉ index 1 cột trong khi câu lệnh lọc 3 cột).
-   - *Hành động:* Chuyển sang dùng **Composite Index** kết hợp nhiều cột.
+1. **`actual time=0.035..0.036 ms`:** Thời gian chạy thực tế (tính bằng mili-giây).
+2. **`rows=1` vs `actual rows=2`:** Số dòng dự đoán so với số dòng thực tế. Nếu lệch nhau trên **10 lần**, chứng tỏ thống kê cũ -> chạy ngay `ANALYZE orders;`.
+3. **`Buffers: shared hit=4 read=0`:** 
+   - `hit`: Đọc trực tiếp từ RAM (siêu nhanh, nano-giây).
+   - `read`: Phải đọc từ ổ đĩa cứng (chậm hơn hàng trăm lần). Càng nhiều `hit`, ít `read` càng tốt.
+4. **3 Cờ đỏ (Red Flags) cảnh báo khẩn cấp:**
+   - 🚩 Xuất hiện `Seq Scan` trên bảng lớn kèm `Rows Removed by Filter` cao -> **Đang thiếu Index!**
+   - 🚩 `Sort Method: external merge Disk` -> Bộ nhớ sắp xếp bị tràn ra ổ cứng -> Cần tăng biến `work_mem`.
+   - 🚩 `Nested Loop` với số dòng thực tế quá lớn -> Câu truy vấn đang bị lặp hàng triệu lần -> Cần tối ưu lại JOIN.
 
 ---
 
 ## 5.4 Bảng so sánh "NÊN LÀM vs NÊN TRÁNH" khi viết SQL
 
-Tối ưu hóa câu truy vấn bắt đầu từ thói quen viết code của lập trình viên. Dưới đây là 6 quy tắc kinh điển kèm giải thích bản chất:
-
-### 1. Điều kiện Sargable (Search Argument Able) với hàm xử lý
-- ❌ **NÊN TRÁNH (Vô hiệu hóa B-Tree Index hoàn toàn):**
-  ```sql
-  -- Bọc cột created_at vào hàm date_trunc:
-  SELECT id, total_amount FROM orders 
-  WHERE date_trunc('day', created_at) = '2026-11-01';
-  ```
-  *Bản chất:* Cây B-Tree lưu giá trị thô của `created_at`. Khi bọc vào hàm, PostgreSQL không thể biết giá trị sau khi chạy hàm sẽ rơi vào nhánh nào trên cây, buộc phải quét tuần tự toàn bộ bảng (`Seq Scan`) và tính toán hàm cho từng dòng một!
-- ✅ **NÊN LÀM (Tận dụng tối đa B-Tree Index):**
-  ```sql
-  -- Viết dưới dạng khoảng thời gian sargable:
-  SELECT id, total_amount FROM orders 
-  WHERE created_at >= '2026-11-01 00:00:00+00' 
-    AND created_at <  '2026-11-02 00:00:00+00';
-  ```
-
----
-
-### 2. Ký tự đại diện `%` trong toán tử LIKE
-- ❌ **NÊN TRÁNH:**
-  ```sql
-  SELECT id, name FROM products WHERE name LIKE '%macbook';
-  ```
-  *Bản chất:* Dấu `%` nằm ở đầu chuỗi khiến cây B-Tree không thể xác định được ký tự bắt đầu để chọn nhánh điều hướng.
-- ✅ **NÊN LÀM:**
-  ```sql
-  -- Nếu chỉ cần tìm tiền tố (Prefix search):
-  SELECT id, name FROM products WHERE name LIKE 'macbook%';
-
-  -- Nếu bắt buộc tìm chuỗi con ở giữa (Infix search), PHẢI dùng extension pg_trgm kết hợp GIN Index:
-  CREATE EXTENSION IF NOT EXISTS pg_trgm;
-  CREATE INDEX idx_products_name_trgm ON products USING gin (name gin_trgm_ops);
-  SELECT id, name FROM products WHERE name LIKE '%macbook%'; -- Chạy siêu nhanh với GIN!
-  ```
-
----
-
-### 3. Phân trang sâu: `OFFSET` vs `Keyset Pagination`
-- ❌ **NÊN TRÁNH (Phân trang bằng OFFSET lớn làm tê liệt DB):**
-  ```sql
-  -- Người dùng xem trang thứ 50,000:
-  SELECT id, name, created_at FROM logs 
-  ORDER BY id ASC 
-  LIMIT 20 OFFSET 1000000;
-  ```
-  *Bản chất:* Để bỏ qua 1,000,000 dòng, PostgreSQL bắt buộc phải đọc nạp toàn bộ 1,000,020 dòng từ đĩa vào RAM, đếm đủ 1,000,000 dòng rồi vứt bỏ hết để lấy 20 dòng cuối cùng! Càng sang trang sau, câu lệnh chạy càng chậm.
-- ✅ **NÊN LÀM (Keyset Pagination / Cursor-based Pagination):**
-  ```sql
-  -- Lưu lại id lớn nhất của trang trước (ví dụ: last_seen_id = 1000000):
-  SELECT id, name, created_at FROM logs 
-  WHERE id > 1000000 
-  ORDER BY id ASC 
-  LIMIT 20;
-  ```
-  *Bản chất:* Tận dụng B-Tree Index trên cột `id` để nhảy ngay lập tức tới vị trí `id = 1000000` và đọc đúng 20 dòng tiếp theo trong **vòng 0.05 mili-giây**, bất kể dữ liệu có 100 triệu dòng!
-
----
-
-### 4. Vấn đề N+1 Query trong mã nguồn Backend (ORM)
-- ❌ **NÊN TRÁNH (N+1 Query):**
-  ```python
-  # Mã Python ORM tệ hại:
-  users = db.query("SELECT * FROM users LIMIT 100") # 1 câu truy vấn
-  for u in users:
-      # Chạy thêm 100 câu truy vấn đơn lẻ vào DB!
-      orders = db.query(f"SELECT * FROM orders WHERE user_id = {u.id}")
-  ```
-  *Hậu quả:* Sinh ra 101 round-trip kết nối mạng, gây quá tải CPU và nghẽn pool kết nối.
-- ✅ **NÊN LÀM (Eager Loading / Batching):**
-  ```sql
-  -- Lấy toàn bộ trong đúng 1 hoặc 2 câu truy vấn duy nhất:
-  SELECT u.id, u.name, o.id AS order_id, o.amount
-  FROM (SELECT id, name FROM users LIMIT 100) u
-  LEFT JOIN orders o ON u.id = o.user_id;
-  ```
-
----
-
-### 5. Thêm dữ liệu hàng loạt: Batch INSERT vs Single INSERT
-- ❌ **NÊN TRÁNH:** Lặp vòng lặp gọi 1,000 lần lệnh `INSERT INTO logs VALUES (...)`. Tiêu tốn 1,000 transaction, 1,000 lần ghi file WAL độc lập.
-- ✅ **NÊN LÀM:**
-  ```sql
-  -- Gom thành 1 câu lệnh Multi-values:
-  INSERT INTO logs (level, message) VALUES 
-    ('INFO', 'Msg 1'),
-    ('WARN', 'Msg 2'),
-    ('ERROR', 'Msg 3');
-  
-  -- Hoặc với dữ liệu cực lớn (hàng triệu dòng), dùng lệnh \COPY stream nhị phân (nhanh nhất thế giới):
-  COPY logs (level, message) FROM '/data/logs.csv' WITH (FORMAT csv, HEADER true);
-  ```
+| Tình huống | NÊN TRÁNH (Chậm, vô hiệu hóa Index) |  NÊN LÀM (Tối ưu, tận dụng tối đa Index) | Bản chất kỹ thuật |
+| :--- | :--- | :--- | :--- |
+| **Chọn cột** | `SELECT * FROM orders;` | `SELECT id, code, amount FROM orders;` | Tiết kiệm băng thông, RAM và giúp kích hoạt **`Index Only Scan`**. |
+| **Lọc thời gian** | `WHERE date_trunc(day, created_at) = 2026-11-01` | `WHERE created_at >= 2026-11-01 AND created_at < 2026-11-02` | Bọc cột trong hàm làm B-Tree bị vô hiệu hóa (phải quét toàn bảng). Dùng khoảng so sánh để giữ tính Sargable. |
+| **Tìm chuỗi** | `WHERE name LIKE %iphone` | `WHERE name LIKE iphone%` | Dấu `%` ở đầu làm B-Tree không tìm được nhánh; dấu `%` ở cuối thì B-Tree tìm cực nhanh. *(Nếu cần tìm ở giữa, dùng extension `pg_trgm`)*. |
+| **Subquery** | `WHERE id IN (SELECT user_id FROM orders)` | `WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id)` | `EXISTS` dừng lại ngay khi thấy bản ghi khớp đầu tiên; xử lý an toàn khi bảng con có giá trị `NULL`. |
+| **Phân trang** | `SELECT * FROM logs ORDER BY id LIMIT 20 OFFSET 500000;` | `SELECT * FROM logs WHERE id > 500000 ORDER BY id LIMIT 20;` | `OFFSET 500,000` bắt DB đọc nạp 500,000 dòng rồi vứt đi. Dùng **Keyset Pagination** (`WHERE id > ?`) nhảy tức thì 0.05ms! |
+| **Ghi dữ liệu** | Chạy vòng lặp gọi 1,000 lần lệnh `INSERT` đơn lẻ | `INSERT INTO logs (m) VALUES (a), (b), (c);` (Batch) | Giảm 1,000 round-trip mạng và chi phí mở/đóng transaction. |
 
 ---
 
 ## 5.5 Dọn rác với VACUUM, Autovacuum & Chống phình dữ liệu (Bloat)
 
-### 1. Bản chất của hiện tượng phình dữ liệu (Table & Index Bloat)
+### 1. Tại sao file dữ liệu không tự nhỏ lại khi DELETE?
+- Theo cơ chế **MVCC**, khi bạn `DELETE` hoặc `UPDATE`, dòng cũ không bị xóa mất mà trở thành **Dead Tuple (bản ghi rác)**.
+- **Kích thước file trên đĩa cứng KHÔNG BAO GIỜ tự thu nhỏ lại**. Không gian của các dòng rác chỉ được tái sử dụng nội bộ cho các lệnh `INSERT/UPDATE` tương lai.
 
-Như đã phân tích ở phần **MVCC (Mục 4.2)**:
-- Khi một hàng bị `DELETE`, PostgreSQL không xóa nó khỏi tệp đĩa mà chỉ đánh dấu `xmax = Transaction_ID_Hien_Tai` (biến nó thành **Dead Tuple - Hàng chết**).
-- Khi một hàng bị `UPDATE`, PostgreSQL tạo ra một Tuple mới và đánh dấu Tuple cũ là Dead Tuple.
+### 2. Phân biệt 3 công cụ dọn rác:
+- **`VACUUM (ANALYZE)`:** Dọn dẹp rác, tái sử dụng ô trống. **Hoàn toàn KHÔNG khóa bảng**, ứng dụng vẫn đọc/ghi bình thường.
+- **`VACUUM FULL`:** Viết lại toàn bộ bảng sang file mới để trả dung lượng đĩa về cho Hệ điều hành. **Cực kỳ nguy hiểm vì KHÓA CỨNG TOÀN BẢNG**, ứng dụng bị treo toàn bộ!
+- **`pg_repack` (Extension):** Giải pháp chuẩn cho Production: Thu hồi đĩa 100% như `VACUUM FULL` nhưng **hoàn toàn Online, không khóa đọc/ghi**.
 
-> **Quy luật vật lý quan trọng:**
-> Kích thước file dữ liệu bảng (`base/`) trên hệ điều hành **sẽ không bao giờ tự thu nhỏ lại** khi bạn chạy lệnh `DELETE`. Không gian đĩa của các Dead Tuples chỉ được tái sử dụng nội bộ để đón các lệnh `INSERT/UPDATE` tương lai. Nếu không dọn rác, bảng sẽ bị phình to gấp 5-10 lần kích thước thực, làm chậm toàn bộ các thao tác quét bộ nhớ.
-
----
-
-### 2. Phân biệt rạch ròi 3 công cụ: VACUUM, VACUUM FULL và pg_repack
-
-```mermaid
-flowchart TD
-    V["Tiến trình dọn dẹp bộ nhớ"] --> V_Normal["1. VACUUM thường (Online)
-- Quét và thu hồi Dead Tuples
-- Tái sử dụng ô trống cho INSERT mới
-- KHÔNG khóa bảng, ứng dụng chạy bình thường
-- KHÔNG trả dung lượng đĩa về cho OS"]
-    V --> V_Full["2. VACUUM FULL (Offline - Nguy hiểm)
-- Tạo file mới, copy Live Tuples sang
-- Xóa file cũ, TRẢ đĩa về cho OS
-- KHÓA CỨNG TOÀN BẢNG (Exclusive Lock)
-- Cấm đọc, cấm ghi suốt quá trình chạy"]
-    V --> Repack["3. pg_repack (Khuyên dùng Production)
-- Thu hồi đĩa 100% như VACUUM FULL
-- KHÔNG khóa đọc/ghi (Online hoàn toàn)
-- Cần cài thêm extension pg_repack"]
-```
-
-| Tiêu chí so sánh | `VACUUM (ANALYZE)` thường | `VACUUM FULL` | Tiện ích mở rộng `pg_repack` |
-| :--- | :--- | :--- | :--- |
-| **Mức độ khóa bảng** | Rất nhẹ (`ShareUpdateExclusiveLock`). **Ứng dụng vẫn đọc và ghi bình thường.** | **Khóa độc quyền (`AccessExclusiveLock`). Mọi truy vấn đọc/ghi đều bị treo cứng!** | Rất nhẹ. Không khóa đọc ghi, chỉ xin khóa ngắn vài mili-giây lúc hoán đổi file. |
-| **Trả dung lượng về OS** | Không (chỉ đánh dấu trống bên trong trang 8KB). | **Có** (giải phóng dung lượng ổ cứng ngay lập tức). | **Có** (giải phóng dung lượng ổ cứng tương đương `VACUUM FULL`). |
-| **Khi nào sử dụng?** | Chạy tự động liên tục qua Autovacuum, hoặc chạy thủ công định kỳ. | Chỉ dùng khi bảo trì hệ thống lúc nửa đêm hoặc bảng đã phình to quá mức (Bloat > 80%). | Lựa chọn số 1 của các công ty công nghệ lớn để dọn dẹp đĩa trên hệ thống chạy 24/7. |
-
----
-
-### 3. Tinh chỉnh cấu hình Autovacuum cho cơ sở dữ liệu lớn
-
-Theo mặc định, công thức kích hoạt Autovacuum dọn dẹp cho 1 bảng là:
-$$	ext{Số Dead Tuples cần đạt} = 	ext{autovacuum\_vacuum\_threshold} + (	ext{autovacuum\_vacuum\_scale\_factor} 	imes 	ext{Tổng số dòng})$$
-
-Trong cấu hình mặc định của PostgreSQL:
-- `autovacuum_vacuum_threshold = 50`
-- `autovacuum_vacuum_scale_factor = 0.2` (tương đương **20%**)
-
-> **Cảnh báo thực tế:**
-> Với bảng nhỏ 1,000 dòng, chỉ cần $50 + 200 = 250$ dòng chết là autovacuum chạy. Nhưng với bảng lớn **20 triệu dòng**, hệ thống phải chờ tích tụ đủ **4,000,050 bản ghi chết** thì Autovacuum mới chịu thức dậy! Lúc này bảng đã bị phình thêm hàng chục Gigabytes và làm sụt giảm nghiêm trọng hiệu năng hệ thống.
-
-**Giải pháp: Tinh chỉnh tham số riêng cho từng bảng lớn:**
-```sql
--- Cấu hình riêng cho bảng orders: Chỉ cần 2% dữ liệu chết hoặc 10,000 dòng là dọn rác ngay:
-ALTER TABLE orders SET (
-    autovacuum_vacuum_scale_factor = 0.02,
-    autovacuum_vacuum_threshold = 10000,
-    autovacuum_vacuum_cost_limit = 1000  -- Tăng tốc độ dọn rác nhanh gấp 5 lần
-);
-```
-
----
-
-### 4. Thảm họa cạn kiệt Transaction ID (XID Wraparound) & Vai trò của `VACUUM FREEZE`
-
-- **Bản chất kỹ thuật:** PostgreSQL sử dụng biến số nguyên không dấu 32-bit để gán ID cho mỗi Transaction (`xmin`, `xmax`). 32-bit có nghĩa là tối đa chỉ có thể biểu diễn được khoảng **$2^{32} pprox 4.2$ tỷ giao dịch**.
-- **Quy tắc so sánh vòng tròn:** PostgreSQL dùng một nửa (2 tỷ số) cho các giao dịch trong quá khứ, và 2 tỷ số cho tương lai.
-- **Thảm họa:** Nếu hệ thống chạy được 2 tỷ transaction mà không được đóng băng, các transaction cũ sẽ bị hiểu nhầm là nằm ở "tương lai", khiến dữ liệu cũ **biến mất hoàn toàn khỏi tầm nhìn của người dùng**!
-- **Cơ chế tự bảo vệ:** Để ngăn chặn mất dữ liệu, khi số lượng transaction chưa được đóng băng chạm ngưỡng nguy hiểm (`autovacuum_freeze_max_age = 200 triệu`), PostgreSQL sẽ kích hoạt tiến trình **Aggressive Vacuum Freeze**. Nếu quản trị viên cố tình bỏ qua hoặc tắt autovacuum, khi còn 1 triệu transaction nữa là cạn kiệt, **PostgreSQL sẽ tự động tắt máy chủ và từ chối mọi kết nối ghi mới, ép chuyển sang chế độ Read-Only!**
-- **Quy tắc sống còn:** **Tuyệt đối không bao giờ tắt Autovacuum trên môi trường Production!**
+### 3. Quy tắc vàng với Autovacuum:
+- **Tuyệt đối không bao giờ tắt Autovacuum!** Tắt Autovacuum sẽ dẫn đến thảm họa cạn kiệt Transaction ID (**Wraparound**), khiến PostgreSQL tự động ngắt kết nối và ép chuyển sang chế độ Read-Only để chống hỏng dữ liệu.
+- Với bảng lớn (> 10 triệu dòng), hãy giảm tham số `scale_factor` để Autovacuum dọn rác sớm hơn:
+  ```sql
+  ALTER TABLE orders SET (autovacuum_vacuum_scale_factor = 0.02); -- 2% rác là dọn ngay
+  ```
 
 ---
 
 ## 5.6 Tối ưu cấu hình phần cứng & Connection Pooling (PgBouncer)
 
-### 1. Bản chất kiến trúc tiến trình của PostgreSQL (Process-based Model)
-
-Khác với MySQL hay MS SQL sử dụng mô hình đa luồng (Multi-threading), PostgreSQL sử dụng mô hình **Đa tiến trình độc lập (Multi-process)**:
-- Mỗi khi có một Client kết nối vào cổng 5432, tiến trình chủ `Postmaster` sẽ gọi hàm hệ thống `fork()` của Linux để tạo ra **1 tiến trình con Backend độc lập** (`postgres: user db client_ip`).
-- Mỗi tiến trình này tiêu tốn từ **5 đến 10 MB RAM** ngay khi vừa khởi tạo.
-- **Hậu quả khi có quá nhiều kết nối:** Nếu có 1,000 ứng dụng đồng thời mở kết nối trực tiếp, hệ thống sẽ ngốn ngay 10 GB RAM chỉ để duy trì kết nối rỗng. Tệ hơn nữa, CPU của máy chủ sẽ bị quá tải 100% chỉ để làm nhiệm vụ chuyển ngữ cảnh (**Context Switching**) giữa hàng nghìn tiến trình của hệ điều hành, thay vì thực thi truy vấn SQL!
+### 1. Tại sao bắt buộc dùng PgBouncer?
+PostgreSQL dùng mô hình **đa tiến trình (Multi-process)**: mỗi kết nối từ ứng dụng tạo ra 1 process Linux riêng (tiêu tốn ~10MB RAM). Nếu mở 1,000 kết nối trực tiếp, máy chủ sẽ sập RAM và tê liệt CPU vì chuyển ngữ cảnh (Context Switching).
 
 ```mermaid
 flowchart LR
-    subgraph Bad ["Mô hình xấu: 1000 Kết nối trực tiếp (Gây sập DB)"]
-        A1["1000 App Clients"] -->|"1000 Kết nối TCP"| PG1[("PostgreSQL Server
-1000 Processes
--> Nghẽn CPU & Cháy RAM!")]
-    end
-
-    subgraph Good ["Mô hình chuẩn: Sử dụng PgBouncer Connection Pooler"]
-        A2["1000 App Clients"] -->|"1000 Kết nối nhẹ"| PB["PgBouncer Pooler"]
-        PB -->|"Duy trì ổn định chỉ 20-30 kết nối thật"| PG2[("PostgreSQL Server
-20-30 Processes
--> CPU mát mẻ, Tốc độ đỉnh cao")]
-    end
+    App["1000 Kết nối từ Backend"] --> PB["PgBouncer
+(Connection Pooler)"]
+    PB -->|"Chỉ duy trì 20 - 30 kết nối thực tế"| PG[("PostgreSQL Server
+(CPU & RAM ổn định)")]
 ```
 
----
+> **Chế độ khuyên dùng:** Thiết lập PgBouncer ở chế độ **`pool_mode = transaction`** (mượn kết nối khi chạy transaction, xong trả ngay cho người khác). Giúp hàng ngàn người dùng chia sẻ mượt mà chỉ 30 kết nối thực tế!
 
-### 2. Các chế độ hoạt động của PgBouncer (Pool Modes)
+### 2. Bảng cấu hình `postgresql.conf` bỏ túi (cho máy chủ chạy ổ cứng SSD/NVMe):
 
-| Chế độ Pool | Cơ chế hoạt động | Ưu điểm & Ứng dụng | Điểm cần lưu ý |
-| :--- | :--- | :--- | :--- |
-| **1. Session Pooling** | Giữ kết nối vật lý cố định cho Client từ lúc đăng nhập cho tới khi Client ngắt kết nối. | Tương thích 100% với mọi tính năng SQL. | Kém hiệu quả nhất, không giải quyết triệt để được bài toán hàng nghìn người dùng. |
-| **2. Transaction Pooling** *(Khuyên dùng cho 95% Web/API)* | Mượn một kết nối vật lý ngay khi bắt đầu transaction (`BEGIN`), và **trả lại kết nối cho người khác dùng ngay khi `COMMIT` / `ROLLBACK`**. | **Hiệu quả cao nhất:** Hàng chục nghìn client có thể chia sẻ chung một nhóm 30-50 kết nối DB thực tế. | Không dùng được các tính năng gắn liền với phiên như `SET search_path`, `LISTEN/NOTIFY`, hoặc Prepared Statement cấp phiên. |
-| **3. Statement Pooling** | Cấp kết nối cho đúng 1 câu lệnh SQL đơn lẻ rồi thu hồi ngay lập tức. | Rất nhanh cho các ứng dụng chỉ đọc dữ liệu thống kê đơn giản. | Không hỗ trợ giao dịch nhiều câu lệnh (`BEGIN ... COMMIT`). |
-
----
-
-### 3. Công thức tính toán cấu hình `postgresql.conf` cho máy chủ chạy ổ cứng SSD / NVMe
-
-Dưới đây là bảng gợi ý cấu hình chuẩn sản xuất theo 3 cấp độ phần cứng máy chủ:
-
-| Tham số cấu hình | Máy chủ Nhỏ (4 Core, 8GB RAM) | Máy chủ Vừa (8 Core, 32GB RAM) | Máy chủ Lớn (16 Core, 64GB RAM) | Giải thích bản chất & Công thức |
-| :--- | :--- | :--- | :--- | :--- |
-| **`shared_buffers`** | **2 GB** | **8 GB** | **16 GB** | Vùng nhớ đệm RAM mà PostgreSQL dùng để giữ các trang dữ liệu thường xuyên đọc. **Công thức chuẩn: 25% tổng RAM của máy chủ**. Không nên đặt quá 40% vì PostgreSQL còn dựa vào Page Cache của Linux. |
-| **`effective_cache_size`**| **6 GB** | **24 GB** | **48 GB** | Ước tính tổng dung lượng bộ nhớ khả dụng cho việc cache dữ liệu (gồm cả Shared Buffers và Linux Page Cache). **Công thức: 50% - 75% tổng RAM**. Giúp Planner biết dữ liệu có khả năng nằm sẵn trên RAM hay không để chọn Index. |
-| **`work_mem`** | **16 MB** | **64 MB** | **128 MB** | Bộ nhớ dành cho **mỗi phép sắp xếp (`ORDER BY`) hoặc bảng băm (`Hash Join`)** của một câu truy vấn. Một câu truy vấn phức tạp có 3 phép sort và 2 phép hash sẽ tiêu tốn $5 	imes 	ext{work\_mem}$. |
-| **`maintenance_work_mem`**| **512 MB** | **2 GB** | **4 GB** | Bộ nhớ dành riêng cho các tác vụ bảo trì hệ thống nặng như tạo chỉ mục (`CREATE INDEX`) và dọn rác (`VACUUM`). |
-| **`wal_buffers`** | **16 MB** | **64 MB** | **64 MB** | Kích thước bộ đệm lưu nhật ký giao dịch trước khi ghi xuống đĩa. Thường cố định ở mức 16MB đến 64MB là tối ưu. |
-| **`random_page_cost`** | **1.1** | **1.1** | **1.1** | Chi phí đọc ngẫu nhiên một trang đĩa so với đọc tuần tự. **Mặc định là 4.0 (dành cho ổ cứng cơ HDD cũ quay chậm). Với ổ SSD/NVMe hiện đại, bắt buộc đổi thành 1.1** để khuyến khích Planner tích cực dùng Index! |
-| **`max_connections`** | **100** | **200** | **300** | Số lượng kết nối tối đa. Không nên đặt con số này lên hàng ngàn. Hãy giữ ở mức hợp lý và đặt PgBouncer ở phía trước! |
+| Tham số | Giá trị khuyên dùng | Bản chất dễ nhớ |
+| :--- | :--- | :--- |
+| **`shared_buffers`** | **25% tổng RAM** của server | Bộ nhớ đệm RAM chính để giữ các trang dữ liệu hay đọc. (Ví dụ: Server 16GB RAM -> đặt 4GB). |
+| **`effective_cache_size`** | **50% - 75% tổng RAM** | Ước tính tổng bộ nhớ cache (của cả PostgreSQL và Linux) để Query Planner tính toán chọn Index. |
+| **`work_mem`** | **16MB - 64MB** | RAM cấp cho **mỗi phép sắp xếp hoặc băm** của câu truy vấn. Không đặt quá lớn kẻo tràn RAM khi nhiều người truy vấn cùng lúc. |
+| **`maintenance_work_mem`**| **256MB - 1GB** | RAM dành riêng cho việc bảo trì: tạo Index (`CREATE INDEX`) và dọn rác (`VACUUM`). |
+| **`random_page_cost`** | **`1.1`** *(Mặc định là 4.0)* | **Bắt buộc đổi thành 1.1 khi dùng ổ SSD/NVMe** để báo cho DB biết ổ đĩa đọc ngẫu nhiên rất nhanh, khuyến khích dùng Index! |
+| **`max_connections`** | **100 - 200** | Giữ ở mức vừa phải kết hợp với PgBouncer, không mở trực tiếp hàng ngàn kết nối. |
 
 ---
 
