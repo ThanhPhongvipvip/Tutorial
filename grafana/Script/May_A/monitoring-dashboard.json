@@ -826,8 +826,8 @@
     },
     {
       "id": 61,
-      "title": "Sơ Đồ Thực Thể Quan Hệ (ERD) Chuẩn pgAdmin 4 — Thiết Bị: ${device} | DB: ${db_name}",
-      "description": "Sơ đồ ERD trực quan chuẩn pgAdmin 4 sử dụng Cytoscape.js + ELK.js (Orthogonal routing, tự động sắp xếp Sugiyama, hiển thị đầy đủ PK/FK/Data Type, hỗ trợ zoom, kéo thả và xuất ảnh PNG).",
+      "title": "Sơ Đồ Thực Thể Quan Hệ (ERD) — Thiết Bị: ${device} | DB: ${db_name}",
+      "description": "Sơ đồ ERD trực quan sử dụng Cytoscape.js + ELK.js (Orthogonal routing, tự động sắp xếp Sugiyama, hiển thị đầy đủ PK/FK/Data Type, hỗ trợ zoom, kéo thả và xuất ảnh PNG).",
       "type": "volkovlabs-echarts-panel",
       "datasource": {
         "type": "postgres",

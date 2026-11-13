@@ -65,4 +65,3 @@ Sau khi hoan thanh
 * [Hướng dẫn cài đặt chi tiết (doc/SETUP.md)](doc/SETUP.md)
 * [Cẩm nang vận hành & xử lý sự cố (doc/USAGE.md)](doc/USAGE.md)
 * [Kiến trúc & tính năng tổng thể (doc/README.md)](doc/README.md)
-* [Báo cáo phân loại tệp phụ trợ (Other/README.md)](Other/README.md)
