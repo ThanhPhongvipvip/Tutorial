@@ -78,3 +78,14 @@ ping 100.64.15.28
 
 - Cả hai máy phải đăng nhập vào cùng Tailscale network
 - Firewall phải cho phép port RustDesk (ví dụ: `8686`)
+
+
+
+
+
+Người kia tự cài Tailscale trên máy họ và đăng nhập bằng tài khoản riêng của họ (Gmail/GitHub/... của họ).
+Họ vào Tailscale Admin Console
+ → Machines → bấm ... ở máy cần remote → chọn Share this machine... → gửi link mời hoặc nhập email Tailscale của bạn.
+Bạn mở link và Accept. Máy họ sẽ hiện trong Tailscale của bạn với một IP 100.x.x.x.
+Trên máy người kia, mở RustDesk (không cần đăng nhập tài khoản RustDesk), vào Settings → Security bật Enable Direct IP Access + đặt mật khẩu (hoặc Accept thủ công khi bạn gọi tới).
+Bạn kết nối trực tiếp vào <IP_Tailscale_máy_họ>:21118 (hoặc port đã cấu hình).
