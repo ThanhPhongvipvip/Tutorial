@@ -290,6 +290,42 @@ Lệnh này sẽ:
 2. SSH vào Ubuntu 2
 3. Tự động chạy ứng dụng với VirtualGL
 
+#### Chỉ định đường dẫn trực tiếp trên Ubuntu 2 (máy B) thay vì dùng `find`
+
+Nếu đã biết chính xác đường dẫn ứng dụng trên **Ubuntu 2 (máy B)**, bạn không cần dùng `find` để tìm trong `$HOME` (giúp SSH chạy nhanh hơn và tránh chọn nhầm nếu có nhiều thư mục trùng tên).
+
+Có thể thay trực tiếp dòng `RemoteCommand` trong `Host ubuntu-vgl` ở trên, hoặc thêm một `Host` riêng vào `~/.ssh/config`:
+
+```bash
+Host ubuntu-vgl-direct
+    HostName <IPv6-Ubuntu-2>
+    User username
+    Port 22
+
+    # X11 Forwarding
+    ForwardX11 yes
+    ForwardX11Trusted yes
+    RequestTTY yes
+
+    # Tự động chạy ứng dụng với đường dẫn trực tiếp trên Ubuntu 2 (máy B)
+    RemoteCommand bash -lc 'cd "/duong/dan/toi/xf4_asr_rdd" || exit 1; unset VGL_CLIENT; export VGL_DISPLAY=:1; exec vglrun -d :1 ./run.sh'
+
+    # Tự động khởi động vglclient trên local
+    LocalCommand sh -c 'if ! pgrep -u "$USER" -x vglclient >/dev/null 2>&1; then DISPLAY=:1 VGLCLIENT_IPV6=1 nohup vglclient -display :1 -port 4242 -ipv6 > "$HOME/.vglclient.log" 2>&1 & fi'
+    PermitLocalCommand yes
+```
+
+**Hoặc chỉ định thẳng đường dẫn tới file script (có bước kiểm tra file tồn tại):**
+
+```bash
+    RemoteCommand bash -lc 'PROJECT="/duong/dan/toi/xf4_asr_rdd/run.sh"; if [ ! -f "$PROJECT" ]; then echo "Không tìm thấy $PROJECT"; exit 1; fi; cd "$(dirname "$PROJECT")" || exit 1; unset VGL_CLIENT; export VGL_DISPLAY=:1; exec vglrun -d :1 "./$(basename "$PROJECT")"'
+```
+
+> **Lưu ý về đường dẫn trên Ubuntu 2 (máy B):**
+> - Thay `/duong/dan/toi/xf4_asr_rdd` bằng đường dẫn thực tế trên Ubuntu 2 (ví dụ `/home/username/xf4_asr_rdd` hoặc `"$HOME/xf4_asr_rdd"`).
+> - Không dùng `~` bên trong dấu ngoặc kép `"..."` (ví dụ `"~/xf4_asr_rdd"` sẽ báo lỗi vì bash không mở rộng `~` trong ngoặc kép).
+> - Nếu tạo `Host ubuntu-vgl-direct`, kết nối bằng lệnh: `ssh ubuntu-vgl-direct`.
+
 ---
 
 ## Tối ưu hiệu suất (Giảm lag)

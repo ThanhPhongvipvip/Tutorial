@@ -153,7 +153,7 @@ from(bucket: "system_metrics")
   |> group()
   |> count()
 ```
-- **Hiểu nhanh:** Lấy chỉ số `cpu` trong 5 phút gần nhất → gom theo từng `device` và lấy 1 dòng cuối (`last()`) để mỗi máy chỉ tính 1 lần → gộp hết lại (`group()`) rồi đếm (`count()`).
+- Giải thích:  Lấy chỉ số `cpu` trong 5 phút gần nhất → gom theo từng `device` và lấy 1 dòng cuối (`last()`) để mỗi máy chỉ tính 1 lần → gộp hết lại (`group()`) rồi đếm (`count()`).
 - **Cài đặt bên phải:** Calculation `Last*`, Color mode `Background`, Unit `Short`, No value `0`, Color `blue`.
 
 **2. Panel `Thiết Bị Online` (Duplicate Panel 1)**
@@ -176,7 +176,7 @@ Thêm 2 query (bấm **+ Add query**) để vẽ 2 đường System và User:
     |> yield(name: "System")
   ```
 - **Query B** *(đặt tên RefID: `User`)*: Giống Query A, chỉ đổi `usage_system` → **`usage_user`** và `yield(name: "User")`.
-- **Hiểu nhanh:** Lọc `r.cpu == "cpu-total"` để lấy % CPU tổng (không tách lẻ từng nhân).
+- **Giải thích:** Lọc `r.cpu == "cpu-total"` để lấy % CPU tổng (không tách lẻ từng nhân).
 - **Cài đặt:** Unit `Percent (0-100)`, Line interpolation `Smooth`, Fill opacity `15`. Vào tab **Overrides** đổi tên `System` → `CPU Hệ Thống (Kernel)` (màu `blue`), `User` → `CPU Ứng Dụng (User)` (màu `orange`).
 
 #### 2. RAM (`RAM Usage (%) - ${device}`) — Kiểu `Time series`
@@ -205,7 +205,7 @@ from(bucket: "system_metrics")
       _value: r._value
   }))
 ```
-- **Hiểu nhanh:** Lấy dung lượng `used` và `free` của thư mục gốc `/` (nếu muốn xem ổ khác như `/data` thì đổi `r.path == "/data"`), lấy giá trị mới nhất (`last()`), rồi dùng `map(...)` đổi tên sang tiếng Việt.
+- **Giải thích:** Lấy dung lượng `used` và `free` của thư mục gốc `/` (nếu muốn xem ổ khác như `/data` thì đổi `r.path == "/data"`), lấy giá trị mới nhất (`last()`), rồi dùng `map(...)` đổi tên sang tiếng Việt.
 - **Cài đặt:** Pie chart type `Donut`, Labels `Name` + `Percent`, Unit `Data -> bytes (IEC)`. Tab **Overrides** (`Fields with name`): `Đã dùng` (`orange`), `Còn trống` (`green`).
 
 #### 4. Mạng (`Network Download` & `Network Upload`) — Kiểu `Gauge`
@@ -222,7 +222,7 @@ from(bucket: "system_metrics")
     |> map(fn: (r) => ({_value: if exists r._value and r._value > 0.0 then r._value else 0.0}))
   ```
 - **Panel Upload (`Network Upload - ${device}`):** Duplicate panel Download, sửa `bytes_recv` → **`bytes_sent`**.
-- **Hiểu nhanh:** `derivative(unit: 1s)` đổi tổng bytes thành tốc độ **bytes/giây** cho từng card mạng; sau đó `last() |> group() |> sum()` cộng tốc độ tất cả card mạng trên máy lại (muốn đo riêng 1 card như `eth0` thì thêm `and r.interface == "eth0"` ở dòng `filter`).
+- **Giải thích:** `derivative(unit: 1s)` đổi tổng bytes thành tốc độ **bytes/giây** cho từng card mạng; sau đó `last() |> group() |> sum()` cộng tốc độ tất cả card mạng trên máy lại (muốn đo riêng 1 card như `eth0` thì thêm `and r.interface == "eth0"` ở dòng `filter`).
 - **Cài đặt:** Unit `Data rate -> bytes/sec (IEC)`, Min `0`, No value `0 B/s`, Color `From thresholds`. Thresholds: Base `green`, `5242880` (5 MiB/s) vàng, `20971520` (20 MiB/s) đỏ.
 
 ---
@@ -240,7 +240,6 @@ from(bucket: "system_metrics")
   |> drop(columns: ["arch", "compute_mode", "pstate", "uuid", "device", "device_name", "host", "location", "_measurement", "_start", "_stop"])
 ```
 
-- **Mẹo hay:** Trong `drop(...)` cố tình **giữ lại 2 tag là `index` và `name`**. Nhờ đó khi gõ Display name là `GPU #${__field.labels.index}: ${__field.labels.name}`, máy có 2 card sẽ tự tách thành 2 đường `GPU #0: ...` và `GPU #1: ...`.
 
 Bảng thông số để tạo nhanh 4 panel GPU:
 
@@ -274,7 +273,7 @@ from(bucket: "device_csv")
   |> limit(n: 500)
 ```
 
-**Giải thích nhanh:**
+**Giải thích:**
 1. `range(start: -30d)`: lấy trong 30 ngày gần nhất để file CSV cũ vẫn hiện.
 2. `group(... "row_id", "_field") |> last()`: mỗi phút Telegraf đọc lại file CSV 1 lần; lệnh này giữ **bản mới nhất của từng ô**, tránh bị lặp dòng.
 3. `toString()`: ép mọi giá trị về dạng chữ để không bị lỗi khi file có nhiều kiểu dữ liệu.
@@ -284,7 +283,7 @@ from(bucket: "device_csv")
 
 ---
 
-### 4.5. Sơ Đồ ERD (`Row: SƠ ĐỒ THỰC THỂ QUAN HỆ (ERD) - THIẾT BỊ: $device`)
+### 4.5. Sơ Đồ ERD (`Row: SƠ ĐỒ THỰC THỂ QUAN HỆ (ERD))
 
 Tạo Panel **`Business Charts`** (plugin vừa cài), nguồn **`PostgreSQL-Catalog`**, tiêu đề `Sơ Đồ Thực Thể Quan Hệ (ERD) — Thiết Bị: ${device} | DB: ${db_name}`.
 
@@ -325,9 +324,9 @@ UNION ALL
 SELECT * FROM edges;
 ```
 
-**Query SQL này làm gì?**
+**Giải thichs Query SQL**
 - **`nodes` & `edges`:** Lấy danh sách các **bảng** (tên bảng, cột, PK/FK) và **đường nối khóa ngoại** của `${device}` / `${db_name}` từ PostgreSQL.
-- **Tác dụng chính:** Dùng để kiểm tra dữ liệu bảng thô (khi bật *Table view*), đồng thời **làm "cò kích hoạt"** — mỗi khi bạn đổi máy hay database trên dropdown, query chạy lại và báo cho phần JavaScript bên dưới vẽ lại sơ đồ mới.
+- **Tác dụng chính:** Dùng để kiểm tra dữ liệu bảng thô (khi bật *Table view*), đồng thời mỗi khi đổi máy hay database trên dropdown, query chạy lại và báo cho phần JavaScript bên dưới vẽ lại sơ đồ mới.
 
 #### 2. Phần Script JavaScript (`Charts Function` / `getOption`) ở thanh bên phải
 ```javascript
@@ -389,11 +388,11 @@ if (dom) {
 // BƯỚC 5: Trả về rỗng để plugin không vẽ biểu đồ khác đè lên
 return {};
 ```
-
+Phương pháp nghiên cứu và kỹ năng viết học thuật
 **Tóm tắt 5 bước Script làm gì (dành cho người mới):**
 1. **Tìm ô chứa Panel (`dom`):** Lấy đúng vùng trống của Panel này trên màn hình *(viết nhiều điều kiện `if` để tương thích mọi phiên bản Grafana)*.
-2. **Đọc biến đang chọn:** Lấy tên **Máy** và **Database** từ thanh dropdown (VD: `cuonglq`, `erd_demo`).
-3. **Ghép link web ERD:** Tự lấy IP máy chủ trên trình duyệt (`window.location.hostname`) để tạo thành link `http://<IP_MAY_A>:8088/?device=...&db=...` mà không cần gõ cứng IP.
+2. **Đọc biến đang chọn:** Lấy tên **Máy** và **Database** từ thanh dropdown
+3. **Ghép link web ERD:** Tự lấy IP máy chủ trên trình duyệt (`window.location.hostname`) để tạo thành link `http://<IP_MAY_A>:8088/?device=...&db=...` .
 4. **Nhúng web vào Panel (`<iframe>`):**
    - Lần đầu mở: tạo một khung web con tràn 100% Panel trỏ vào link trên.
    - Khi Dashboard tự làm mới mỗi 10s: kiểm tra `data-url`, **chỉ tải lại khi bạn đổi sang Máy hoặc DB khác** để sơ đồ không bị giật hay mất vị trí vừa kéo.
