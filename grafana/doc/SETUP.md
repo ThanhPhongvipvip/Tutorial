@@ -4,9 +4,7 @@ Tài liệu hướng dẫn cài đặt từ đầu cho **Máy Chủ Trung Tâm (
 
 ---
 
-## Tổng Quan: Cài Những Gì Và Để Làm Gì?
-
-Trước khi chạy lệnh, bảng dưới đây giải thích ngắn gọn vai trò của từng gói phần mềm và dịch vụ sẽ được cài đặt:
+## Tổng Quan:
 
 ### Trên Máy Chủ Trung Tâm (Máy A)
 
@@ -16,7 +14,6 @@ Trước khi chạy lệnh, bảng dưới đây giải thích ngắn gọn vai 
 | **`influxdb2`** | `8086` | Cơ sở dữ liệu chuỗi thời gian dùng để lưu toàn bộ **chỉ số phần cứng** (CPU, RAM, Disk, Network, GPU) và **nội dung file CSV** theo mốc thời gian. |
 | **`grafana` + plugin `volkovlabs-echarts-panel`** | `3000` | Giao diện web trung tâm để hiển thị biểu đồ giám sát, xem bảng CSV và nhúng khung sơ đồ ERD. Plugin thêm vào để hỗ trợ chạy mã nhúng khung ERD trong Panel. |
 | **`erd-viewer.service`** *(dịch vụ Python tự tạo)* | `8088` | Dịch vụ web chạy ngầm lấy cấu trúc bảng từ PostgreSQL để vẽ **sơ đồ ERD tương tác** (kéo thả, tự sắp xếp, xuất ảnh PNG) rồi hiển thị lên Grafana. |
-| **`curl`, `wget`, `gnupg`, `jq`, `python3`, `python3-yaml`** | - | Các công cụ phụ trợ để tải gói/kho cài đặt có xác thực chữ ký GPG, gọi API Grafana, xử lý JSON (`jq`), chạy script quản trị (`manage.py`) và chạy dịch vụ ERD. |
 
 ### Trên Máy Con Cần Giám Sát (Máy B, Máy C...)
 
@@ -24,7 +21,7 @@ Trước khi chạy lệnh, bảng dưới đây giải thích ngắn gọn vai 
 | :--- | :--- |
 | **`telegraf`** *(tải từ kho InfluxData)* | Phần mềm thu thập dữ liệu (Agent) chạy ngầm trên máy con: định kỳ đọc % CPU, RAM, ổ đĩa, mạng, GPU NVIDIA (`nvidia-smi`), thông số PostgreSQL và file CSV để đẩy về InfluxDB trên Máy A. |
 | **`manage.py` + cronjob `erd-metadata-sync`** | Chạy tự động mỗi 5 phút để trích xuất danh sách bảng, cột, khóa chính/ngoại từ PostgreSQL trên máy con đẩy về PostgreSQL Máy A (vì Telegraf chỉ đo chỉ số vận hành chứ không đọc cấu trúc bảng để vẽ ERD). |
-| **`python3-yaml`, `curl`, `gnupg`, `openssh-client`, `ca-certificates`** | Các gói nền giúp script `install-agent-v2.sh` kiểm tra kho cài đặt InfluxData, đọc file cấu hình `device.yaml` và chuyển đổi thành file cấu hình cho Telegraf. |
+
 
 ---
 
