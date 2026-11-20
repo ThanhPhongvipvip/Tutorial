@@ -13,11 +13,6 @@
 #   6. Cấu hình ~/.ssh/config (idempotent) bật X11 Forwarding và tự động chạy
 #      vglclient mỗi khi SSH (kể cả sau khi reboot Máy A)
 #
-# Cách dùng:
-#   ./setup-may-a.sh
-#   ./setup-may-a.sh user@<IPv6-May-B>
-#   ./setup-may-a.sh --display :1 --port 4242 user@<IPv6-May-B>
-# =============================================================================
 
 set -Eeuo pipefail
 

@@ -1,4 +1,4 @@
-#  Cơ Sở Dữ Liệu & PostgreSQL 16
+# Cơ Sở Dữ Liệu & PostgreSQL 16
 
 > Ứng dụng demo thực tế Qt + PostgreSQL 16 + Docker: xem tại thư mục [`qt-postgres-login-demo/`](qt-postgres-login-demo/README.md).
 
@@ -6,7 +6,7 @@
 
 ## Mục lục
 
-- [**Phần 1: Nhập Môn Cơ Sở Dữ Liệu & Mô Hình Quan Hệ (RDBMS)**](#phần-1-nhập-môn-cơ-sở-dữ-liệu--mô-hình-quan-hệ-rdbms)
+- [**Phần 1: Cơ Sở Dữ Liệu & Mô Hình Quan Hệ (RDBMS)**](#phần-1-cơ-sở-dữ-liệu--mô-hình-quan-hệ-rdbms)
   - [1.1 CSDL là gì? Tại sao không dùng Excel / File?](#11-csdl-là-gì-tại-sao-không-dùng-excel--file)
   - [1.2 Phân loại: SQL (RDBMS) vs NoSQL - Khi nào dùng gì?](#12-phân-loại-sql-rdbms-vs-nosql---khi-nào-dùng-gì)
   - [1.3 Các khái niệm cốt lõi: Bảng, Cột, Hàng, Giá trị NULL](#13-các-khái-niệm-cốt-lõi-bảng-cột-hàng-giá-trị-null)
@@ -18,8 +18,8 @@
   - [2.1 Cấu trúc phân cấp logic: Cluster -> Database -> Schema -> Table](#21-cấu-trúc-phân-cấp-logic-cluster---database---schema---table)
   - [2.2 Cài đặt & Khởi chạy PostgreSQL 16 + pgAdmin 4 bằng Docker Compose](#22-cài-đặt--khởi-chạy-postgresql-16--pgadmin-4-bằng-docker-compose)
   - [2.3 Chuỗi kết nối chuẩn (Connection String / URI) & Biến môi trường](#23-chuỗi-kết-nối-chuẩn-connection-string--uri--biến-môi-trường)
-  - [2.4 Bảng lệnh tắt psql bỏ túi (CLI Cheat Sheet)](#24-bảng-lệnh-tắt-psql-bỏ-túi-cli-cheat-sheet)
-- [**Phần 3: Bảng Tra Cứu Toàn Diện Các Câu Lệnh Truy Vấn SQL**](#phần-3-bảng-tra-cứu-toàn-diện-các-câu-lệnh-truy-vấn-sql)
+  - [2.4 Bảng lệnh tắt psql (CLI Cheat Sheet)](#24-bảng-lệnh-tắt-psql-cli-cheat-sheet)
+- [**Phần 3: Bảng Tra Cứu Các Câu Lệnh Truy Vấn SQL**](#phần-3-bảng-tra-cứu-các-câu-lệnh-truy-vấn-sql)
   - [3.1 Bảng lệnh tạo và sửa cấu trúc (DDL)](#31-bảng-lệnh-tạo-và-sửa-cấu-trúc-ddl)
   - [3.2 Bảng lệnh thao tác dữ liệu cơ bản (DML)](#32-bảng-lệnh-thao-tác-dữ-liệu-cơ-bản-dml)
   - [3.3 Bảng điều kiện lọc & Tìm kiếm (WHERE, LIKE, ILIKE, IN, BETWEEN, IS NULL)](#33-bảng-điều-kiện-lọc--tìm-kiếm-where-like-ilike-in-between-is-null)
@@ -33,19 +33,17 @@
   - [4.3 Các mức cô lập (Isolation Levels) & Hiện tượng đọc sai](#43-các-mức-cô-lập-isolation-levels--hiện-tượng-đọc-sai)
   - [4.4 Cơ chế Khóa hàng: FOR UPDATE & FOR UPDATE SKIP LOCKED](#44-cơ-chế-khóa-hàng-for-update--for-update-skip-locked)
 - [**Phần 5: Tối Ưu Hóa Truy Vấn (Query Optimization)**](#phần-5-tối-ưu-hóa-truy-vấn-query-optimization)
-  - [5.1 Bản chất Chỉ mục (Index) & Cơ chế hoạt động (B-Tree vs Sequential Scan)](#51-bản-chất-chỉ-mục-index--cơ-chế-hoạt-động-b-tree-vs-sequential-scan)
-  - [5.2 Bảng tra cứu các loại Index trong PostgreSQL](#52-bảng-tra-cứu-các-loại-index-trong-postgresql)
-  - [5.4 Bảng so sánh "NÊN LÀM vs NÊN TRÁNH" khi viết SQL](#54-bảng-so-sánh-nên-làm-vs-nên-tránh-khi-viết-sql)
-  - [5.5 Dọn rác với VACUUM, Autovacuum & Chống phình dữ liệu (Bloat)](#55-dọn-rác-với-vacuum-autovacuum--chống-phình-dữ-liệu-bloat)
-  - [5.6 Tối ưu cấu hình phần cứng & Connection Pooling (PgBouncer)](#56-tối-ưu-cấu-hình-phần-cứng--connection-pooling-pgbouncer)
-- [**Phần 6: Kiến Trúc Nội Bộ, Bảo Mật & Vận Hành**](#phần-6-kiến-trúc-nội-bộ-bảo-mật--vận-hành)
-  - [6.1 Sơ đồ kiến trúc các tiến trình & Cơ chế WAL (Write-Ahead Logging)](#61-sơ-đồ-kiến-trúc-các-tiến-trình--cơ-chế-wal-write-ahead-logging)
-  - [6.2 Phân quyền Role & Bảo mật mật khẩu với pgcrypto (bcrypt)](#62-phân-quyền-role--bảo-mật-mật-khẩu-với-pgcrypto-bcrypt)
-
+  - [5.1 Chỉ mục (Index) là gì và tại sao giúp tìm dữ liệu nhanh?](#51-chỉ-mục-index-là-gì-và-tại-sao-giúp-tìm-dữ-liệu-nhanh)
+  - [5.2 Các loại Index thường dùng trong PostgreSQL](#52-các-loại-index-thường-dùng-trong-postgresql)
+  - [5.3 Cách viết câu lệnh SQL chạy nhanh (Nên làm vs Nên tránh)](#53-cách-viết-câu-lệnh-sql-chạy-nhanh-nên-làm-vs-nên-tránh)
+  - [5.4 Dọn rác dữ liệu với VACUUM & Autovacuum](#54-dọn-rác-dữ-liệu-với-vacuum--autovacuum)
+- [**Phần 6: Cách PostgreSQL Lưu Dữ Liệu & Bảo Mật Cơ Bản**](#phần-6-cách-postgresql-lưu-dữ-liệu--bảo-mật-cơ-bản)
+  - [6.1 Cách PostgreSQL xử lý truy vấn và chống mất dữ liệu (WAL)](#61-cách-postgresql-xử-lý-truy-vấn-và-chống-mất-dữ-liệu-wal)
+  - [6.2 Bảo mật cơ bản: Phân quyền, Mật khẩu](#62-bảo-mật-cơ-bản-phân-quyền-mật-khẩu)
 
 ---
 
-# Phần 1: Nhập Môn Cơ Sở Dữ Liệu & Mô Hình Quan Hệ (RDBMS)
+# Phần 1: Cơ Sở Dữ Liệu & Mô Hình Quan Hệ (RDBMS)
 
 ## 1.1 CSDL là gì? Tại sao không dùng Excel / File?
 
@@ -57,7 +55,7 @@
 ```mermaid
 flowchart LR
     subgraph Client ["1. Tầng Trình Bày (Client)"]
-        UI["Web / Mobile App / Desktop (Qt)"]
+        UI["Web / Mobile App / Desktop"]
     end
 
     subgraph App ["2. Tầng Nghiệp Vụ (Backend)"]
@@ -86,16 +84,28 @@ flowchart LR
 
 ## 1.2 Phân loại: SQL (RDBMS) vs NoSQL - Khi nào dùng gì?
 
+Hiện nay các hệ quản trị cơ sở dữ liệu được chia làm 2 nhóm chính:
+
+### 1. Bảng phân biệt dễ hiểu: SQL vs NoSQL
+
+| Tiêu chí | CSDL Quan hệ - SQL (PostgreSQL, MySQL) | CSDL Phi quan hệ - NoSQL (MongoDB, Redis) |
+| :--- | :--- | :--- |
+| **Cách lưu dữ liệu** | Lưu vào các **Bảng (Table)** có hàng và cột được quy định sẵn khuôn mẫu chặt chẽ (giống các bảng tính có liên kết với nhau). | Không ép buộc chia bảng/cột cố định. Lưu linh hoạt dưới dạng tài liệu **JSON** (MongoDB) hoặc cặp **Khóa - Giá trị** trên RAM (Redis). |
+| **Kiểm soát dữ liệu** | **chặt chẽ:** Dữ liệu phải đúng kiểu (số, chữ, ngày tháng) và đúng quy tắc liên kết giữa các bảng thì mới cho phép lưu. | **Linh hoạt:** Dòng trước có 3 trường, dòng sau thêm thành 5 trường khác nhau vẫn lưu được ngay mà không cần sửa cấu trúc bảng. |
+| **Phù hợp nhất cho** | Hệ thống cần **độ chính xác cao và dữ liệu có mối liên kết rõ ràng**: Tài khoản người dùng, Đơn hàng, Kế toán, Ngân hàng, Quản lý kho. | Hệ thống cần **tốc độ bộ nhớ đệm (Cache)** cực nhanh (Redis), hoặc lưu nhật ký hệ thống (Logs), dữ liệu cảm biến thay đổi cấu trúc liên tục. |
+
+### 2. Sơ đồ chọn nhanh loại CSDL cho dự án
+
 ```mermaid
 flowchart TD
-    Start{"Dữ liệu của bạn có cấu trúc rõ ràng\nvà yêu cầu giao dịch ACID tuyệt đối?"}
-    Start -- "Có (Tài chính, Đơn hàng, Người dùng)" --> SQL["Dùng SQL / RDBMS (PostgreSQL)\n- Ràng buộc quan hệ chặt chẽ\n- Transaction ACID an toàn tuyệt đối\n- Hỗ trợ JSONB khi cần dữ liệu động"]
-    Start -- "Không (Dữ liệu phi cấu trúc, Logs, Cache)" --> CheckCache{"Cần tốc độ đọc siêu cao\nhoặc mở rộng phân tán cực lớn?"}
-    CheckCache -- "Caching / Key-Value" --> Redis["Redis / Memcached"]
-    CheckCache -- "Tài liệu JSON biến đổi liên tục" --> Mongo["MongoDB / Document Store"]
+    Start{"Dữ liệu có cấu trúc rõ ràng\nvà cần đảm bảo chính xác?"}
+    Start -- "Có (Người dùng, Đơn hàng, Tiền tệ)" --> SQL["Chọn SQL (PostgreSQL)\n- Quản lý bảng và liên kết chặt chẽ\n- Chuyển tiền / đặt hàng an toàn\n- Có sẵn kiểu JSONB khi cần lưu dữ liệu động"]
+    Start -- "Không (Lưu tạm tốc độ cao, Logs tự do)" --> CheckCache{"Mục đích chính của bạn là gì?"}
+    CheckCache -- "Lưu bộ nhớ đệm (Cache) nhanh trên RAM" --> Redis["Chọn Redis"]
+    CheckCache -- "Lưu tài liệu JSON tự do, ít liên kết" --> Mongo["Chọn MongoDB"]
 ```
 
-> **Vị thế đặc biệt của PostgreSQL:** PostgreSQL là một **ORDBMS** (Hệ quản trị CSDL quan hệ - hướng đối tượng). Điểm mạnh vượt trội của PostgreSQL là vừa hỗ trợ đầy đủ chuẩn SQL quan hệ và giao dịch ACID, vừa hỗ trợ kiểu dữ liệu nhị phân `JSONB` với hiệu năng tìm kiếm và đánh index tương đương MongoDB. Vì vậy, PostgreSQL có thể giải quyết tốt hơn nhiều nhu cầu thực tế của dự án mà không cần cài thêm CSDL NoSQL riêng.
+> **Điểm mạnh đặc biệt của PostgreSQL:** Thông thường bạn phải chọn giữa sự chặt chẽ của **SQL** hoặc sự linh hoạt của **NoSQL**. Tuy nhiên, PostgreSQL là hệ CSDL SQL nhưng lại tích hợp sẵn kiểu dữ liệu **`JSONB`** (cho phép lưu và tìm kiếm dữ liệu JSON nhanh tương đương MongoDB). Vì vậy, trong đa số dự án, bạn chỉ cần dùng một mình **PostgreSQL** là đã đáp ứng tốt cả hai nhu cầu.
 
 ---
 
@@ -109,7 +119,7 @@ BẢNG: users (Tập hợp các bản ghi người dùng)
 | id | username   | email             | age | is_active  |  <-- CÁC CỘT (Columns / Thuộc tính / Kiểu dữ liệu)
 +----+------------+-------------------+-----+------------+
 | 1  | phong      | phong@example.com | 22  | true       |  <-- HÀNG 1 (Row / Record / Bản ghi)
-| 2  | phanh      | phanh@test.com    | 20  | true       |  <-- HÀNG 2
+| 2  | phonh      | phonh@test.com    | 20  | true       |  <-- HÀNG 2
 | 3  | guest      | NULL              | 0   | false      |  <-- HÀNG 3: Cột email có giá trị NULL
 +----+------------+-------------------+-----+------------+
   ^
@@ -139,7 +149,7 @@ Khóa là công cụ cốt lõi để đảm bảo dữ liệu không bị trùn
 
 ## 1.5 Bảng các kiểu dữ liệu quan trọng nhất trong PostgreSQL
 
-Việc chọn đúng kiểu dữ liệu giúp tiết kiệm dung lượng ổ cứng, tăng tốc độ RAM và giúp bộ tối ưu (Query Planner) hoạt động hiệu quả:
+Việc chọn đúng kiểu dữ liệu giúp tiết kiệm dung lượng ổ cứng, bộ tối ưu (Query Planner) hoạt động hiệu quả:
 
 | Nhóm dữ liệu | Tên kiểu dữ liệu | Dung lượng | Khi nào nên dùng? (Lưu ý thực tế) |
 | :--- | :--- | :--- | :--- |
@@ -147,7 +157,7 @@ Việc chọn đúng kiểu dữ liệu giúp tiết kiệm dung lượng ổ c�
 | | `integer` (`int`) | 4 bytes | Dải số đến ~2.1 tỷ. Thường dùng làm ID cho các bảng vừa và nhỏ. |
 | | `bigint` | 8 bytes | Dải số đến 9 tỷ tỷ. **Chuẩn bắt buộc làm PK cho đơn hàng, giao dịch, logs.** |
 | **Số thực / Tiền** | `numeric(p, s)` | Linh hoạt | **Bắt buộc dùng cho tiền tệ, tài chính**. Tính toán chính xác 100%, không bị sai số làm tròn như `float`. |
-| | `real` / `double` | 4 - 8 bytes | Số thực dấu phẩy động. Chỉ dùng cho tọa độ địa lý, khoa học kỹ thuật chấp nhận sai số nhỏ. |
+| | `real` / `double precision` | 4 - 8 bytes | Số thực dấu phẩy động. Chỉ dùng cho tọa độ địa lý, khoa học kỹ thuật chấp nhận sai số nhỏ. |
 | **Chuỗi ký tự** | `varchar(n)` | Linh hoạt | Chuỗi có giới hạn độ dài tối đa (ví dụ: mã bưu điện, mã vạch). |
 | | `text` | Linh hoạt | Chuỗi độ dài bất kỳ. Trong PostgreSQL, `text` và `varchar` có hiệu năng tương đương, nên ưu tiên dùng `text` khi không cần giới hạn cứng. |
 | **Ngày & Giờ** | `timestamptz` | 8 bytes | **Timestamp with time zone - Chuẩn quốc tế bắt buộc dùng**. Tự động chuẩn hóa về UTC khi lưu, hiển thị theo timezone client. |
@@ -185,31 +195,70 @@ erDiagram
 
 ## 1.7 Chuẩn hóa dữ liệu (1NF -> 2NF -> 3NF) & Hiện tượng phản chuẩn hóa
 
-Mục đích của chuẩn hóa: **Loại bỏ dữ liệu dư thừa** và ngăn chặn các dị thường khi thêm, sửa, xóa (Anomaly).
+### 1. Chuẩn hóa dữ liệu là gì và tại sao cần chuẩn hóa?
+
+Khi mới học thiết kế CSDL, người mới thường có thói quen **nhồi nhét tất cả thông tin vào chung 1 bảng duy nhất**. Việc này gây ra 2 rắc rối lớn:
+- **Dữ liệu bị lặp đi lặp lại gây tốn bộ nhớ** (ví dụ: một phòng ban có 500 nhân viên thì tên phòng và địa chỉ phòng bị chép lại 500 lần).
+- **Dễ sai sót khi cập nhật:** Khi phòng ban đó đổi tên, bạn phải tìm và sửa cả 500 dòng; nếu sót vài dòng thì dữ liệu trong bảng sẽ mâu thuẫn nhau.
+
+**Chuẩn hóa dữ liệu** đơn giản là **3 bước kiểm tra để tách một bảng ôm đồm thành các bảng nhỏ gọn, hợp lý** (`1NF -> 2NF -> 3NF`), sao cho mỗi thông tin chỉ cần lưu ở **đúng một nơi duy nhất**.
 
 ```mermaid
 flowchart TD
-    Raw["Dữ liệu thô ban đầu\n(Ô gộp nhiều giá trị, dữ liệu lặp lại)"] -->|"Tách dữ liệu nguyên tử\n(1 ô = đúng 1 giá trị đơn)"| NF1["Chuẩn 1 (1NF)"]
-    NF1 -->|"Tách bảng để mọi cột\nphụ thuộc toàn phần vào Khóa chính"| NF2["Chuẩn 2 (2NF)"]
-    NF2 -->|"Loại bỏ phụ thuộc bắc cầu\n(Cột A -> Cột B -> Cột C)"| NF3["Chuẩn 3 (3NF) - Chuẩn thiết kế tối ưu"]
+    Raw["Bảng thô ban đầu\n(Lưu gộp nhiều giá trị, lặp lại thông tin)"] -->|"Bước 1: Mỗi ô chỉ lưu 1 giá trị đơn"| NF1["Đạt Chuẩn 1 (1NF)"]
+    NF1 -->|"Bước 2: Tách thông tin riêng của từng đối tượng ra bảng riêng"| NF2["Đạt Chuẩn 2 (2NF)"]
+    NF2 -->|"Bước 3: Không lưu ké thông tin bắc cầu của bảng khác"| NF3["Đạt Chuẩn 3 (3NF) - Thiết kế chuẩn"]
 ```
 
-### Ví dụ từng bước:
+---
 
-#### Bước 1: Chuẩn 1 (1NF) - "Mỗi ô chỉ chứa một giá trị nguyên tử (Atomic)"
-- **Vi phạm 1NF:** Cột `dien_thoai` lưu chuỗi `'0912345678, 0987654321'`. Khi cần tìm người có số `'0987654321'`, máy tính phải quét chuỗi rất chậm và không thể lập index.
-- **Đạt 1NF:** Mỗi ô chỉ lưu đúng 1 số điện thoại; nếu có nhiều số thì tách thành nhiều dòng hoặc chuyển sang bảng phụ `user_phones`.
+### 2. Giải thích dễ hiểu 3 bước chuẩn hóa qua ví dụ
 
-#### Bước 2: Chuẩn 2 (2NF) - "Mọi cột phải phụ thuộc vào TOÀN BỘ Khóa chính (Không phụ thuộc một phần)"
-- **Vi phạm 2NF:** Bảng `chi_tiet_don(ma_don, ma_sp, ten_sp, so_luong)`. Khóa chính gồm cặp `(ma_don, ma_sp)`. Nhưng `ten_sp` chỉ cần biết `ma_sp` là xác định được, không cần tới `ma_don`. Khi sửa tên một sản phẩm, hệ thống phải cập nhật hàng triệu dòng đơn hàng cũ!
-- **Đạt 2NF:** Tách riêng bảng `san_pham(ma_sp, ten_sp)`. Bảng `chi_tiet_don` chỉ còn lại `(ma_don, ma_sp, so_luong)`.
+#### Bước 1: Chuẩn 1 (`1NF`) — "Mỗi ô chỉ chứa đúng 1 giá trị duy nhất"
+- **Cách làm sai (Vi phạm 1NF):** Nhét nhiều số điện thoại vào chung một ô, cách nhau bằng dấu phẩy:
+  ```text
+  +----+-------+-------------------------+
+  | id | ten   | so_dien_thoai           |
+  +----+-------+-------------------------+
+  | 1  | Phong | 0912345678, 0987654321  |  <-- SAI: Gộp 2 số vào chung 1 ô
+  +----+-------+-------------------------+
+  ```
+  *(Khi lưu thế này, việc tìm kiếm hoặc lập mục lục theo từng số điện thoại sẽ rất khó khăn).*
+- **Cách sửa để đạt 1NF:** Đảm bảo mỗi ô chỉ lưu đúng 1 giá trị đơn. Nếu một người có nhiều số điện thoại thì tách sang bảng phụ `user_phones(user_id, so_dien_thoai)`, mỗi số nằm trên 1 dòng riêng.
 
-#### Bước 3: Chuẩn 3 (3NF) - "Không phụ thuộc bắc cầu (A xác định B, B lại xác định C)"
-- **Vi phạm 3NF:** Bảng `nhan_vien(ma_nv, ten_nv, ma_phong, ten_phong)`. Ta có: `ma_nv -> ma_phong` và `ma_phong -> ten_phong`. Khi đổi tên phòng ban, ta phải cập nhật trên tất cả nhân viên thuộc phòng đó.
-- **Đạt 3NF:** Tách riêng bảng `phong_ban(ma_phong, ten_phong)`. Bảng `nhan_vien` chỉ lưu Khóa ngoại `ma_phong`.
+#### Bước 2: Chuẩn 2 (`2NF`) — "Bảng có Khóa chính ghép từ nhiều cột thì mọi cột phụ phải gắn với cả cặp khóa đó"
+*(Quy tắc này chỉ cần xét với những bảng dùng **Khóa kết hợp - Composite Key**, ví dụ bảng `chi_tiet_don_hang` có khóa chính gồm cặp `ma_don + ma_sp`).*
+- **Cách làm sai (Vi phạm 2NF):** Lưu luôn cả `ten_sp` và `gia_niem_yet` vào bảng `chi_tiet_don_hang(ma_don, ma_sp, ten_sp, gia_niem_yet, so_luong)`.
+  - Bạn thấy rằng: cột `so_luong` (mua mấy cái) thì đúng là phải biết cả **Đơn nào (`ma_don`)** và **Sản phẩm nào (`ma_sp`)** mới xác định được.
+  - Nhưng cột `ten_sp` ("Chuột không dây") thì chỉ cần biết **`ma_sp`** là biết tên rồi, không liên quan gì tới `ma_don` cả! Nếu sản phẩm này xuất hiện trong 10.000 đơn hàng thì tên sản phẩm bị lưu lặp lại 10.000 lần.
+- **Cách sửa để đạt 2NF:** Đưa `ten_sp` và `gia_niem_yet` về bảng riêng `san_pham(ma_sp, ten_sp, gia_niem_yet)`. Bảng `chi_tiet_don_hang` chỉ giữ lại `(ma_don, ma_sp, so_luong)`.
 
-> **Khi nào nên Phản chuẩn hóa (Denormalization)?**
-> Trong các hệ thống báo cáo (Data Warehouse / OLAP) hoặc hệ thống thương mại điện tử đọc cực lớn: Việc tuân thủ 100% 3NF bắt buộc câu truy vấn phải `JOIN` qua 7-10 bảng, làm giảm tốc độ đọc. Lúc này, người ta chủ động chấp nhận lưu dư thừa (ví dụ: lưu sẵn `tong_tien` ở bảng `orders`, hoặc lưu `ten_san_pham_luc_mua` để làm lịch sử) nhằm đạt tốc độ đọc cao nhất.
+#### Bước 3: Chuẩn 3 (`3NF`) — "Không lưu ké thông tin của đối tượng khác (Bỏ phụ thuộc bắc cầu)"
+- **Cách làm sai (Vi phạm 3NF):** Trong bảng `nhan_vien` có khóa chính là `ma_nv`, nhưng lại lưu kèm luôn cả tên phòng ban và địa chỉ phòng ban:
+  ```text
+  BẢNG: nhan_vien (Chưa đạt 3NF)
+  +-------+--------+----------+---------------+------------------+
+  | ma_nv | ten_nv | ma_phong | ten_phong     | dia_chi_phong    |
+  +-------+--------+----------+---------------+------------------+
+  | 101   | Nam    | P01      | Phòng Kỹ thuật| Tầng 3 - Tòa A   |
+  | 102   | Lan    | P01      | Phòng Kỹ thuật| Tầng 3 - Tòa A   |  <-- Lặp lại thông tin phòng P01
+  +-------+--------+----------+---------------+------------------+
+  ```
+  - Ở đây: `ma_nv` cho biết nhân viên thuộc `ma_phong` nào -> rồi từ `ma_phong` mới suy ra `ten_phong` và `dia_chi_phong` (gọi là **suy ra bắc cầu**: `A -> B -> C`).
+- **Cách sửa để đạt 3NF:** Tách thông tin phòng ban ra bảng riêng `phong_ban(ma_phong, ten_phong, dia_chi_phong)`. Bảng `nhan_vien` chỉ giữ lại cột khóa ngoại `ma_phong`:
+  ```text
+  BẢNG: nhan_vien (Đã đạt 3NF)              BẢNG: phong_ban
+  +-------+--------+----------+             +----------+---------------+----------------+
+  | ma_nv | ten_nv | ma_phong |             | ma_phong | ten_phong     | dia_chi_phong  |
+  +-------+--------+----------+             +----------+---------------+----------------+
+  | 101   | Nam    | P01      | ----------> | P01      | Phòng Kỹ thuật| Tầng 3 - Tòa A |
+  | 102   | Lan    | P01      | ----------> +----------+---------------+----------------+
+  +-------+--------+----------+
+  ```
+
+> **Khi nào người ta chủ động "Phản chuẩn hóa" (Denormalization)?**
+> Tách bảng theo chuẩn `3NF` giúp dữ liệu cực kỳ gọn và dễ sửa, nhưng khi cần xem báo cáo tổng hợp thì câu lệnh SQL lại phải ghép (`JOIN`) nhiều bảng với nhau. Trong thực tế, nếu một thông tin phải đọc đi đọc lại hàng triệu lần, người ta có thể **chấp nhận lưu dư thêm 1 cột đã tính sẵn** để đọc cho nhanh.
+> *Ví dụ điển hình:* Lưu sẵn cột `tong_tien` ngay trong bảng `orders` (thay vì mỗi lần hiển thị danh sách đơn hàng lại phải `JOIN` sang bảng `order_items` để cộng tiền từng món).
 
 ---
 
@@ -217,28 +266,34 @@ flowchart TD
 
 ## 2.1 Cấu trúc phân cấp logic: Cluster -> Database -> Schema -> Table
 
-Trước khi bắt đầu cài đặt, cần nắm vững cấu trúc tổ chức 4 tầng bên trong PostgreSQL:
+Người mới làm quen với PostgreSQL rất dễ nhầm lẫn giữa **Database** và **Schema**. Để dễ hình dung nhất, hãy liên tưởng tới mô hình **một tòa nhà văn phòng** gồm 4 cấp từ lớn đến nhỏ:
 
 ```mermaid
 graph TD
-    Cluster["PostgreSQL Instance / Cluster (Chạy trên cổng TCP 5432)"]
-    Cluster --> DB1["Database: appdb (Ứng dụng chính)"]
-    Cluster --> DB2["Database: analytics_db (Phân tích dữ liệu)"]
+    Cluster["1. Cluster (Cả tòa nhà)\nMáy chủ PostgreSQL chạy ở cổng 5432"]
+    Cluster --> DB1["2. Database: appdb\n(Công ty A - Ứng dụng bán hàng)"]
+    Cluster --> DB2["2. Database: analytics_db\n(Công ty B - Hệ thống báo cáo)"]
     
-    DB1 --> S1["Schema: public (Mặc định khi tạo bảng)"]
-    DB1 --> S2["Schema: sales (Nghiệp vụ bán hàng)"]
-    DB1 --> S3["Schema: inventory (Quản lý kho)"]
+    DB1 --> S1["3. Schema: public\n(Thư mục mặc định)"]
+    DB1 --> S2["3. Schema: sales\n(Thư mục đơn hàng)"]
+    DB1 --> S3["3. Schema: inventory\n(Thư mục kho bãi)"]
     
-    S1 --> T1["Table: users"]
-    S2 --> T2["Table: orders"]
-    S2 --> T3["Table: order_items"]
-    S3 --> T4["Table: products"]
+    S1 --> T1["4. Table: users"]
+    S2 --> T2["4. Table: orders"]
+    S2 --> T3["4. Table: order_items"]
+    S3 --> T4["4. Table: products"]
 ```
 
-- **Cluster:** Một tiến trình máy chủ PostgreSQL quản lý tập hợp các Database trên cùng một thư mục dữ liệu (`PGDATA`).
-- **Database:** Không gian lưu trữ độc lập hoàn toàn. Một phiên kết nối thông thường không thể chạy lệnh `JOIN` trực tiếp giữa hai Database khác nhau.
-- **Schema:** Tương tự như các "thư mục phân loại" nằm bên trong một Database. Giúp gom nhóm các bảng theo nghiệp vụ (`sales.orders`, `inventory.products`) và phân quyền độc lập. Mặc định PostgreSQL dùng schema có tên `public`.
-- **Table / View / Function:** Các đối tượng dữ liệu cụ thể nằm trong từng schema.
+1. **Cluster (Cả tòa nhà — Máy chủ PostgreSQL):**
+   - Là phần mềm máy chủ PostgreSQL đang chạy trên máy tính (mặc định lắng nghe ở cổng `5432`). Một Cluster có thể quản lý nhiều Database cùng lúc.
+2. **Database (Từng công ty riêng biệt trong tòa nhà):**
+   - Mỗi dự án hoặc phần mềm sẽ tạo một Database riêng (ví dụ: `appdb`).
+   - **Đặc điểm quan trọng:** Các Database trong PostgreSQL **cách ly hoàn toàn với nhau**. Khi bạn kết nối vào `appdb`, bạn chỉ nhìn thấy dữ liệu của `appdb`, không thể viết câu lệnh `JOIN` trực tiếp sang bảng của `analytics_db`.
+3. **Schema (Các phòng ban / Thư mục phân loại bên trong một Database):**
+   - Bên trong một Database lớn có thể có tới hàng trăm bảng. Thay vì để tất cả bảng lẫn lộn một chỗ, PostgreSQL cho phép tạo các **Schema** (giống như tạo các **thư mục con**) để gom nhóm bảng theo từng mảng công việc: `sales.orders` (bảng `orders` nằm trong thư mục `sales`), `inventory.products` (bảng `products` nằm trong thư mục `inventory`).
+   - **Lưu ý cho người mới:** Mỗi Database khi mới tạo ra đều có sẵn một thư mục mặc định tên là **`public`**. Khi bạn gõ `CREATE TABLE users (...)` mà không ghi tên schema ở trước, bảng `users` sẽ tự động được đặt vào trong schema `public`.
+4. **Table (Các bảng dữ liệu cụ thể):**
+   - Là nơi thực sự chứa các hàng và cột dữ liệu, nằm bên trong từng Schema.
 
 ---
 
@@ -308,29 +363,41 @@ docker compose down
 
 ## 2.3 Chuỗi kết nối chuẩn (Connection String / URI) & Biến môi trường
 
-Khi kết nối từ Backend (Node.js, Python, Go, Java, C++/Qt), cấu trúc chuỗi kết nối URI chuẩn có dạng:
+### 1. Chuỗi kết nối (Connection String / URI) là gì?
 
-```text
-postgresql://[username]:[password]@[host]:[port]/[database_name]?sslmode=[disable|prefer|require]
-```
+Khi bạn viết code ứng dụng (bằng Python, Node.js, C++/Qt, Java, Go...), chương trình cần một **"địa chỉ đầy đủ"** để biết phải tìm máy chủ PostgreSQL ở đâu, vào Database nào và đăng nhập bằng tài khoản gì. Toàn bộ thông tin đó thường được gom gọn vào 1 dòng chữ theo chuẩn URI:
 
-*Ví dụ thực tế:*
 ```text
 postgresql://admin:SecretPassword123!@127.0.0.1:5432/appdb?sslmode=disable
+|________|   |___| |________________| |_______| |__| |___| |_____________|
+    |          |           |              |       |    |          |
+Giao thức   Tài khoản   Mật khẩu       Địa chỉ  Cổng Tên DB   Tùy chọn mã hóa
+                                       máy chủ                đường truyền
 ```
 
-### Các biến môi trường chuẩn của PostgreSQL (`libpq`):
+- **`postgresql://`**: Báo cho thư viện lập trình biết đây là kết nối tới hệ CSDL PostgreSQL.
+- **`admin:SecretPassword123!`**: Tên đăng nhập và mật khẩu (ngăn cách nhau bởi dấu `:`).
+- **`@127.0.0.1:5432`**: Địa chỉ IP của máy chủ chạy PostgreSQL (`127.0.0.1` hoặc `localhost` là ngay trên máy tính hiện tại) và cổng kết nối (`5432` là cổng mặc định của PostgreSQL).
+- **`/appdb`**: Tên Database cụ thể muốn mở ra làm việc.
+- **`?sslmode=disable`**: Tắt mã hóa đường truyền SSL khi chỉ chạy thử nghiệm trên máy cá nhân. *(Khi triển khai lên máy chủ thật qua mạng Internet, người ta sẽ đổi thành `sslmode=require` để chống nghe lén dữ liệu trên đường truyền).*
 
-Hầu hết các thư viện lập trình đều tự động nhận các biến môi trường này nếu không truyền trực tiếp chuỗi kết nối:
-- `PGHOST=127.0.0.1`
-- `PGPORT=5432`
-- `PGDATABASE=appdb`
-- `PGUSER=admin`
-- `PGPASSWORD=SecretPassword123!`
+### 2. Tại sao nên dùng Biến môi trường (Environment Variables)?
+
+Khi làm dự án thực tế, **không bao giờ nên viết trực tiếp mật khẩu Database vào trong file code** (vì khi chia sẻ code hoặc đẩy lên GitHub người khác sẽ thấy mật khẩu). Thay vào đó, người ta đặt thông tin kết nối vào các **biến môi trường** của hệ thống (hoặc lưu trong file `.env` riêng):
+
+| Tên biến chuẩn của PostgreSQL | Giá trị ví dụ | Ý nghĩa |
+| :--- | :--- | :--- |
+| **`PGHOST`** | `127.0.0.1` | Địa chỉ máy chủ chạy PostgreSQL |
+| **`PGPORT`** | `5432` | Cổng kết nối (mặc định là `5432`) |
+| **`PGDATABASE`** | `appdb` | Tên Database cần kết nối vào |
+| **`PGUSER`** | `admin` | Tên tài khoản đăng nhập |
+| **`PGPASSWORD`** | `SecretPassword123!` | Mật khẩu của tài khoản |
+
+*(Hầu hết các công cụ và thư viện kết nối PostgreSQL đều tự động đọc 5 biến môi trường chuẩn này nếu bạn không truyền chuỗi URI trực tiếp).*
 
 ---
 
-## 2.4 Bảng lệnh tắt psql bỏ túi (CLI Cheat Sheet)
+## 2.4 Bảng lệnh tắt psql (CLI Cheat Sheet)
 
 Truy cập dòng lệnh `psql` bên trong container:
 ```bash
@@ -353,7 +420,7 @@ docker exec -it postgres_pg16 psql -U admin -d appdb
 
 ---
 
-# Phần 3: Bảng Tra Cứu Toàn Diện Các Câu Lệnh Truy Vấn SQL
+# Phần 3: Bảng Tra Cứu Các Câu Lệnh Truy Vấn SQL
 
 Lược đồ mẫu dùng xuyên suốt cho các ví dụ trong phần này:
 - Bảng `categories`: Danh mục sản phẩm (`id`, `name`)
@@ -846,7 +913,7 @@ sequenceDiagram
 
 ---
 
-## 4.2 MVCC:
+## 4.2 MVCC: Multi-Version Concurrency Control
 
 PostgreSQL kiểm soát truy cập đồng thời bằng cơ chế **MVCC (Multi-Version Concurrency Control)**. Khi một câu lệnh `UPDATE` hoặc `DELETE` diễn ra, PostgreSQL **không bao giờ ghi đè trực tiếp** lên ô nhớ của bản ghi cũ, mà thực hiện:
 1. Đánh dấu bản ghi cũ là đã hết hiệu lực (Dead Tuple).
@@ -867,23 +934,36 @@ CẤU TRÚC BẢNG LƯU DƯỚI Ổ CỨNG (HEAP PAGE):
 
 ## 4.3 Các mức cô lập (Isolation Levels) & Hiện tượng đọc sai
 
-Chuẩn SQL định nghĩa 3 hiện tượng dị thường khi nhiều giao dịch chạy đồng thời:
-1. **Dirty Read (Đọc rác):** Giao dịch 1 đọc phải dữ liệu dở dang mà Giao dịch 2 vừa sửa nhưng chưa `COMMIT` (nếu Giao dịch 2 `ROLLBACK` thì dữ liệu Giao dịch 1 đọc là hoàn toàn sai).
-2. **Non-repeatable Read (Đọc không lặp lại):** Trong cùng 1 giao dịch, đọc dòng X lần 1 được 10 triệu; đọc dòng X lần 2 lại ra 15 triệu vì ai đó vừa `UPDATE` và `COMMIT` ở giữa 2 lần đọc.
-3. **Phantom Read (Đọc bóng ma):** Trong cùng 1 giao dịch, câu lệnh đếm tổng đơn hàng lần 1 được 100 đơn; câu lệnh đếm lần 2 lại ra 101 đơn vì ai đó vừa `INSERT` thêm đơn mới và `COMMIT`.
+Khi có nhiều người cùng đọc và sửa dữ liệu vào cùng một thời điểm, nếu không có quy tắc kiểm soát thì người đang đọc báo cáo có thể nhìn thấy số liệu bị nhảy loạn xạ.
 
-### Bảng ma trận mức cô lập trong PostgreSQL:
+### 1. Ba tình huống "đọc lệch dữ liệu" khi nhiều người truy cập cùng lúc
 
-| Mức cô lập | Dirty Read | Non-repeatable Read | Phantom Read | Đánh giá & Khuyên dùng |
-| :--- | :---: | :---: | :---: | :--- |
-| **`READ COMMITTED`** *(Mặc định)* | **Không bị** | Có thể gặp | Có thể gặp | Mặc định của PostgreSQL. Đạt tốc độ cao nhất, phù hợp với 95% tác vụ thông thường. |
-| **`REPEATABLE READ`** | **Không bị** | **Ngăn chặn được** | **Ngăn chặn được** *(Đặc trưng của PG)* | Chụp snapshot ổn định cho toàn bộ transaction. Dùng khi làm báo cáo tài chính phức tạp. |
-| **`SERIALIZABLE`** *(Cao nhất)* | **Không bị** | **Ngăn chặn được** | **Ngăn chặn được** | Đảm bảo kết quả giống như các transaction chạy lần lượt từng cái một. Chi phí cao, dễ bị lỗi `serialization_failure` cần retry. |
+1. **Đọc phải dữ liệu chưa chốt (`Dirty Read` - Đọc rác):**
+   - *Tình huống:* Giao dịch A vừa sửa số dư tài khoản từ `10 triệu` lên `50 triệu` nhưng **chưa bấm `COMMIT`** (và ngay sau đó A bị lỗi nên `ROLLBACK` hủy bỏ về lại `10 triệu`). Nếu trong lúc A chưa `COMMIT` mà Giao dịch B vào xem lại nhìn thấy con số `50 triệu` ảo kia thì B đã đọc phải dữ liệu sai.
+   - *Trong PostgreSQL:* Bạn hoàn toàn yên tâm vì **PostgreSQL chặn 100% lỗi này ở mọi chế độ** — dữ liệu nào chưa `COMMIT` thì không ai bên ngoài được phép nhìn thấy.
+2. **Đọc lại cùng 1 dòng nhưng số liệu bị nhảy (`Non-repeatable Read`):**
+   - *Tình huống:* Trong cùng một giao dịch `BEGIN ... COMMIT` của bạn, bạn chạy câu lệnh xem giá sản phẩm X lần thứ nhất thấy `100.000đ`. Ngay lúc đó có người khác ở ngoài sửa giá sản phẩm X thành `150.000đ` và `COMMIT` xong. Bạn chạy lại câu lệnh xem giá sản phẩm X lần thứ hai (vẫn trong giao dịch cũ của bạn) thì lại thấy giá nhảy thành `150.000đ`.
+3. **Đếm lại số dòng thì thấy thừa/thiếu dòng mới (`Phantom Read` - Dòng ma):**
+   - *Tình huống:* Giống như trên, nhưng thay vì người khác sửa 1 dòng cũ (`UPDATE`), họ lại **thêm một dòng mới (`INSERT`)** hoặc xóa dòng (`DELETE`) và `COMMIT`. Kết quả là trong cùng một giao dịch, câu lệnh đếm lần 1 của bạn ra `100 đơn hàng`, nhưng đếm lại lần 2 ở cuối giao dịch lại ra `101 đơn hàng`.
+
+---
+
+### 2. Ba mức cô lập trong PostgreSQL — Khi nào dùng mức nào?
+
+PostgreSQL cho phép bạn chọn mức độ "đóng cửa tách biệt" (gọi là **Isolation Level**) cho giao dịch của mình tùy theo nhu cầu:
+
+| Mức cô lập | Cách hoạt động dễ hiểu | Khi nào nên dùng? |
+| :--- | :--- | :--- |
+| **`READ COMMITTED`**<br>*(Mặc định)* | Mỗi câu lệnh `SELECT` sẽ nhìn thấy dữ liệu mới nhất đã được người khác `COMMIT` ngay trước lúc câu `SELECT` đó chạy. *(Do đó nếu trong 1 giao dịch bạn chạy 2 câu `SELECT` cách nhau vài giây, kết quả có thể khác nhau nếu ở giữa có người vừa `COMMIT`)*. | Dùng cho **hầu hết các thao tác thông thường (95% trường hợp)** vì tốc độ nhanh nhất và không bị nghẽn. |
+| **`REPEATABLE READ`** | Ngay tại câu lệnh đầu tiên của giao dịch, PostgreSQL **chụp lại một bản dữ liệu cố định** cho riêng bạn. Từ đó cho tới khi bạn `COMMIT`, dù bên ngoài có ai sửa giá hay thêm đơn hàng mới, bạn đọc lại bao nhiêu lần vẫn ra kết quả khớp 100% như lúc ban đầu. | Dùng khi cần chạy **báo cáo thống kê, đối soát số liệu** gồm nhiều câu lệnh `SELECT` liên tiếp và cần các con số không bị nhảy giữa chừng. |
+| **`SERIALIZABLE`**<br>*(Nghiêm ngặt nhất)* | Kiểm soát chặt đến mức dù nhiều giao dịch chạy song song cùng lúc, kết quả cuối cùng bắt buộc phải giống hệt như khi xếp hàng chạy lần lượt từng giao dịch một. *(Nếu 2 giao dịch làm ảnh hưởng chéo kết quả của nhau, PostgreSQL sẽ hủy 1 bên để ứng dụng tự chạy lại)*. | Chỉ dùng cho các nghiệp vụ tài chính, kế toán đặc biệt khắt khe vì tốc độ chậm hơn và code ứng dụng phải viết thêm phần tự thử lại (retry). |
 
 ```sql
--- Cách đổi mức cô lập cho phiên làm việc hiện tại:
+-- Khi cần chạy báo cáo đối soát cố định số liệu, bật mức REPEATABLE READ như sau:
 BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
--- Các thao tác truy vấn...
+SELECT sum(amount) FROM orders; -- Lần 1: ra 50.000.000
+-- (Dù lúc này ở ngoài có người vừa thêm đơn hàng mới và COMMIT...)
+SELECT sum(amount) FROM orders; -- Lần 2: vẫn đảm bảo ra đúng 50.000.000!
 COMMIT;
 ```
 
@@ -891,37 +971,64 @@ COMMIT;
 
 ## 4.4 Cơ chế Khóa hàng: FOR UPDATE & FOR UPDATE SKIP LOCKED
 
-Khi xây dựng các hệ thống nhạy cảm như bán vé xem phim, flash sale hoặc trừ tiền tài khoản: Nếu 2 khách hàng cùng bấm nút mua một món hàng cuối cùng (`quantity = 1`), cả 2 tiến trình đều đọc thấy `1` và cùng cho phép mua -> **Dẫn đến bán âm kho!**
+### 1. Bài toán thực tế: Tại sao dễ bị "bán âm kho" khi có nhiều người cùng mua?
 
-### Giải pháp 1: Khóa hàng độc quyền với `FOR UPDATE`
+Giả sử trong kho chỉ còn **đúng 1 chiếc áo cuối cùng** (`stock = 1`). Hai khách hàng **A** và **B** cùng bấm nút "Mua hàng" vào đúng một thời điểm:
 
-```sql
-BEGIN;
--- Khóa cứng dòng sản phẩm này lại:
-SELECT id, stock FROM products 
-WHERE id = 100 
-FOR UPDATE;
-
--- Tiến trình khác muốn SELECT ... FOR UPDATE hoặc UPDATE dòng này phải chờ đợi!
-UPDATE products SET stock = stock - 1 WHERE id = 100;
-COMMIT; -- Nhả khóa an toàn
+```text
+Nếu chỉ dùng SELECT bình thường (Không khóa dòng):
+- Giây thứ 1: Khách A kiểm tra kho -> SELECT stock thấy bằng 1 (Còn hàng!)
+- Giây thứ 1: Khách B cũng kiểm tra kho -> SELECT stock cũng thấy bằng 1 (Còn hàng!)
+- Giây thứ 2: Hệ thống trừ kho cho Khách A -> stock giảm từ 1 xuống 0.
+- Giây thứ 2: Hệ thống trừ kho tiếp cho Khách B -> stock giảm từ 0 xuống -1 (LỖI: Bán 2 đơn nhưng chỉ có 1 áo!).
 ```
 
-### Giải pháp 2: Xử lý hàng đợi tác vụ không nghẽn với `FOR UPDATE SKIP LOCKED`
+---
 
-Khi bạn có 10 worker backend cùng lấy công việc từ bảng `task_queue`: Nếu dùng `FOR UPDATE` thông thường, các worker sẽ bị nghẽn đợi nhau. Dùng `SKIP LOCKED` giúp worker tự động **bỏ qua những dòng đang bị worker khác khóa** để lấy ngay dòng tiếp theo!
+### 2. Giải pháp 1: Khóa giữ chỗ dòng dữ liệu với `FOR UPDATE` (Người đến sau phải chờ)
+
+Khi bạn gắn thêm từ khóa **`FOR UPDATE`** vào cuối câu lệnh `SELECT`, PostgreSQL sẽ **khóa tạm thời dòng dữ liệu đó lại** cho riêng giao dịch của bạn:
+- Người nào chạy `SELECT ... FOR UPDATE` trước sẽ giữ quyền sửa dòng đó.
+- Người thứ hai cũng chạy `SELECT ... FOR UPDATE` (hoặc `UPDATE`) vào đúng dòng đó sẽ **bị dừng lại đứng chờ** cho tới khi người thứ nhất `COMMIT` (hoặc `ROLLBACK`) xong.
 
 ```sql
--- Lấy 1 công việc chưa xử lý mà không bị kẹt khóa:
 BEGIN;
+
+-- Bước 1: Đọc số lượng tồn kho VÀ khóa ngay dòng sản phẩm id = 100 lại
+-- (Nếu có người thứ 2 cùng mua sản phẩm id = 100 lúc này, người thứ 2 sẽ phải đứng chờ ở dòng lệnh này)
+SELECT id, stock FROM products
+WHERE id = 100
+FOR UPDATE;
+
+-- Bước 2: Sau khi ứng dụng kiểm tra thấy stock >= 1 thì tiến hành trừ kho:
+UPDATE products SET stock = stock - 1 WHERE id = 100;
+
+-- Bước 3: Lưu giao dịch và mở khóa dòng id = 100
+-- (Lúc này người thứ 2 mới đọc được dòng id = 100 với stock đã về 0 -> Báo hết hàng an toàn!)
+COMMIT;
+```
+
+---
+
+### 3. Giải pháp 2: Bỏ qua dòng đang bị khóa với `FOR UPDATE SKIP LOCKED` (Không phải chờ)
+
+**Tình huống:** Giả sử bạn có một bảng `task_queue` chứa **100 email đang chờ gửi** (`status = 'pending'`), và bạn chạy **5 tiến trình (workers)** cùng vào bảng này lấy email ra để gửi cho nhanh.
+- Nếu dùng `FOR UPDATE` thông thường: Cả 5 tiến trình cùng nhìn vào dòng email số 1 -> Tiến trình 1 khóa được dòng số 1 để gửi, còn 4 tiến trình kia lại phải đứng chờ ở dòng số 1 mà không chịu đi lấy dòng số 2, số 3!
+- Khi thêm **`SKIP LOCKED`**: Tiến trình nào thấy dòng số 1 đang bị người khác khóa rồi sẽ **tự động bỏ qua dòng đó ngay lập tức để lấy dòng kế tiếp chưa bị ai khóa** (dòng số 2, số 3...). Nhờ vậy cả 5 tiến trình đều làm việc liên tục mà không bao giờ phải đứng đợi nhau.
+
+```sql
+BEGIN;
+
+-- Tìm 1 công việc đang chờ ('pending'), nếu dòng nào đang bị tiến trình khác khóa thì bỏ qua luôn (SKIP LOCKED):
 SELECT id, payload FROM task_queue
 WHERE status = 'pending'
 ORDER BY id ASC
 LIMIT 1
 FOR UPDATE SKIP LOCKED;
 
--- Xử lý xong thì cập nhật trạng thái:
+-- Sau khi xử lý xong công việc đó thì cập nhật trạng thái thành 'completed':
 UPDATE task_queue SET status = 'completed' WHERE id = :id;
+
 COMMIT;
 ```
 
@@ -930,320 +1037,230 @@ COMMIT;
 
 # Phần 5: Tối Ưu Hóa Truy Vấn (Query Optimization)
 
-Tối ưu hóa truy vấn thực chất là **giảm thiểu số lần đọc ổ cứng (I/O)** và tận dụng tối đa bộ nhớ đệm (RAM). Dưới đây là các kiến thức cốt lõi được đúc kết cô đọng, dễ hiểu nhất.
+Đọc dữ liệu từ **ổ cứng** luôn chậm hơn rất nhiều so với đọc từ **bộ nhớ RAM**. Vì vậy, mục tiêu chính của việc tối ưu hóa truy vấn là **giúp PostgreSQL tìm đúng dữ liệu cần lấy mà không phải đọc toàn bộ bảng từ ổ cứng**.
 
 ---
 
-## 5.1 Bản chất Chỉ mục (Index) & Cơ chế hoạt động (B-Tree vs Sequential Scan)
+## 5.1 Chỉ mục (Index) là gì và tại sao giúp tìm dữ liệu nhanh?
 
-### 1. Hình dung trực quan: Mục lục sách vs Lật từng trang
-- **Sequential Scan (`Seq Scan`):** Đọc tuần tự từ trang 1 đến trang cuối cùng của bảng. Nếu bảng có 10 triệu dòng, máy tính phải nạp cả 10 triệu dòng lên RAM để kiểm tra -> **Cực kỳ chậm khi dữ liệu lớn**.
-- **B-Tree Index (`Index Scan`):** Tương tự như **Mục lục ở đầu cuốn sách**. Mục lục lưu các cặp `(Giá trị tìm kiếm -> Vị trí trang trên đĩa ctid)`. 
-  - Thay vì lật 10 triệu trang, cây B-Tree chỉ mất **3 - 4 bước so sánh** trên RAM là nhảy thẳng tới đúng dòng cần đọc!
+### 1. Hình dung đơn giản: Lật từng trang sách vs Tra mục lục
+
+Giả sử bảng `users` của bạn có **10 triệu dòng** và bạn muốn tìm khách hàng có `id = 85`:
+
+- **Khi KHÔNG có Index (`Seq Scan` - Quét tuần tự từ đầu đến cuối):**
+  - Giống như bạn cầm một cuốn sách dày không có mục lục, buộc phải **đọc lần lượt từ dòng số 1, số 2, số 3...** cho đến hết 10 triệu dòng để tìm dòng có `id = 85`. Bảng càng nhiều dòng thì tìm càng lâu.
+- **Khi CÓ Index (`B-Tree Index` - Cây mục lục đã sắp xếp):**
+  - Khi bạn đánh Index lên cột `id`, PostgreSQL sẽ tạo ra một **cây mục lục được sắp xếp sẵn theo thứ tự lớn nhỏ**.
+  - Hãy nhìn cách PostgreSQL tìm ra số **`85`** chỉ sau **3 bước rẽ nhánh** trên sơ đồ dưới đây:
 
 ```mermaid
 graph TD
-    Root["Gốc B-Tree: [Mã 50]"] --> Left["Nhánh Trái: [Mã 20]"]
-    Root --> Right["Nhánh Phải: [Mã 80]"]
-    Left --> Leaf1["Lá: [Mã 10, 15] -> Trang 1"]
-    Left --> Leaf2["Lá: [Mã 25, 30] -> Trang 4"]
-    Right --> Leaf3["Lá: [Mã 60, 70] -> Trang 9"]
-    Right --> Leaf4["Lá: [Mã 85, 95] -> Trang 12"]
+    Root["Bước 1 - So sánh tại Gốc: [50]\n(Vì 85 > 50 nên rẽ sang nhánh phải)"] --> Left["Nhánh nhỏ hơn 50: [20]"]
+    Root --> Right["Bước 2 - So sánh tại Nhánh phải: [80]\n(Vì 85 > 80 nên rẽ tiếp sang phải)"]
+    Left --> Leaf1["[10, 15] -> Nằm ở trang 1"]
+    Left --> Leaf2["[25, 30] -> Nằm ở trang 4"]
+    Right --> Leaf3["[60, 70] -> Nằm ở trang 9"]
+    Right --> Leaf4["Bước 3 - Thấy [85]!\n-> Nhảy thẳng tới trang 12 của bảng để lấy dòng"]
 ```
+
+Nhờ cách chia nhánh lớn/nhỏ như vậy, thay vì phải kiểm tra 10 triệu dòng, PostgreSQL chỉ mất **3 đến 4 bước so sánh** là nhảy thẳng tới đúng vị trí dòng cần lấy!
 
 ---
 
-### 2. So sánh 3 chiến lược quét dữ liệu phổ biến nhất
+### 2. Ba cách PostgreSQL đọc dữ liệu từ bảng
 
-| Kiểu quét | Bản chất dễ hiểu | Khi nào DB chọn? | Tốc độ |
+Khi bạn chạy một câu lệnh `SELECT`, PostgreSQL sẽ tự động tính toán để chọn 1 trong 3 cách đọc sau:
+
+| Tên cách đọc | Hình dung qua việc đọc sách | Khi nào PostgreSQL tự động chọn? | Tốc độ |
 | :--- | :--- | :--- | :---: |
-| **`Seq Scan`** | Quét tuần tự toàn bộ bảng từ đầu đến cuối. | Bảng nhỏ (< vài trăm dòng) hoặc khi câu truy vấn lấy > 25% số dòng của bảng. | 🐢 Chậm nhất |
-| **`Index Scan`** | Tra cây B-Tree để lấy vị trí `ctid`, sau đó lật đến trang bảng để đọc dữ liệu. | Điều kiện lọc tìm kiếm ít dòng (< 5% số dòng). | 🚗 Rất nhanh |
-| **`Index Only Scan`** | **Đỉnh cao tốc độ:** Mọi cột cần lấy (`SELECT`, `WHERE`) đều nằm sẵn trong Index. DB **không cần chạm vào bảng chính**, chỉ đọc trên RAM. | Khi dùng Covering Index (`INCLUDE`) hoặc chỉ `SELECT` cột đã được đánh index. | 🚀 Siêu tốc |
+| **`Seq Scan`**<br>*(Quét tuần tự)* | Lật đọc từng trang sách từ trang đầu tiên đến trang cuối cùng. | Khi cột tìm kiếm chưa có Index, hoặc khi bảng rất nhỏ (vài trăm dòng), hoặc khi bạn cần lấy phần lớn số dòng trong bảng. | Chậm (khi bảng lớn) |
+| **`Index Scan`**<br>*(Quét qua mục lục)* | Xem mục lục ở đầu sách để biết thông tin nằm ở trang 12, sau đó lật thẳng tới trang 12 của cuốn sách để đọc nội dung chi tiết. | Khi cột tìm kiếm đã có Index và bạn chỉ cần lọc ra một số ít dòng trong bảng lớn. | Nhanh |
+| **`Index Only Scan`**<br>*(Chỉ đọc mục lục)* | Thông tin bạn cần hỏi đã được in sẵn ngay trên trang mục lục rồi -> Đọc luôn tại mục lục mà **không cần lật vào trang sách chính nữa**. | Khi tất cả các cột trong câu lệnh `SELECT` đều đã nằm sẵn bên trong Index. | Nhanh nhất |
 
-> **Nguyên tắc chi phí:** Bảng nhỏ (< 500 dòng) thì quét toàn bảng (`Seq Scan`) lại nhanh hơn dùng Index vì không mất công nạp thêm cây B-Tree. Nhưng với bảng hàng triệu dòng, Index giúp giảm thời gian từ **vài chục giây xuống dưới 1 mili-giây**!
+> **Hai điều người mới cần nhớ về Index:**
+> 1. Các cột làm **Khóa chính (`PRIMARY KEY`)** và cột **Duy nhất (`UNIQUE`)** đã được PostgreSQL **tự động tạo Index sẵn**, bạn không cần tạo lại.
+> 2. **Tại sao không tạo Index cho tất cả mọi cột?** Vì mỗi Index là một bảng mục lục riêng. Tạo quá nhiều Index sẽ làm tốn thêm dung lượng lưu trữ, và mỗi khi bạn thêm/sửa/xóa (`INSERT / UPDATE / DELETE`) dữ liệu ở bảng chính, PostgreSQL phải mất thêm thời gian đi cập nhật lại tất cả các bảng mục lục đó. Chỉ nên tạo Index cho những cột thường xuyên xuất hiện trong điều kiện lọc `WHERE`, nối bảng `JOIN` hoặc sắp xếp `ORDER BY`.
 
 ---
 
-## 5.2 Bảng tra cứu các loại Index trong PostgreSQL
+## 5.2 Các loại Index thường dùng trong PostgreSQL
 
-| Loại Index | Khi nào nên dùng? (Bản chất dễ hiểu) | Cú pháp mẫu |
+Trong hầu hết các trường hợp, bạn chỉ cần dùng **B-Tree Index** (loại mặc định). Dưới đây là các cách tạo Index phổ biến nhất:
+
+| Loại Index | Khi nào nên dùng? | Câu lệnh tạo mẫu |
 | :--- | :--- | :--- |
-| **B-Tree** *(Mặc định)* | Tìm kiếm `=`, `<`, `>`, `BETWEEN`, `IN`, sắp xếp `ORDER BY`, tìm tiền tố `LIKE abc%`. | `CREATE INDEX idx_users_email ON users(email);` |
-| **Composite** *(Nhiều cột)* | Thường xuyên lọc đồng thời: `WHERE user_id = ? AND status = ?`.<br>*(Quy tắc: Cột so sánh bằng đặt trước, cột khoảng/sắp xếp đặt sau).* | `CREATE INDEX idx_orders_u_s ON orders(user_id, status);` |
-| **Covering (`INCLUDE`)** | Đính kèm thêm cột phụ vào lá của Index để đạt **`Index Only Scan`** mà không làm nặng cây B-Tree. | `CREATE INDEX idx_orders_covering ON orders(user_id) INCLUDE (total_amount);` |
-| **Partial Index** *(Một phần)* | Chỉ đánh index cho tập dữ liệu con thường xuyên truy vấn (ví dụ: chỉ 5% đơn `pending`). Tiết kiệm 95% RAM! | `CREATE INDEX idx_orders_pending ON orders(created_at) WHERE status = pending;` |
-| **Expression Index** | Đánh index trên kết quả của hàm khi thường xuyên tìm kiếm không phân biệt hoa thường. | `CREATE INDEX idx_users_lower_email ON users(lower(email));`<br>Truy vấn: `WHERE lower(email) = abc@gmail.com` |
-| **GIN Index** | Tìm kiếm trong cột mảng (`text[]`), dữ liệu JSONB (`@>`), hoặc tìm kiếm toàn văn Full-Text Search. | `CREATE INDEX idx_events_json ON events USING gin (payload);` |
-| **BRIN Index** | Bảng Log, Time-series khổng lồ (hàng trăm triệu dòng) ghi liên tục theo thời gian. Dung lượng cực nhỏ (< 5MB). | `CREATE INDEX idx_logs_brin ON logs USING brin (created_at);` |
+| **B-Tree (Mặc định)** | Dùng cho hầu hết nhu cầu: tìm theo `=`, `<`, `>`, `BETWEEN`, `IN`, sắp xếp `ORDER BY`, hoặc tìm đầu chuỗi `LIKE 'abc%'`. | `CREATE INDEX idx_users_email ON users(email);` |
+| **Index nhiều cột (Composite)** | Khi thường xuyên lọc kết hợp 2 cột cùng lúc (ví dụ tìm đơn hàng theo `user_id` và `status`). | `CREATE INDEX idx_orders_user_status ON orders(user_id, status);` |
+| **Index một phần (Partial)** | Chỉ tạo mục lục cho một nhóm dòng hay cần tìm (ví dụ chỉ các đơn hàng đang chờ xử lý `pending`), giúp tiết kiệm bộ nhớ. | `CREATE INDEX idx_orders_pending ON orders(created_at) WHERE status = 'pending';` |
+| **Index theo biểu thức (Expression)** | Khi thường xuyên tìm kiếm qua hàm, ví dụ tìm tên tài khoản không phân biệt chữ HOA / chữ thường. | `CREATE INDEX idx_users_lower_email ON users(lower(email));`<br>Khi tìm: `WHERE lower(email) = 'abc@gmail.com'` |
+| **GIN Index** | Dùng riêng khi cần tìm kiếm bên trong cột dữ liệu dạng **`JSONB`** hoặc cột mảng. | `CREATE INDEX idx_logs_payload ON user_logs USING gin (payload);` |
 
-### 2 câu lệnh SQL bỏ túi kiểm tra Index của DBA:
-
-```sql
--- 1. Tìm các Index thừa KHÔNG BAO GIỜ được dùng (để xóa bớt, tăng tốc ghi INSERT/UPDATE):
-SELECT relname AS ten_bang, indexrelname AS ten_index, idx_scan AS so_lan_dung
-FROM pg_stat_user_indexes
-WHERE idx_scan = 0 AND indisunique = false;
-
--- 2. Tìm các Khóa ngoại (Foreign Key) bị quên đánh Index (nguyên nhân gây treo Deadlock):
-SELECT conrelid::regclass AS bang_con, conname AS ten_khoa_ngoai
-FROM pg_constraint c
-WHERE contype = f AND NOT EXISTS (
-    SELECT 1 FROM pg_index i WHERE i.indrelid = c.conrelid AND (i.indkey::int2[])[0] = (c.conkey)[1]
-);
-```
+> **Mẹo:** Hãy nhớ tạo Index cho các cột **Khóa ngoại (`FOREIGN KEY`)** (như `orders.user_id`, `products.category_id`), vì ứng dụng rất hay dùng các cột này để lọc và ghép bảng (`JOIN`).
 
 ---
 
-## 5.4 Bảng so sánh "NÊN LÀM vs NÊN TRÁNH" khi viết SQL
+## 5.3 Cách viết câu lệnh SQL chạy nhanh (Nên làm vs Nên tránh)
 
-| Tình huống | NÊN TRÁNH (Chậm, vô hiệu hóa Index) |  NÊN LÀM (Tối ưu, tận dụng tối đa Index) | Bản chất kỹ thuật |
+Dù bảng đã có Index, nếu viết câu lệnh SQL không đúng cách thì PostgreSQL vẫn không dùng được Index hoặc phải làm việc thừa.
+
+| Tình huống | Nên tránh | Nên làm | Giải thích dễ hiểu |
 | :--- | :--- | :--- | :--- |
-| **Chọn cột** | `SELECT * FROM orders;` | `SELECT id, code, amount FROM orders;` | Tiết kiệm băng thông, RAM và giúp kích hoạt **`Index Only Scan`**. |
-| **Lọc thời gian** | `WHERE date_trunc(day, created_at) = 2026-11-01` | `WHERE created_at >= 2026-11-01 AND created_at < 2026-11-02` | Bọc cột trong hàm làm B-Tree bị vô hiệu hóa (phải quét toàn bảng). Dùng khoảng so sánh để giữ tính Sargable. |
-| **Tìm chuỗi** | `WHERE name LIKE %iphone` | `WHERE name LIKE iphone%` | Dấu `%` ở đầu làm B-Tree không tìm được nhánh; dấu `%` ở cuối thì B-Tree tìm cực nhanh. *(Nếu cần tìm ở giữa, dùng extension `pg_trgm`)*. |
-| **Subquery** | `WHERE id IN (SELECT user_id FROM orders)` | `WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id)` | `EXISTS` dừng lại ngay khi thấy bản ghi khớp đầu tiên; xử lý an toàn khi bảng con có giá trị `NULL`. |
-| **Phân trang** | `SELECT * FROM logs ORDER BY id LIMIT 20 OFFSET 500000;` | `SELECT * FROM logs WHERE id > 500000 ORDER BY id LIMIT 20;` | `OFFSET 500,000` bắt DB đọc nạp 500,000 dòng rồi vứt đi. Dùng **Keyset Pagination** (`WHERE id > ?`) nhảy tức thì 0.05ms! |
-| **Ghi dữ liệu** | Chạy vòng lặp gọi 1,000 lần lệnh `INSERT` đơn lẻ | `INSERT INTO logs (m) VALUES (a), (b), (c);` (Batch) | Giảm 1,000 round-trip mạng và chi phí mở/đóng transaction. |
+| **Lấy cột dữ liệu** | `SELECT * FROM orders;` | `SELECT id, user_id, amount FROM orders;` | Chỉ lấy đúng cột cần dùng để tránh đọc và truyền dữ liệu thừa qua mạng. |
+| **Lọc theo ngày tháng** | `WHERE date_trunc('day', created_at) = '2026-11-01'` | `WHERE created_at >= '2026-11-01' AND created_at < '2026-11-02'` | Đưa cột `created_at` vào trong hàm sẽ làm PostgreSQL không tra được mục lục (Index). Hãy giữ nguyên tên cột ở một vế và lọc theo khoảng thời gian. |
+| **Tìm kiếm chuỗi (`LIKE`)** | `WHERE name LIKE '%iphone'` | `WHERE name LIKE 'iphone%'` | Mục lục sắp xếp chữ cái từ trái sang phải, nên nếu đặt dấu `%` ở đầu chuỗi thì không tra mục lục được. |
+| **Tìm dữ liệu không tồn tại** | `WHERE u.id NOT IN (SELECT user_id FROM orders)` | `WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id)` | Nếu danh sách bên trong `NOT IN` có chứa dù chỉ 1 giá trị `NULL`, kết quả trả về sẽ bị rỗng. Dùng `NOT EXISTS` vừa tránh được lỗi này vừa chạy nhanh hơn. |
+| **Phân trang khi bảng rất lớn** | `SELECT id, amount FROM orders ORDER BY id LIMIT 20 OFFSET 500000;` | `SELECT id, amount FROM orders WHERE id > 500000 ORDER BY id LIMIT 20;` | `OFFSET 500000` bắt DB phải đếm qua 500.000 dòng đầu rồi bỏ đi. Dùng `WHERE id > (id cuối trang trước)` giúp nhảy thẳng đến trang tiếp theo ngay lập tức. |
+| **Thêm nhiều dòng cùng lúc** | Chạy vòng lặp gọi 1.000 lệnh `INSERT` rời rạc | `INSERT INTO categories (name) VALUES ('Laptop'), ('Chuột'), ('Bàn phím');` | Gộp nhiều dòng vào chung một câu lệnh `INSERT` giúp giảm thời gian gửi nhận giữa ứng dụng và Database. |
 
 ---
 
-## 5.5 Dọn rác với VACUUM, Autovacuum & Chống phình dữ liệu (Bloat)
+## 5.4 Dọn rác dữ liệu với VACUUM & Autovacuum
 
-### 1. Tại sao file dữ liệu không tự nhỏ lại khi DELETE?
-- Theo cơ chế **MVCC**, khi bạn `DELETE` hoặc `UPDATE`, dòng cũ không bị xóa mất mà trở thành **Dead Tuple (bản ghi rác)**.
-- **Kích thước file trên đĩa cứng KHÔNG BAO GIỜ tự thu nhỏ lại**. Không gian của các dòng rác chỉ được tái sử dụng nội bộ cho các lệnh `INSERT/UPDATE` tương lai.
+### 1. Vì sao trong PostgreSQL lại có "dữ liệu rác"?
+- Như đã biết ở mục **4.2 (MVCC)**, khi bạn sửa (`UPDATE`) hoặc xóa (`DELETE`) một dòng, PostgreSQL không xóa hẳn dòng cũ ngay lập tức mà chỉ đánh dấu nó là **dòng cũ đã bỏ (Dead Tuple)**.
+- Nếu sửa/xóa nhiều lần mà không dọn, bảng sẽ chứa đầy các dòng cũ không còn dùng nữa, làm file dữ liệu phình to và câu lệnh tìm kiếm chạy chậm dần.
 
-### 2. Phân biệt 3 công cụ dọn rác:
-- **`VACUUM (ANALYZE)`:** Dọn dẹp rác, tái sử dụng ô trống. **Hoàn toàn KHÔNG khóa bảng**, ứng dụng vẫn đọc/ghi bình thường.
-- **`VACUUM FULL`:** Viết lại toàn bộ bảng sang file mới để trả dung lượng đĩa về cho Hệ điều hành. **Cực kỳ nguy hiểm vì KHÓA CỨNG TOÀN BẢNG**, ứng dụng bị treo toàn bộ!
-- **`pg_repack` (Extension):** Giải pháp chuẩn cho Production: Thu hồi đĩa 100% như `VACUUM FULL` nhưng **hoàn toàn Online, không khóa đọc/ghi**.
+### 2. Các lệnh dọn dẹp dữ liệu
 
-### 3. Quy tắc vàng với Autovacuum:
-- **Tuyệt đối không bao giờ tắt Autovacuum!** Tắt Autovacuum sẽ dẫn đến thảm họa cạn kiệt Transaction ID (**Wraparound**), khiến PostgreSQL tự động ngắt kết nối và ép chuyển sang chế độ Read-Only để chống hỏng dữ liệu.
-- Với bảng lớn (> 10 triệu dòng), hãy giảm tham số `scale_factor` để Autovacuum dọn rác sớm hơn:
-  ```sql
-  ALTER TABLE orders SET (autovacuum_vacuum_scale_factor = 0.02); -- 2% rác là dọn ngay
-  ```
-
----
-
-## 5.6 Tối ưu cấu hình phần cứng & Connection Pooling (PgBouncer)
-
-### 1. Tại sao bắt buộc dùng PgBouncer?
-PostgreSQL dùng mô hình **đa tiến trình (Multi-process)**: mỗi kết nối từ ứng dụng tạo ra 1 process Linux riêng (tiêu tốn ~10MB RAM). Nếu mở 1,000 kết nối trực tiếp, máy chủ sẽ sập RAM và tê liệt CPU vì chuyển ngữ cảnh (Context Switching).
-
-```mermaid
-flowchart LR
-    App["1000 Kết nối từ Backend"] --> PB["PgBouncer
-(Connection Pooler)"]
-    PB -->|"Chỉ duy trì 20 - 30 kết nối thực tế"| PG[("PostgreSQL Server
-(CPU & RAM ổn định)")]
-```
-
-> **Chế độ khuyên dùng:** Thiết lập PgBouncer ở chế độ **`pool_mode = transaction`** (mượn kết nối khi chạy transaction, xong trả ngay cho người khác). Giúp hàng ngàn người dùng chia sẻ mượt mà chỉ 30 kết nối thực tế!
-
-### 2. Bảng cấu hình `postgresql.conf` bỏ túi (cho máy chủ chạy ổ cứng SSD/NVMe):
-
-| Tham số | Giá trị khuyên dùng | Bản chất dễ nhớ |
+| Lệnh | Tác dụng dễ hiểu | Có làm gián đoạn ứng dụng không? |
 | :--- | :--- | :--- |
-| **`shared_buffers`** | **25% tổng RAM** của server | Bộ nhớ đệm RAM chính để giữ các trang dữ liệu hay đọc. (Ví dụ: Server 16GB RAM -> đặt 4GB). |
-| **`effective_cache_size`** | **50% - 75% tổng RAM** | Ước tính tổng bộ nhớ cache (của cả PostgreSQL và Linux) để Query Planner tính toán chọn Index. |
-| **`work_mem`** | **16MB - 64MB** | RAM cấp cho **mỗi phép sắp xếp hoặc băm** của câu truy vấn. Không đặt quá lớn kẻo tràn RAM khi nhiều người truy vấn cùng lúc. |
-| **`maintenance_work_mem`**| **256MB - 1GB** | RAM dành riêng cho việc bảo trì: tạo Index (`CREATE INDEX`) và dọn rác (`VACUUM`). |
-| **`random_page_cost`** | **`1.1`** *(Mặc định là 4.0)* | **Bắt buộc đổi thành 1.1 khi dùng ổ SSD/NVMe** để báo cho DB biết ổ đĩa đọc ngẫu nhiên rất nhanh, khuyến khích dùng Index! |
-| **`max_connections`** | **100 - 200** | Giữ ở mức vừa phải kết hợp với PgBouncer, không mở trực tiếp hàng ngàn kết nối. |
+| **`VACUUM ten_bang;`** | Thu hồi chỗ trống của các dòng cũ đã xóa để **dùng lại cho các dòng mới** thêm vào sau này. | **Không** (Ứng dụng vẫn đọc/ghi bình thường). |
+| **`ANALYZE ten_bang;`** | Cập nhật lại số liệu thống kê của bảng để PostgreSQL biết cách chọn Index tốt nhất. *(Thường gộp chung: `VACUUM ANALYZE ten_bang;`)*. | **Không** |
+| **`VACUUM FULL ten_bang;`** | Viết lại toàn bộ bảng sang một file mới tinh để **giảm dung lượng file trên ổ cứng**. | **Có** (Khóa cứng bảng, ứng dụng không đọc/ghi được trong lúc chạy). |
+
+### 3. Tiến trình tự động Autovacuum
+- Bạn **không cần** phải chạy lệnh `VACUUM` thủ công vì PostgreSQL đã bật sẵn chế độ **Autovacuum** chạy ngầm: cứ khi nào bảng có nhiều dòng bị sửa/xóa, nó sẽ tự động vào dọn rác và cập nhật thống kê.
+- **Lưu ý quan trọng:** Luôn để Autovacuum bật theo mặc định, không nên tắt.
 
 ---
 
-# Phần 6: Kiến Trúc Nội Bộ, Bảo Mật & Vận Hành
+# Phần 6: Cách PostgreSQL Lưu Dữ Liệu & Bảo Mật Cơ Bản
 
-## 6.1 Sơ đồ kiến trúc các tiến trình & Cơ chế WAL (Write-Ahead Logging)
+## 6.1 Cách PostgreSQL xử lý truy vấn và chống mất dữ liệu (WAL)
 
-### Sơ đồ kiến trúc toàn diện của PostgreSQL Instance
+### 1. Vì sao PostgreSQL phải kết hợp cả RAM và Ổ cứng?
+
+Trong máy tính có 2 nơi lưu trữ với đặc tính trái ngược nhau:
+- **Bộ nhớ RAM:** Đọc và sửa dữ liệu **cực kỳ nhanh**, nhưng có nhược điểm là **mất điện thì toàn bộ dữ liệu trên RAM sẽ biến mất**.
+- **Ổ cứng (SSD/HDD):** Dữ liệu lưu xuống ổ cứng sẽ **còn mãi dù tắt máy hay mất điện**, nhưng tốc độ đọc/ghi lại **chậm hơn RAM rất nhiều**.
+
+Do đó, nếu mỗi lần sửa một dòng dữ liệu mà PostgreSQL đều phải mở các file bảng lớn trên ổ cứng ra tìm đúng chỗ để ghi đè ngay, hệ thống sẽ rất chậm. Để vừa **nhanh như RAM** vừa **an toàn như ổ cứng**, PostgreSQL sử dụng cơ chế **Sổ nhật ký ghi trước (`WAL` - Write-Ahead Logging)**.
 
 ```mermaid
 flowchart TD
-    subgraph Clients ["Các ứng dụng kết nối (Client Layer)"]
-        C1["Web App"]
-        C2["Mobile Backend"]
-        C3["Worker Service"]
+    Client["Ứng dụng"] -->|"Gửi câu lệnh SQL (Cổng 5432)"| BE["Tiến trình xử lý\n(Backend Process)"]
+
+    subgraph RAM ["1. Bộ nhớ RAM (Tốc độ rất nhanh)"]
+        SB["Bộ nhớ đệm dữ liệu\n(Shared Buffers)"]
     end
 
-    subgraph Master ["Tiến trình Quản lý chính (Postmaster)"]
-        PM["Postmaster Daemon (Cổng TCP 5432)"]
+    subgraph Disk ["2. Ổ cứng (Không mất khi tắt máy)"]
+        WAL[("Sổ nhật ký WAL\n(Thư mục pg_wal/)")]
+        DATA[("File dữ liệu bảng & Index\n(Thư mục base/)")]
     end
 
-    subgraph Shared_Memory ["Vùng Bộ Nhớ Chung (Shared Memory / RAM)"]
-        SB[("Shared Buffers
-(Các trang dữ liệu bảng 8KB)")]
-        WB["WAL Buffers
-(Nhật ký thay đổi chờ ghi)"]
-        LM["Lock Manager
-(Quản lý khóa hàng & khóa bảng)"]
-    end
-
-    subgraph Backends ["Các tiến trình phục vụ độc lập"]
-        B1["Backend Process 1"]
-        B2["Backend Process 2"]
-        B3["Backend Process 3"]
-    end
-
-    subgraph Bg_Workers ["Các tiến trình nền ngầm (Background Workers)"]
-        CP["Checkpointer
-(Đẩy trang bẩn từ RAM xuống đĩa)"]
-        BGW["Background Writer (bgwriter)
-(Làm sạch Shared Buffers)"]
-        WW["WAL Writer
-(Ghi WAL Buffers xuống đĩa liên tục)"]
-        AV["Autovacuum Launcher & Workers
-(Dọn dẹp Dead Tuples)"]
-        ARCH["Archiver
-(Lưu trữ WAL phục vụ backup PITR)"]
-    end
-
-    subgraph Storage ["Hệ thống Lưu Trữ Ổ Cứng (Disk Storage)"]
-        WAL_DISK[("pg_wal/
-(Tệp nhật ký ghi trước 16MB)")]
-        DATA_DISK[("base/ & global/
-(Tệp dữ liệu bảng và Index)")]
-    end
-
-    Clients -->|"Gửi yêu cầu kết nối"| PM
-    PM -->|"Fork tiến trình mới"| Backends
-    Backends <-->|"Đọc / Sửa trang dữ liệu"| SB
-    Backends -->|"Ghi chép lịch sử giao dịch"| WB
-    Backends <-->|"Xin cấp phép khóa"| LM
-
-    WB -->|"fsync định kỳ"| WW --> WAL_DISK
-    SB -->|"Checkpoint định kỳ"| CP --> DATA_DISK
-    SB -->|"Dọn chỗ trống RAM"| BGW --> DATA_DISK
-    AV <-->|"Quét dọn rác"| SB & DATA_DISK
-    WAL_DISK -->|"Đẩy file sang kho lưu trữ"| ARCH
+    BE <-->|"Bước 1: Đọc & sửa ngay trên RAM"| SB
+    BE -->|"Bước 2: Ghi 1 dòng vào cuối sổ WAL khi COMMIT"| WAL
+    SB -->|"Bước 3: Lúc rảnh mới gom dữ liệu lưu xuống file bảng"| DATA
 ```
 
 ---
 
-### Vòng đời chi tiết của một câu lệnh ghi (`INSERT / UPDATE`):
+### 2. Hình dung dễ hiểu: Cơ chế "Cuốn sổ nhật ký" (`WAL`) hoạt động ra sao?
 
-Khi ứng dụng chạy lệnh:
+Hãy tưởng tượng một kho hàng có **100 kệ hàng lớn ở khắp kho** (tương ứng với **các file bảng dữ liệu & Index trên ổ cứng**) và **1 cuốn sổ nhật ký đặt ngay bàn thu ngân** (tương ứng với **file nhật ký `WAL`**).
+
+Khi ứng dụng chạy lệnh trừ tiền và chốt giao dịch (`COMMIT`):
 ```sql
 UPDATE accounts SET balance = balance - 500 WHERE id = 10;
 COMMIT;
 ```
 
-Cơ chế diễn ra bên dưới gồm 5 bước nghiêm ngặt:
-1. **Truy vấn trang dữ liệu vào RAM:** Tiến trình Backend tìm kiếm xem trang chứa dòng `id = 10` đã có trong `Shared Buffers` (RAM) chưa. Nếu chưa có, nó phát lệnh đọc khối 8KB tương ứng từ đĩa cứng `base/` nạp vào RAM.
-2. **Sửa đổi trên RAM (Tạo Dirty Page):** Backend tạo một bản ghi mới với số dư trừ 500, đánh dấu bản ghi cũ là Dead Tuple. Trang dữ liệu trên RAM bị thay đổi gọi là **Dirty Page (Trang bẩn)** vì nội dung trên RAM lúc này đã khác với nội dung đang lưu dưới đĩa.
-3. **Ghi nhật ký WAL (Write-Ahead Logging):** Ngay lập tức, một bản ghi nhật ký mô tả sự thay đổi ("Dòng 10 đổi số dư thành X") được tạo ra và đưa vào `WAL Buffers` trên RAM.
-4. **Lệnh `COMMIT` và `fsync` xuống đĩa:** Khi gặp lệnh `COMMIT`, tiến trình gọi lệnh hệ thống `fsync()` để ép ghi bản ghi WAL từ RAM xuống tệp vật lý trong thư mục `pg_wal/` trên ổ cứng. **Ngay khi file WAL được ghi an toàn xuống đĩa, PostgreSQL lập tức phản hồi về cho ứng dụng: "Giao dịch thành công!"**
-   > **Bí mật tốc độ của PostgreSQL:** Lưu ý rằng lúc này **dữ liệu trong tệp bảng chính `base/` vẫn CHƯA ĐƯỢC CẬP NHẬT DƯỚI ĐĨA**! Việc ghi nhật ký WAL tuần tự (Sequential I/O) nhanh hơn gấp hàng trăm lần so với việc nhảy vào sửa file bảng chính (Random I/O).
-5. **Đồng bộ về sau qua Checkpointer:** Một lúc sau, tiến trình nền `Checkpointer` thức dậy định kỳ, gom tất cả các Dirty Pages trên RAM ghi một lượt xuống tệp bảng chính trên ổ đĩa và đánh dấu một "Điểm kiểm tra" (Checkpoint).
+PostgreSQL thực hiện theo 3 bước rất thông minh:
+1. **Bước 1 — Sửa trên RAM trước:** PostgreSQL đưa thông tin tài khoản `id = 10` lên bộ nhớ RAM (`Shared Buffers`) và trừ `500` ngay trên RAM.
+2. **Bước 2 — Ghi vào cuối cuốn sổ nhật ký `WAL` trên ổ cứng:** Khi gặp lệnh `COMMIT`, thay vì phải chạy đi tìm các file bảng và file Index trên ổ cứng để sửa từng chỗ, PostgreSQL chỉ cần **ghi nối tiếp 1 dòng ngắn gọn vào cuối file nhật ký `WAL`** trên ổ cứng: *"Tài khoản id=10 vừa giảm 500"*.
+   - **Ngay khi dòng nhật ký này được lưu xong xuống ổ cứng, PostgreSQL lập tức báo cho ứng dụng: "COMMIT thành công!"** *(Lúc này file bảng dữ liệu chính trên ổ cứng thực chất vẫn chưa được cập nhật).*
+3. **Bước 3 — Định kỳ cập nhật vào file bảng chính sau:** Cứ định kỳ ít phút một lần, tiến trình chạy ngầm của PostgreSQL mới gom nhiều thay đổi đang nằm trên RAM để đi cập nhật một lượt xuống các file bảng chính (`base/`).
+
+> **Tại sao cách làm này giải quyết được cả Tốc độ lẫn Độ an toàn?**
+> - **Tại sao NHANH?** Vì ghi nối tiếp một dòng chữ vào cuối cuốn sổ nhật ký (`WAL`) nhanh hơn rất nhiều so với việc phải mở hàng chục file bảng và file Index ở nhiều vị trí khác nhau trên ổ cứng ra sửa trực tiếp.
+> - **Tại sao MẤT ĐIỆN KHÔNG MẤT DỮ LIỆU?** Giả sử vừa xong Bước 2 (đã báo `COMMIT` thành công cho khách) thì máy chủ bị mất điện đột ngột: dữ liệu mới trên RAM bị mất sạch và Bước 3 chưa kịp chạy để lưu vào bảng chính. Khi có điện trở lại, PostgreSQL chỉ cần **mở cuốn sổ nhật ký `WAL` trên ổ cứng ra đọc lại những dòng cuối** rồi cập nhật bù vào bảng chính -> **Khôi phục nguyên vẹn 100% những gì đã `COMMIT`!**
 
 ---
 
-### Nguyên lý phục hồi khi gặp thảm họa (Crash Recovery):
+## 6.2 Bảo mật cơ bản: Phân quyền, Mật khẩu
 
-Nếu máy chủ bị rút phích cắm điện đột ngột ngay sau bước 4:
-- Dữ liệu mới trong RAM `Shared Buffers` bị mất sạch 100%.
-- Dữ liệu trong file bảng chính `base/` vẫn là dữ liệu cũ.
-- **Cách khôi phục khi bật máy lại:** PostgreSQL khởi động, đọc điểm Checkpoint gần nhất và đọc lại toàn bộ nhật ký `pg_wal/` từ mốc đó trở đi (**REDO Phase**). Nó thực hiện lại toàn bộ các thao tác đã commit ghi vào tệp bảng, đảm bảo **không mất một byte dữ liệu nào**!
+Khi làm ứng dụng thực tế kết nối với PostgreSQL, có 2 nguyên tắc bảo mật cơ bản nhất mà người mới cần nắm vững:
 
----
+### 1. Phân quyền tài khoản (Không dùng tài khoản quản trị cao nhất cho ứng dụng)
 
-## 6.2 Phân quyền Role & Bảo mật mật khẩu với pgcrypto (bcrypt)
+Khi mới cài PostgreSQL, bạn luôn có một tài khoản quản trị cao nhất (thường là `postgres` hoặc `admin`). Tài khoản này có toàn quyền, kể cả quyền xóa sạch bảng (`DROP TABLE`) hay xóa cả Database.
 
-### 1. Mô hình Phân quyền Phân tầng chuẩn Doanh nghiệp (RBAC Model)
-
-Trong PostgreSQL, không có sự phân biệt giữa "User" và "Group", cả hai đều là **`ROLE`**. Một User thực chất chỉ là một Role có cờ `LOGIN`.
+- **Sai lầm thường gặp của người mới:** Đưa luôn tài khoản `admin` này vào trong code ứng dụng hoặc đưa cho người khác vào xem dữ liệu. Nếu ai đó gõ nhầm lệnh xóa bảng, hoặc kẻ xấu tấn công được vào ứng dụng, toàn bộ Database sẽ bị phá hủy.
+- **Cách làm đúng:** Trong PostgreSQL, cả **"nhóm quyền"** và **"tài khoản đăng nhập"** đều được tạo bằng khái niệm **`ROLE`** (lệnh `CREATE USER` thực chất chỉ là tạo một `ROLE` có quyền đăng nhập). Ta sẽ tạo từng nhóm quyền vừa đủ dùng rồi gán cho từng tài khoản:
 
 ```mermaid
-flowchart TD
-    subgraph Roles ["Tầng Phân Nhóm Quyền (Không thể đăng nhập)"]
-        R_Read["Role: read_only
-(Chỉ xem SELECT dữ liệu)"]
-        R_App["Role: app_read_write
-(Xem, Thêm, Sửa, Xóa DML)"]
-        R_Admin["Role: dba_admin
-(Tạo bảng, sửa schema DDL)"]
-    end
-
-    subgraph Logins ["Tầng Tài Khoản Đăng Nhập Thực Tế (LOGIN)"]
-        U_Analyst["User: analyst_linh
-(Nhân viên phân tích dữ liệu)"]
-        U_Backend["User: backend_api_service
-(Mã nguồn ứng dụng chạy thật)"]
-        U_DevOps["User: devops_deployer
-(Tài khoản CI/CD chạy migration)"]
-    end
-
-    U_Analyst -->|"Kế thừa quyền"| R_Read
-    U_Backend -->|"Kế thừa quyền"| R_App
-    U_DevOps -->|"Kế thừa quyền"| R_Admin
+flowchart LR
+    U1["Tài khoản xem báo cáo\n(bi_analyst)"] -->|"Gán vào nhóm"| R1["Nhóm chỉ xem (role_readonly)\nChỉ được chạy lệnh SELECT"]
+    U2["Tài khoản của ứng dụng\n(app_backend)"] -->|"Gán vào nhóm"| R2["Nhóm đọc & ghi (role_readwrite)\nĐược SELECT, INSERT, UPDATE, DELETE\n(Không được xóa bảng DROP TABLE)"]
 ```
 
-#### Mã nguồn SQL thiết lập phân quyền chuẩn sản xuất:
+Cách viết lệnh SQL để phân quyền (kèm giải thích từng dòng):
 
 ```sql
--- BƯỚC 1: Tạo các Role chức năng (Không cho phép đăng nhập trực tiếp)
+-- =========================================================
+-- PHẦN 1: TẠO NHÓM QUYỀN "CHỈ ĐỌC" (role_readonly)
+-- =========================================================
 CREATE ROLE role_readonly;
+-- 1. Cho phép bước qua cổng kết nối vào database 'appdb':
 GRANT CONNECT ON DATABASE appdb TO role_readonly;
+-- 2. Cho phép mở thư mục (schema) 'public':
 GRANT USAGE ON SCHEMA public TO role_readonly;
+-- 3. Chỉ cho phép đọc (SELECT) dữ liệu của các bảng trong 'public':
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO role_readonly;
--- Đảm bảo các bảng tạo trong tương lai cũng tự động cấp quyền SELECT:
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO role_readonly;
 
+
+-- =========================================================
+-- PHẦN 2: TẠO NHÓM QUYỀN "ĐỌC & GHI" CHO ỨNG DỤNG (role_readwrite)
+-- =========================================================
 CREATE ROLE role_readwrite;
 GRANT CONNECT ON DATABASE appdb TO role_readwrite;
 GRANT USAGE ON SCHEMA public TO role_readwrite;
+-- Cho phép Đọc, Thêm, Sửa, Xóa dòng dữ liệu (nhưng KHÔNG có quyền DROP hay ALTER bảng):
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO role_readwrite;
+-- Cho phép dùng bộ đếm số tự động (SEQUENCE) để các cột ID tự tăng hoạt động khi INSERT:
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO role_readwrite;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO role_readwrite;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO role_readwrite;
 
--- BƯỚC 2: Tạo các tài khoản đăng nhập chuyên biệt cho từng dịch vụ
-CREATE USER api_backend_user WITH PASSWORD 'MatKhauSieuManh_2026_@XYZ';
-GRANT role_readwrite TO api_backend_user; -- Kế thừa toàn bộ quyền Đọc/Ghi
 
-CREATE USER bi_analyst_user WITH PASSWORD 'AnalystPass_2026_Safe!';
-GRANT role_readonly TO bi_analyst_user;   -- Chỉ được phép đọc dữ liệu
+-- =========================================================
+-- PHẦN 3: TẠO TÀI KHOẢN ĐĂNG NHẬP VÀ GÁN VÀO NHÓM
+-- =========================================================
+CREATE USER bi_analyst WITH PASSWORD 'MatKhauBaoCao_123!';
+GRANT role_readonly TO bi_analyst;   -- Tài khoản này chỉ xem được dữ liệu
+
+CREATE USER app_backend WITH PASSWORD 'MatKhauUngDung_123!';
+GRANT role_readwrite TO app_backend; -- Tài khoản này dùng để lắp vào code ứng dụng
 ```
 
 ---
 
-### 2. Bảo mật cấp hàng (Row-Level Security - RLS)
+### 2. Băm mật khẩu người dùng với `pgcrypto` (`bcrypt`)
 
-**Bài toán:** Trong hệ thống SaaS đa khách hàng (Multi-tenant), bảng `documents` chứa tài liệu của hàng trăm công ty khác nhau. Nếu một lập trình viên backend viết thiếu mệnh đề `WHERE company_id = ?`, dữ liệu của công ty này sẽ bị lộ cho công ty khác xem (lỗ hổng IDOR nguy hiểm).
+Khi làm chức năng Đăng ký / Đăng nhập cho người dùng của ứng dụng, bạn cần lưu mật khẩu của họ vào bảng (ví dụ bảng `accounts`):
 
-**Giải pháp RLS: Ràng buộc an toàn ngay tại tầng CSDL:**
-```sql
--- 1. Bật tính năng RLS trên bảng:
-ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
+- **Nguyên tắc 1 — Không lưu mật khẩu dạng chữ rõ (Plaintext):** Nếu bạn lưu thẳng chuỗi `'MatKhau123'` vào cột, bất kỳ ai xem được bảng dữ liệu đều biết hết mật khẩu của khách hàng.
+- **Nguyên tắc 2 — Dùng hàm "Băm một chiều" (`Hash`) có trộn "Muối" (`Salt`):**
+  - **Băm một chiều (Hash) là gì?** Là biến mật khẩu gốc `'MatKhau123'` thành một chuỗi ký tự dài không có quy luật (ví dụ `'$2a$10$N9qo8uLOickgx2ZMRZoMye...'`). Điểm cốt lõi là **chỉ có thể biến đổi 1 chiều từ mật khẩu -> chuỗi băm, hoàn toàn không có công thức nào dịch ngược từ chuỗi băm về lại mật khẩu gốc**.
+  - **Trộn muối (Salt) là gì?** Nếu hai người dùng cùng đặt mật khẩu dễ đoán là `'123456'` mà băm thông thường (như `MD5` hay `SHA256`) thì sẽ ra 2 chuỗi băm giống hệt nhau (kẻ xấu rất dễ dò ra). Thuật toán **`bcrypt`** sẽ tự động tạo thêm một chuỗi ngẫu nhiên (gọi là **muối - salt**) trộn vào mật khẩu trước khi băm -> nhờ đó 2 người cùng đặt mật khẩu `'123456'` vẫn tạo ra **2 chuỗi băm hoàn toàn khác nhau**!
+  - **Vậy khi đăng nhập thì kiểm tra bằng cách nào?** Vì không thể dịch ngược chuỗi băm, nên khi người dùng gõ mật khẩu đăng nhập, hệ thống sẽ **đem mật khẩu người dùng vừa gõ đi băm lại một lần nữa** (với cùng hạt muối đó). Nếu kết quả băm mới **trùng khớp 100%** với chuỗi băm đang lưu trong bảng thì chứng tỏ người dùng nhập đúng mật khẩu!
 
--- 2. Tạo chính sách bảo mật: Người dùng chỉ được thấy dòng có company_id trùng với phiên làm việc của họ:
-CREATE POLICY tenant_isolation_policy ON documents
-FOR ALL
-TO role_readwrite
-USING (company_id = current_setting('app.current_company_id')::int);
-
--- 3. Khi Backend kết nối vào và xử lý yêu cầu của Công ty A (id=5):
-BEGIN;
-SET LOCAL app.current_company_id = '5';
-SELECT * FROM documents; -- Tự động chỉ trả về tài liệu của công ty 5, không cần nhớ viết WHERE!
-COMMIT;
-```
-
----
-
-### 3. Mã hóa và xác thực mật khẩu an toàn với `pgcrypto` (bcrypt)
-
-Tuyệt đối không sử dụng MD5 hay SHA256 để lưu mật khẩu người dùng vì hacker có thể dùng kỹ thuật bảng Rainbow (Rainbow Tables) để giải mã hàng triệu mật khẩu trong vài phút. Bắt buộc sử dụng thuật toán thích ứng **bcrypt**.
+Trong PostgreSQL, công cụ có sẵn **`pgcrypto`** giúp bạn thực hiện toàn bộ quy trình `bcrypt` này chỉ với 2 hàm `gen_salt()` và `crypt()`:
 
 ```sql
--- Bật extension mã hóa chuẩn của PostgreSQL:
+-- Bước 0: Bật công cụ pgcrypto (chỉ cần chạy 1 lần trên Database)
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- 1. Tạo bảng lưu người dùng:
+-- Tạo bảng tài khoản người dùng của ứng dụng:
 CREATE TABLE accounts (
     id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username varchar(50) NOT NULL UNIQUE,
@@ -1251,16 +1268,27 @@ CREATE TABLE accounts (
     created_at timestamptz DEFAULT now()
 );
 
--- 2. Đăng ký tài khoản: Mã hóa mật khẩu với thuật toán Blowfish (bcrypt) với độ phức tạp cost=10:
+-- =========================================================
+-- 1. KHI NGƯỜI DÙNG ĐĂNG KÝ TÀI KHOẢN MỚI:
+-- =========================================================
+-- gen_salt('bf', 10): Tự sinh chuỗi muối (salt) ngẫu nhiên theo chuẩn Blowfish (bcrypt) với độ khó = 10
+-- crypt('MatKhau123!@#', ...): Trộn mật khẩu với muối rồi băm thành chuỗi password_hash
 INSERT INTO accounts (username, password_hash)
-VALUES ('phongvt', crypt('MatKhauKhoDoan123!@#', gen_salt('bf', 10)));
+VALUES ('phongvt', crypt('MatKhau123!@#', gen_salt('bf', 10)));
 
--- 3. Xác thực khi người dùng đăng nhập:
-SELECT id, username 
-FROM accounts 
+
+-- =========================================================
+-- 2. KHI NGƯỜI DÙNG ĐĂNG NHẬP:
+-- =========================================================
+-- Truyền mật khẩu người dùng vừa nhập VÀ cột password_hash đang lưu vào hàm crypt().
+-- Hàm crypt() sẽ lấy lại đúng hạt muối nằm trong password_hash để băm mật khẩu vừa nhập rồi so sánh:
+SELECT id, username
+FROM accounts
 WHERE username = 'phongvt'
-  AND password_hash = crypt('MatKhauKhoDoan123!@#', password_hash);
--- Nếu mật khẩu khớp: Trả về dòng dữ liệu của user phongvt.
--- Nếu mật khẩu sai: Trả về rỗng (0 dòng). Toàn bộ quá trình kiểm tra diễn ra an toàn trong CSDL.
+  AND password_hash = crypt('MatKhau123!@#', password_hash);
+
+-- Kết quả:
+-- - Nếu nhập ĐÚNG mật khẩu: Điều kiện bằng nhau -> Trả về 1 dòng (id, username) -> Cho phép đăng nhập!
+-- - Nếu nhập SAI mật khẩu : Chuỗi băm khác nhau -> Trả về 0 dòng (rỗng)        -> Báo sai mật khẩu!
 ```
 

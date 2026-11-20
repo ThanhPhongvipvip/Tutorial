@@ -26,7 +26,7 @@ grafana/
 ├── doc/                             ← Trọn bộ tài liệu kỹ thuật
 │   ├── README.md                    ← Tổng quan kiến trúc & các tính năng cốt lõi
 │   ├── SETUP.md                     ← Hướng dẫn cài đặt Máy A và các máy con chi tiết từ A-Z
-│   └── USAGE.md                     ← Cẩm nang vận hành, thêm CSV mới, tự động phát hiện DB
+│   └── USAGE.md                     ← Vận hành, thêm CSV mới, tự động phát hiện DB
 │
 └── Other/                           ← Tệp dữ liệu mẫu & báo cáo dọn dẹp
     ├── sample_data/                 ← Các tệp CSV mẫu để kiểm tra tính năng vẽ biểu đồ
