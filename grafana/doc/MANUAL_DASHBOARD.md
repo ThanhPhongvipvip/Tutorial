@@ -153,7 +153,7 @@ from(bucket: "system_metrics")
   |> group()
   |> count()
 ```
-- Giải thích:  Lấy chỉ số `cpu` trong 5 phút gần nhất → gom theo từng `device` và lấy 1 dòng cuối (`last()`) để mỗi máy chỉ tính 1 lần → gộp hết lại (`group()`) rồi đếm (`count()`).
+- Giải thích: Lấy chỉ số `cpu` trong 5 phút gần nhất → gom theo từng `device` và lấy 1 dòng cuối (`last()`) để mỗi máy chỉ tính 1 lần → gộp hết lại (`group()`) rồi đếm (`count()`).
 - **Cài đặt bên phải:** Calculation `Last*`, Color mode `Background`, Unit `Short`, No value `0`, Color `blue`.
 
 **2. Panel `Thiết Bị Online` (Duplicate Panel 1)**
@@ -324,7 +324,7 @@ UNION ALL
 SELECT * FROM edges;
 ```
 
-**Giải thichs Query SQL**
+**Giải thích Query SQL:**
 - **`nodes` & `edges`:** Lấy danh sách các **bảng** (tên bảng, cột, PK/FK) và **đường nối khóa ngoại** của `${device}` / `${db_name}` từ PostgreSQL.
 - **Tác dụng chính:** Dùng để kiểm tra dữ liệu bảng thô (khi bật *Table view*), đồng thời mỗi khi đổi máy hay database trên dropdown, query chạy lại và báo cho phần JavaScript bên dưới vẽ lại sơ đồ mới.
 
@@ -388,10 +388,10 @@ if (dom) {
 // BƯỚC 5: Trả về rỗng để plugin không vẽ biểu đồ khác đè lên
 return {};
 ```
-Phương pháp nghiên cứu và kỹ năng viết học thuật
+
 **Tóm tắt 5 bước Script làm gì (dành cho người mới):**
 1. **Tìm ô chứa Panel (`dom`):** Lấy đúng vùng trống của Panel này trên màn hình *(viết nhiều điều kiện `if` để tương thích mọi phiên bản Grafana)*.
-2. **Đọc biến đang chọn:** Lấy tên **Máy** và **Database** từ thanh dropdown
+2. **Đọc biến đang chọn:** Lấy tên **Máy** và **Database** từ thanh dropdown.
 3. **Ghép link web ERD:** Tự lấy IP máy chủ trên trình duyệt (`window.location.hostname`) để tạo thành link `http://<IP_MAY_A>:8088/?device=...&db=...` .
 4. **Nhúng web vào Panel (`<iframe>`):**
    - Lần đầu mở: tạo một khung web con tràn 100% Panel trỏ vào link trên.
