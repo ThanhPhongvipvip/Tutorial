@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 475" width="920" height="475" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <defs>
+    <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+    <marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <rect x="2" y="2" width="916" height="471" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Hình 4.1: Giao dịch (ACID), Kiểm soát đa phiên bản (MVCC) và Khóa dòng (Row Locking)</text>
+
+  <!-- Top Panel: ACID -->
+  <rect x="28" y="52" width="864" height="176" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+  <text x="460" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">1. Chu trình Transaction (ACID): Thực hiện trọn vẹn hoặc hoàn tác toàn bộ</text>
+
+  <rect x="46" y="116" width="110" height="52" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6"/>
+  <text x="101" y="139" text-anchor="middle" font-family="monospace" font-size="13.5" font-weight="700" fill="#1d4ed8">BEGIN;</text>
+  <text x="101" y="157" text-anchor="middle" font-size="11.5" fill="#334155">Mở giao dịch</text>
+  <line x1="156" y1="142" x2="188" y2="142" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrB)"/>
+
+  <rect x="192" y="116" width="196" height="52" rx="6" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.6"/>
+  <text x="290" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">Bước 1: Trừ tài khoản A</text>
+  <text x="290" y="157" text-anchor="middle" font-size="12" fill="#475569">balance = balance - 1.000.000</text>
+
+  <path d="M 388 130 L 442 108" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrG)"/>
+  <rect x="446" y="88" width="204" height="44" rx="6" fill="#ecfdf5" stroke="#10b981" stroke-width="1.6"/>
+  <text x="548" y="108" text-anchor="middle" font-size="12.5" font-weight="700" fill="#047857">Bước 2: Cộng tài khoản B</text>
+  <text x="548" y="124" text-anchor="middle" font-size="11.5" fill="#065f46">+ 1.000.000 hợp lệ</text>
+  <line x1="650" y1="110" x2="686" y2="110" stroke="#059669" stroke-width="2" marker-end="url(#arrG)"/>
+  <rect x="690" y="88" width="182" height="44" rx="6" fill="#059669"/>
+  <text x="781" y="108" text-anchor="middle" font-family="monospace" font-size="13" font-weight="700" fill="#ffffff">COMMIT;</text>
+  <text x="781" y="124" text-anchor="middle" font-size="11.5" fill="#ecfdf5">Xác nhận và lưu bền vững</text>
+
+  <path d="M 388 154 L 442 178" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrR)"/>
+  <rect x="446" y="158" width="204" height="48" rx="6" fill="#fff1f2" stroke="#f43f5e" stroke-width="1.6"/>
+  <text x="548" y="179" text-anchor="middle" font-size="12.5" font-weight="700" fill="#be123c">Phát sinh lỗi / Mất kết nối</text>
+  <text x="548" y="197" text-anchor="middle" font-size="11.5" fill="#9f1239">Không hoàn tất bước 2</text>
+  <line x1="650" y1="182" x2="686" y2="182" stroke="#dc2626" stroke-width="2" marker-end="url(#arrR)"/>
+  <rect x="690" y="158" width="182" height="48" rx="6" fill="#e11d48"/>
+  <text x="781" y="179" text-anchor="middle" font-family="monospace" font-size="13" font-weight="700" fill="#ffffff">ROLLBACK;</text>
+  <text x="781" y="197" text-anchor="middle" font-size="11.5" fill="#ffe4e6">Hoàn tác, A giữ nguyên số dư</text>
+
+  <!-- MVCC -->
+  <rect x="28" y="246" width="420" height="206" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
+  <text x="238" y="272" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">2. Cơ chế MVCC: Đọc và ghi không khóa chéo nhau</text>
+  <rect x="46" y="288" width="384" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="60" y="314" font-size="12.5" fill="#64748b">Phiên bản cũ: <tspan font-family="monospace">price = 100k</tspan>  ←  <tspan font-weight="600" fill="#1d4ed8">Giao dịch A đang đọc</tspan></text>
+  <rect x="46" y="340" width="384" height="42" rx="6" fill="#dcfce7" stroke="#34d399"/>
+  <text x="60" y="366" font-size="12.5" fill="#065f46">Phiên bản mới: <tspan font-family="monospace" font-weight="700">price = 150k</tspan> ←  <tspan font-weight="600" fill="#047857">Giao dịch B vừa cập nhật</tspan></text>
+  <text x="46" y="408" font-size="12.5" fill="#334155">• Khi cập nhật, PostgreSQL tạo phiên bản mới thay vì ghi đè.</text>
+  <text x="46" y="430" font-size="12.5" fill="#334155">• Các phiên bản cũ được <tspan font-weight="700" fill="#1d4ed8">Autovacuum</tspan> thu hồi sau khi xong.</text>
+
+  <!-- Row Locking -->
+  <rect x="472" y="246" width="420" height="206" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.6"/>
+  <text x="682" y="272" text-anchor="middle" font-size="14" font-weight="700" fill="#b45309">3. Khóa dòng xử lý tranh chấp đồng thời</text>
+  <rect x="490" y="288" width="384" height="68" rx="6" fill="#ffffff" stroke="#fbbf24"/>
+  <text x="504" y="310" font-size="12.5" font-weight="700" fill="#92400e">SELECT ... FOR UPDATE (Khóa chờ tuần tự):</text>
+  <text x="504" y="330" font-size="12" fill="#334155">Kho còn 1 sản phẩm → Giao dịch A giữ khóa trước, giao dịch B</text>
+  <text x="504" y="347" font-size="12" fill="#334155">đợi A COMMIT xong mới đọc tồn kho (= 0), tránh bán vượt tồn kho.</text>
+
+  <rect x="490" y="368" width="384" height="68" rx="6" fill="#ffffff" stroke="#34d399"/>
+  <text x="504" y="390" font-size="12.5" font-weight="700" fill="#047857">FOR UPDATE SKIP LOCKED (Bỏ qua dòng đang khóa):</text>
+  <text x="504" y="410" font-size="12" fill="#334155">Nhiều tiến trình cùng xử lý hàng đợi → Gặp dòng đang khóa</text>
+  <text x="504" y="427" font-size="12" fill="#334155">sẽ bỏ qua ngay để nhận tác vụ kế tiếp, không bị nghẽn chờ.</text>
+</svg>

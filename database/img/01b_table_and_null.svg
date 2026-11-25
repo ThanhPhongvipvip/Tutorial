@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" width="920" height="420" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <rect x="2" y="2" width="916" height="416" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Hình 1.2: Cấu trúc một Bảng dữ liệu quan hệ và Phân biệt giá trị NULL</text>
+
+  <!-- Left: Table Anatomy -->
+  <rect x="28" y="56" width="530" height="205" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+  <rect x="28" y="56" width="530" height="34" rx="8" fill="#1e293b"/>
+  <text x="293" y="78" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Bảng (Table): users — Tập hợp bản ghi người dùng</text>
+
+  <!-- Column headers -->
+  <rect x="38" y="98" width="510" height="30" fill="#dbeafe"/>
+  <text x="75" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#b45309">id (PK)</text>
+  <text x="175" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a8a">username</text>
+  <text x="315" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a8a">phone</text>
+  <text x="425" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a8a">balance</text>
+  <text x="505" y="118" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e3a8a">active</text>
+
+  <!-- Row 1 -->
+  <rect x="38" y="128" width="510" height="32" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="75" y="149" text-anchor="middle" font-size="12.5" font-weight="700" fill="#b45309">1</text>
+  <text x="175" y="149" text-anchor="middle" font-size="12.5" fill="#1e293b">phong</text>
+  <text x="315" y="149" text-anchor="middle" font-size="12.5" fill="#1e293b">'0912345678'</text>
+  <text x="425" y="149" text-anchor="middle" font-size="12.5" fill="#1e293b">500000</text>
+  <text x="505" y="149" text-anchor="middle" font-size="12.5" fill="#047857">true</text>
+
+  <!-- Row 2 -->
+  <rect x="38" y="160" width="510" height="32" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="75" y="181" text-anchor="middle" font-size="12.5" font-weight="700" fill="#b45309">2</text>
+  <text x="175" y="181" text-anchor="middle" font-size="12.5" fill="#1e293b">linh</text>
+  <text x="315" y="181" text-anchor="middle" font-family="monospace" font-size="12.5" font-weight="700" fill="#dc2626">NULL</text>
+  <text x="425" y="181" text-anchor="middle" font-size="12.5" fill="#1e293b">0</text>
+  <text x="505" y="181" text-anchor="middle" font-size="12.5" fill="#047857">true</text>
+
+  <!-- Row 3 -->
+  <rect x="38" y="192" width="510" height="32" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="75" y="213" text-anchor="middle" font-size="12.5" font-weight="700" fill="#b45309">3</text>
+  <text x="175" y="213" text-anchor="middle" font-size="12.5" fill="#1e293b">guest</text>
+  <text x="315" y="213" text-anchor="middle" font-family="monospace" font-size="12.5" fill="#64748b">'' (chuỗi rỗng)</text>
+  <text x="425" y="213" text-anchor="middle" font-size="12.5" fill="#1e293b">0</text>
+  <text x="505" y="213" text-anchor="middle" font-size="12.5" fill="#dc2626">false</text>
+
+  <text x="293" y="247" text-anchor="middle" font-size="12" fill="#475569"><tspan font-weight="700">Cột (Column):</tspan> Thuộc tính có kiểu cố định   •   <tspan font-weight="700">Hàng (Row):</tspan> Một bản ghi đối tượng hoàn chỉnh</text>
+
+  <!-- Right: SQL vs NoSQL summary -->
+  <rect x="580" y="56" width="312" height="205" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="736" y="80" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">Phân biệt mô hình SQL và NoSQL</text>
+  <rect x="596" y="94" width="280" height="70" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="610" y="115" font-size="12.5" font-weight="700" fill="#1d4ed8">CSDL Quan hệ - SQL (PostgreSQL)</text>
+  <text x="610" y="134" font-size="12" fill="#334155">Lược đồ bảng và cột chặt chẽ; phù hợp</text>
+  <text x="610" y="151" font-size="12" fill="#334155">với nghiệp vụ tài chính, đơn hàng, kho.</text>
+
+  <rect x="596" y="176" width="280" height="70" rx="6" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="610" y="197" font-size="12.5" font-weight="700" fill="#047857">Phi quan hệ - NoSQL (Redis, MongoDB)</text>
+  <text x="610" y="216" font-size="12" fill="#334155">Cấu trúc linh hoạt không cần bảng cố định;</text>
+  <text x="610" y="233" font-size="12" fill="#334155">phù hợp làm bộ nhớ đệm (Cache) hoặc Log.</text>
+
+  <!-- Bottom: NULL vs 0 vs Empty String -->
+  <text x="460" y="292" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">Phân biệt ba trạng thái giá trị của một ô dữ liệu</text>
+
+  <rect x="28" y="308" width="272" height="92" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+  <text x="164" y="332" text-anchor="middle" font-size="13.5" font-weight="700" fill="#9f1239">1. Giá trị NULL</text>
+  <text x="164" y="354" text-anchor="middle" font-size="12.5" fill="#334155">Nghĩa là "chưa biết / chưa có giá trị"</text>
+  <text x="164" y="374" text-anchor="middle" font-size="11.5" fill="#9f1239">Kiểm tra bằng toán tử: <tspan font-family="monospace" font-weight="700">IS NULL</tspan></text>
+  <text x="164" y="391" text-anchor="middle" font-size="11.5" fill="#be123c">(Biểu thức <tspan font-family="monospace">= NULL</tspan> luôn trả về không xác định)</text>
+
+  <rect x="324" y="308" width="272" height="92" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="460" y="332" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d4ed8">2. Giá trị số 0</text>
+  <text x="460" y="354" text-anchor="middle" font-size="12.5" fill="#334155">Là một con số xác định bằng không</text>
+  <text x="460" y="376" text-anchor="middle" font-size="12" fill="#475569">Ví dụ: Số dư tài khoản = <tspan font-family="monospace" font-weight="700">0</tspan> đồng</text>
+
+  <rect x="620" y="308" width="272" height="92" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="756" y="332" text-anchor="middle" font-size="13.5" font-weight="700" fill="#334155">3. Chuỗi rỗng ''</text>
+  <text x="756" y="354" text-anchor="middle" font-size="12.5" fill="#334155">Là dữ liệu kiểu văn bản có độ dài 0</text>
+  <text x="756" y="376" text-anchor="middle" font-size="12" fill="#475569">Ví dụ: Chuỗi ghi chú để trống (<tspan font-family="monospace" font-weight="700">''</tspan>)</text>
+</svg>

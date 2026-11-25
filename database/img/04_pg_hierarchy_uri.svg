@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 460" width="920" height="460" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <rect x="2" y="2" width="916" height="456" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Hình 2.1: Phân cấp logic 4 tầng của PostgreSQL và Cấu trúc chuỗi kết nối (URI)</text>
+
+  <!-- Cluster -->
+  <rect x="28" y="52" width="864" height="232" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.8"/>
+  <text x="460" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">Tầng 1 — CLUSTER: Tiến trình máy chủ PostgreSQL (Lắng nghe ở cổng 5432)</text>
+
+  <!-- DB 1 -->
+  <rect x="46" y="90" width="545" height="178" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.6"/>
+  <text x="318" y="113" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1d4ed8">Tầng 2 — DATABASE: appdb (Phân vùng dữ liệu độc lập)</text>
+
+  <rect x="62" y="126" width="246" height="126" rx="6" fill="#ffffff" stroke="#60a5fa" stroke-width="1.4"/>
+  <text x="185" y="147" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0369a1">Tầng 3 — Schema: public</text>
+  <text x="185" y="164" text-anchor="middle" font-size="11" fill="#64748b">(Không gian tên mặc định)</text>
+  <rect x="80" y="176" width="210" height="30" rx="5" fill="#dbeafe"/>
+  <text x="185" y="196" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e3a8a">Tầng 4 — Table: users</text>
+  <rect x="80" y="212" width="210" height="30" rx="5" fill="#dbeafe"/>
+  <text x="185" y="232" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e3a8a">Tầng 4 — Table: categories</text>
+
+  <rect x="326" y="126" width="248" height="126" rx="6" fill="#ffffff" stroke="#60a5fa" stroke-width="1.4"/>
+  <text x="450" y="147" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0369a1">Tầng 3 — Schema: sales</text>
+  <text x="450" y="164" text-anchor="middle" font-size="11" fill="#64748b">(Nhóm bảng nghiệp vụ bán hàng)</text>
+  <rect x="344" y="176" width="212" height="30" rx="5" fill="#dbeafe"/>
+  <text x="450" y="196" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e3a8a">Table: sales.orders</text>
+  <rect x="344" y="212" width="212" height="30" rx="5" fill="#dbeafe"/>
+  <text x="450" y="232" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e3a8a">Table: sales.order_items</text>
+
+  <!-- DB 2 -->
+  <rect x="610" y="90" width="264" height="178" rx="8" fill="#fefce8" stroke="#eab308" stroke-width="1.6"/>
+  <text x="742" y="113" text-anchor="middle" font-size="13.5" font-weight="700" fill="#a16207">DATABASE: analytics_db</text>
+  <rect x="626" y="126" width="232" height="126" rx="6" fill="#ffffff" stroke="#facc15" stroke-width="1.4"/>
+  <text x="742" y="149" text-anchor="middle" font-size="12.5" font-weight="700" fill="#854d0e">Schema: public</text>
+  <rect x="644" y="168" width="196" height="32" rx="5" fill="#fef9c3"/>
+  <text x="742" y="189" text-anchor="middle" font-size="12.5" font-weight="600" fill="#713f12">Table: daily_reports</text>
+  <text x="742" y="226" text-anchor="middle" font-size="11.5" fill="#92400e">Cách ly hoàn toàn, không JOIN</text>
+  <text x="742" y="242" text-anchor="middle" font-size="11.5" fill="#92400e">trực tiếp sang bảng của appdb</text>
+
+  <!-- URI Anatomy -->
+  <text x="460" y="314" text-anchor="middle" font-size="15.5" font-weight="700" fill="#1e293b">Cấu trúc chuỗi kết nối chuẩn (Connection URI)</text>
+
+  <rect x="32" y="332" width="128" height="40" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="96" y="357" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#3730a3">postgresql://</text>
+
+  <rect x="168" y="332" width="84" height="40" rx="6" fill="#dcfce7" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="210" y="357" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#15803d">admin</text>
+
+  <text x="260" y="357" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#64748b">:</text>
+
+  <rect x="268" y="332" width="136" height="40" rx="6" fill="#ffe4e6" stroke="#f43f5e" stroke-width="1.5"/>
+  <text x="336" y="357" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#be123c">Secret123!</text>
+
+  <text x="413" y="357" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#64748b">@</text>
+
+  <rect x="422" y="332" width="118" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="481" y="357" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#b45309">127.0.0.1</text>
+
+  <text x="548" y="357" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#64748b">:</text>
+
+  <rect x="556" y="332" width="68" height="40" rx="6" fill="#ffedd5" stroke="#f97316" stroke-width="1.5"/>
+  <text x="590" y="357" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#c2410c">5432</text>
+
+  <text x="632" y="357" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#64748b">/</text>
+
+  <rect x="640" y="332" width="84" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="682" y="357" text-anchor="middle" font-family="monospace" font-size="14" font-weight="700" fill="#1d4ed8">appdb</text>
+
+  <rect x="732" y="332" width="156" height="40" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="810" y="357" text-anchor="middle" font-family="monospace" font-size="13" font-weight="700" fill="#475569">?sslmode=disable</text>
+
+  <text x="96" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#3730a3">Giao thức</text>
+  <text x="210" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#15803d">Tên đăng nhập</text>
+  <text x="336" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#be123c">Mật khẩu</text>
+  <text x="481" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#b45309">Địa chỉ máy chủ</text>
+  <text x="590" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">Cổng</text>
+  <text x="682" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#1d4ed8">Tên CSDL</text>
+  <text x="810" y="395" text-anchor="middle" font-size="12" font-weight="600" fill="#475569">Tham số bảo mật</text>
+
+  <rect x="95" y="412" width="730" height="30" rx="6" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="460" y="432" text-anchor="middle" font-size="12.5" fill="#92400e">Lưu ý: Trong dự án thực tế, thông tin đăng nhập cần lưu qua biến môi trường (<tspan font-family="monospace" font-weight="700">.env</tspan>), tránh viết trực tiếp trong mã nguồn.</text>
+</svg>

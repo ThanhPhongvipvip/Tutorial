@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" width="920" height="440" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <rect x="2" y="2" width="916" height="436" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Hình 1.4: Chuẩn hóa dữ liệu (1NF → 2NF → 3NF) nhằm loại bỏ dư thừa và dị thường cập nhật</text>
+
+  <!-- Top Unnormalized Table -->
+  <rect x="28" y="52" width="864" height="138" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1.6"/>
+  <rect x="28" y="52" width="864" height="32" rx="8" fill="#ffe4e6"/>
+  <text x="460" y="73" text-anchor="middle" font-size="13.5" font-weight="700" fill="#9f1239">Trước khi chuẩn hóa: Gộp toàn bộ thông tin vào một bảng (dữ liệu lặp lại nhiều lần)</text>
+
+  <rect x="44" y="92" width="832" height="26" fill="#fecdd3"/>
+  <text x="85" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#881337">ma_nv</text>
+  <text x="175" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#881337">ten_nv</text>
+  <text x="345" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#be123c">so_dien_thoai (Vi phạm 1NF)</text>
+  <text x="515" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#881337">ma_phong</text>
+  <text x="655" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#be123c">ten_phong (Vi phạm 3NF)</text>
+  <text x="805" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#be123c">dia_chi_phong</text>
+
+  <rect x="44" y="118" width="832" height="28" fill="#ffffff" stroke="#fda4af"/>
+  <text x="85" y="137" text-anchor="middle" font-size="12.5" fill="#1e293b">101</text>
+  <text x="175" y="137" text-anchor="middle" font-size="12.5" fill="#1e293b">Nam</text>
+  <text x="345" y="137" text-anchor="middle" font-size="12.5" font-weight="600" fill="#dc2626">0912.xxx, 0987.xxx (Gộp 2 số)</text>
+  <text x="515" y="137" text-anchor="middle" font-size="12.5" fill="#1e293b">P01</text>
+  <text x="655" y="137" text-anchor="middle" font-size="12.5" fill="#dc2626">Phòng Kỹ thuật</text>
+  <text x="805" y="137" text-anchor="middle" font-size="12.5" fill="#dc2626">Tầng 3 - Tòa A</text>
+
+  <rect x="44" y="146" width="832" height="28" fill="#ffffff" stroke="#fda4af"/>
+  <text x="85" y="165" text-anchor="middle" font-size="12.5" fill="#1e293b">102</text>
+  <text x="175" y="165" text-anchor="middle" font-size="12.5" fill="#1e293b">Lan</text>
+  <text x="345" y="165" text-anchor="middle" font-size="12.5" fill="#1e293b">0905.xxx</text>
+  <text x="515" y="165" text-anchor="middle" font-size="12.5" fill="#1e293b">P01</text>
+  <text x="655" y="165" text-anchor="middle" font-size="12.5" fill="#dc2626">Phòng Kỹ thuật (Lặp)</text>
+  <text x="805" y="165" text-anchor="middle" font-size="12.5" fill="#dc2626">Tầng 3 - Tòa A (Lặp)</text>
+
+  <!-- Transformation Banner -->
+  <rect x="115" y="204" width="690" height="36" rx="18" fill="#ecfdf5" stroke="#34d399" stroke-width="1.6"/>
+  <text x="460" y="227" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">Chuẩn hóa: (1NF) Mỗi ô một giá trị đơn  •  (2NF) Phụ thuộc toàn phần khóa  •  (3NF) Tách phụ thuộc bắc cầu</text>
+
+  <!-- Table 1 -->
+  <rect x="28" y="256" width="272" height="160" rx="8" fill="#f8fafc" stroke="#34d399" stroke-width="1.6"/>
+  <rect x="28" y="256" width="272" height="32" rx="8" fill="#059669"/>
+  <text x="164" y="277" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">1. Bảng nhan_vien</text>
+  <rect x="38" y="296" width="252" height="26" fill="#d1fae5"/>
+  <text x="82" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">ma_nv (PK)</text>
+  <text x="164" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">ten_nv</text>
+  <text x="242" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">ma_phong (FK)</text>
+  <text x="82" y="342" text-anchor="middle" font-size="12.5" fill="#1e293b">101</text>
+  <text x="164" y="342" text-anchor="middle" font-size="12.5" fill="#1e293b">Nam</text>
+  <text x="242" y="342" text-anchor="middle" font-size="12.5" font-weight="600" fill="#2563eb">P01</text>
+  <line x1="38" y1="352" x2="290" y2="352" stroke="#e2e8f0"/>
+  <text x="82" y="374" text-anchor="middle" font-size="12.5" fill="#1e293b">102</text>
+  <text x="164" y="374" text-anchor="middle" font-size="12.5" fill="#1e293b">Lan</text>
+  <text x="242" y="374" text-anchor="middle" font-size="12.5" font-weight="600" fill="#2563eb">P01</text>
+  <text x="164" y="404" text-anchor="middle" font-size="11.5" fill="#047857">Chỉ lưu khóa ngoại ma_phong</text>
+
+  <!-- Table 2 -->
+  <rect x="324" y="256" width="296" height="160" rx="8" fill="#f8fafc" stroke="#34d399" stroke-width="1.6"/>
+  <rect x="324" y="256" width="296" height="32" rx="8" fill="#059669"/>
+  <text x="472" y="277" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">2. Bảng phong_ban (Đạt 3NF)</text>
+  <rect x="334" y="296" width="276" height="26" fill="#d1fae5"/>
+  <text x="380" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">ma_phong</text>
+  <text x="472" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">ten_phong</text>
+  <text x="565" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">dia_chi</text>
+  <text x="380" y="346" text-anchor="middle" font-size="12.5" font-weight="700" fill="#047857">P01</text>
+  <text x="472" y="346" text-anchor="middle" font-size="12.5" fill="#1e293b">Phòng Kỹ thuật</text>
+  <text x="565" y="346" text-anchor="middle" font-size="12.5" fill="#1e293b">Tầng 3</text>
+  <rect x="340" y="368" width="264" height="36" rx="6" fill="#ecfdf5"/>
+  <text x="472" y="391" text-anchor="middle" font-size="11.5" font-weight="600" fill="#047857">Cập nhật thông tin phòng tại đúng 1 dòng</text>
+
+  <!-- Table 3 -->
+  <rect x="644" y="256" width="248" height="160" rx="8" fill="#f8fafc" stroke="#34d399" stroke-width="1.6"/>
+  <rect x="644" y="256" width="248" height="32" rx="8" fill="#059669"/>
+  <text x="768" y="277" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">3. Bảng sdt_nv (Đạt 1NF)</text>
+  <rect x="654" y="296" width="228" height="26" fill="#d1fae5"/>
+  <text x="706" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">ma_nv (FK)</text>
+  <text x="812" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="#065f46">so_dien_thoai</text>
+  <text x="706" y="342" text-anchor="middle" font-size="12.5" fill="#2563eb">101</text>
+  <text x="812" y="342" text-anchor="middle" font-size="12.5" fill="#1e293b">0912.xxx</text>
+  <line x1="654" y1="352" x2="882" y2="352" stroke="#e2e8f0"/>
+  <text x="706" y="374" text-anchor="middle" font-size="12.5" fill="#2563eb">101</text>
+  <text x="812" y="374" text-anchor="middle" font-size="12.5" fill="#1e293b">0987.xxx</text>
+  <text x="768" y="404" text-anchor="middle" font-size="11.5" fill="#047857">Mỗi ô chứa duy nhất một giá trị đơn</text>
+</svg>

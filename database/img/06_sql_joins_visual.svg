@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 490" width="920" height="490" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <defs>
+    <clipPath id="clipLeft1"><circle cx="136" cy="136" r="38"/></clipPath>
+  </defs>
+
+  <rect x="2" y="2" width="916" height="486" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Hình 3.3: Minh họa tập hợp kết quả của các phép ghép bảng (SQL JOIN) giữa A (users) và B (orders)</text>
+
+  <!-- Card 1 -->
+  <rect x="26" y="54" width="276" height="196" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="164" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">1. INNER JOIN (Phần giao)</text>
+  <circle cx="136" cy="136" r="38" fill="#ffffff" stroke="#64748b" stroke-width="1.8"/>
+  <circle cx="188" cy="136" r="38" fill="#ffffff" stroke="#64748b" stroke-width="1.8"/>
+  <circle cx="188" cy="136" r="38" fill="#3b82f6" fill-opacity="0.85" clip-path="url(#clipLeft1)"/>
+  <circle cx="136" cy="136" r="38" fill="none" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="188" cy="136" r="38" fill="none" stroke="#334155" stroke-width="1.8"/>
+  <text x="116" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">A</text>
+  <text x="208" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">B</text>
+  <text x="164" y="198" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">Chỉ giữ dòng khớp ở cả hai bảng</text>
+  <text x="164" y="218" text-anchor="middle" font-size="12" fill="#475569">Khách đã mua và đơn hợp lệ</text>
+  <text x="164" y="236" text-anchor="middle" font-size="11.5" fill="#2563eb">(Phong, Linh — loại Tuấn và đơn 104)</text>
+
+  <!-- Card 2 -->
+  <rect x="322" y="54" width="276" height="196" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="460" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">2. LEFT JOIN (Giữ toàn bộ A)</text>
+  <circle cx="484" cy="136" r="38" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="432" cy="136" r="38" fill="#10b981" fill-opacity="0.82" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="484" cy="136" r="38" fill="none" stroke="#334155" stroke-width="1.8"/>
+  <text x="414" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">A</text>
+  <text x="504" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">B</text>
+  <text x="460" y="198" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">Giữ 100% bảng trái + phần khớp B</text>
+  <text x="460" y="218" text-anchor="middle" font-size="12" fill="#475569">Cột bảng phải thiếu điền NULL</text>
+  <text x="460" y="236" text-anchor="middle" font-size="11.5" fill="#047857">(Giữ cả Tuấn → đơn hàng = NULL)</text>
+
+  <!-- Card 3 -->
+  <rect x="618" y="54" width="276" height="196" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="756" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#b45309">3. ANTI-JOIN (Chỉ riêng A)</text>
+  <circle cx="716" cy="136" r="38" fill="#f59e0b" fill-opacity="0.85" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="768" cy="136" r="38" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="716" cy="136" r="38" fill="none" stroke="#334155" stroke-width="1.8"/>
+  <text x="696" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">A</text>
+  <text x="788" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">B</text>
+  <text x="756" y="198" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">LEFT JOIN + WHERE B.id IS NULL</text>
+  <text x="756" y="218" text-anchor="middle" font-size="12" fill="#475569">Tìm bản ghi ở A chưa có bên B</text>
+  <text x="756" y="236" text-anchor="middle" font-size="11.5" fill="#b45309">(Trả về duy nhất Tuấn chưa mua hàng)</text>
+
+  <!-- Card 4 -->
+  <rect x="26" y="268" width="276" height="196" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="164" y="292" text-anchor="middle" font-size="14" font-weight="700" fill="#7c3aed">4. RIGHT JOIN (Giữ toàn bộ B)</text>
+  <circle cx="136" cy="350" r="38" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="188" cy="350" r="38" fill="#8b5cf6" fill-opacity="0.82" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="136" cy="350" r="38" fill="none" stroke="#334155" stroke-width="1.8"/>
+  <text x="116" y="355" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">A</text>
+  <text x="208" y="355" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">B</text>
+  <text x="164" y="412" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">Giữ 100% bảng phải + phần khớp A</text>
+  <text x="164" y="432" text-anchor="middle" font-size="12" fill="#475569">Cột bảng trái thiếu điền NULL</text>
+  <text x="164" y="450" text-anchor="middle" font-size="11.5" fill="#7c3aed">(Giữ đơn mồ côi 104 → tên = NULL)</text>
+
+  <!-- Card 5 -->
+  <rect x="322" y="268" width="276" height="196" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="460" y="292" text-anchor="middle" font-size="14" font-weight="700" fill="#be185d">5. FULL OUTER JOIN (Hợp A và B)</text>
+  <circle cx="432" cy="350" r="38" fill="#ec4899" fill-opacity="0.78" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="484" cy="350" r="38" fill="#ec4899" fill-opacity="0.78" stroke="#334155" stroke-width="1.8"/>
+  <circle cx="432" cy="350" r="38" fill="none" stroke="#334155" stroke-width="1.8"/>
+  <text x="414" y="355" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">A</text>
+  <text x="504" y="355" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">B</text>
+  <text x="460" y="412" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">Lấy toàn bộ bản ghi của hai bảng</text>
+  <text x="460" y="432" text-anchor="middle" font-size="12" fill="#475569">Thiếu bên nào điền NULL bên đó</text>
+  <text x="460" y="450" text-anchor="middle" font-size="11.5" fill="#be185d">(Gồm cả Tuấn lẫn đơn hàng 104)</text>
+
+  <!-- Card 6 -->
+  <rect x="618" y="268" width="276" height="196" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="756" y="292" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">6. CROSS JOIN (Tích Descartes)</text>
+  <rect x="668" y="316" width="58" height="68" rx="5" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+  <text x="697" y="337" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">Size S</text>
+  <text x="697" y="356" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">Size M</text>
+  <text x="697" y="375" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">Size L</text>
+  <text x="756" y="356" text-anchor="middle" font-size="20" font-weight="700" fill="#0f766e">×</text>
+  <rect x="786" y="324" width="60" height="52" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="816" y="346" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">Đỏ</text>
+  <text x="816" y="366" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">Xanh</text>
+  <text x="756" y="412" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">Ghép từng dòng A với mọi dòng B</text>
+  <text x="756" y="432" text-anchor="middle" font-size="12" fill="#475569">Không sử dụng điều kiện ON</text>
+  <text x="756" y="450" text-anchor="middle" font-size="11.5" fill="#0f766e">(3 kích cỡ × 2 màu = 6 tổ hợp)</text>
+</svg>

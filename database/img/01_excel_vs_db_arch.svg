@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 465" width="920" height="465" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowSlate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="2" y="2" width="916" height="461" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+
+  <text x="460" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Hình 1.1: So sánh lưu trữ bằng tệp rời rạc với Hệ quản trị CSDL và Mô hình 3 tầng</text>
+
+  <!-- Left Box: File Storage -->
+  <rect x="28" y="54" width="418" height="170" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1.6"/>
+  <rect x="28" y="54" width="418" height="34" rx="8" fill="#ffe4e6"/>
+  <text x="237" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#9f1239">Lưu bằng tệp rời rạc (Excel, CSV, JSON)</text>
+  <text x="46" y="110" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#9f1239">Ghi đè dữ liệu:</tspan> Hai người lưu cùng lúc dễ làm mất thay đổi trước đó.</text>
+  <text x="46" y="136" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#9f1239">Thiếu kiểm soát kiểu:</tspan> Có thể nhập chữ vào cột số hoặc bỏ trống ô.</text>
+  <text x="46" y="162" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#9f1239">Tra cứu chậm:</tspan> Phải đọc tuần tự từ đầu đến cuối tệp, tốn bộ nhớ.</text>
+  <text x="46" y="188" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#9f1239">Rủi ro khi sự cố:</tspan> Mất điện trong lúc đang ghi dễ gây hỏng toàn bộ tệp.</text>
+
+  <!-- Right Box: DBMS -->
+  <rect x="474" y="54" width="418" height="170" rx="8" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.6"/>
+  <rect x="474" y="54" width="418" height="34" rx="8" fill="#d1fae5"/>
+  <text x="683" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">Hệ quản trị CSDL (PostgreSQL)</text>
+  <text x="492" y="110" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#065f46">Xử lý đồng thời:</tspan> Nhiều kết nối đọc và ghi song song không xung đột.</text>
+  <text x="492" y="136" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#065f46">Toàn vẹn dữ liệu:</tspan> Từ chối ngay dữ liệu sai kiểu hoặc vi phạm ràng buộc.</text>
+  <text x="492" y="162" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#065f46">Tìm kiếm nhanh:</tspan> Chỉ mục (Index) cho phép định vị trong vài mili-giây.</text>
+  <text x="492" y="188" font-size="13" fill="#334155">• <tspan font-weight="600" fill="#065f46">Khôi phục an toàn:</tspan> Nhật ký WAL bảo toàn dữ liệu đã xác nhận giao dịch.</text>
+
+  <line x1="28" y1="244" x2="892" y2="244" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="460" y="272" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">Kiến trúc 3 tầng chuẩn của ứng dụng phần mềm (Ví dụ: Thao tác đặt hàng)</text>
+
+  <!-- Tier 1 -->
+  <rect x="34" y="294" width="236" height="138" rx="10" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.8"/>
+  <text x="152" y="322" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">1. Tầng trình bày (Client)</text>
+  <text x="152" y="346" text-anchor="middle" font-size="12.5" fill="#334155">Trình duyệt Web / Ứng dụng</text>
+  <rect x="52" y="364" width="200" height="52" rx="6" fill="#dbeafe"/>
+  <text x="152" y="386" text-anchor="middle" font-size="12.5" fill="#1e40af">Người dùng gửi yêu cầu đặt hàng</text>
+  <text x="152" y="405" text-anchor="middle" font-size="11.5" fill="#475569">(Không kết nối trực tiếp vào DB)</text>
+
+  <line x1="274" y1="348" x2="336" y2="348" stroke="#2563eb" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="305" y="339" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">HTTP / API</text>
+  <line x1="336" y1="382" x2="274" y2="382" stroke="#64748b" stroke-width="1.8" marker-end="url(#arrowSlate)"/>
+  <text x="305" y="400" text-anchor="middle" font-size="11.5" fill="#475569">Phản hồi</text>
+
+  <!-- Tier 2 -->
+  <rect x="342" y="294" width="236" height="138" rx="10" fill="#fffbeb" stroke="#fbbf24" stroke-width="1.8"/>
+  <text x="460" y="322" text-anchor="middle" font-size="14" font-weight="700" fill="#b45309">2. Tầng nghiệp vụ (Backend)</text>
+  <text x="460" y="346" text-anchor="middle" font-size="12.5" fill="#334155">Máy chủ ứng dụng (Python, C++...)</text>
+  <rect x="360" y="364" width="200" height="52" rx="6" fill="#fef3c7"/>
+  <text x="460" y="386" text-anchor="middle" font-size="12.5" fill="#92400e">Kiểm tra quyền, tính tổng tiền</text>
+  <text x="460" y="405" text-anchor="middle" font-size="12.5" fill="#92400e">và chuyển thành truy vấn SQL</text>
+
+  <line x1="582" y1="348" x2="644" y2="348" stroke="#2563eb" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="613" y="339" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">Lệnh SQL</text>
+  <line x1="644" y1="382" x2="582" y2="382" stroke="#64748b" stroke-width="1.8" marker-end="url(#arrowSlate)"/>
+  <text x="613" y="400" text-anchor="middle" font-size="11.5" fill="#475569">Kết quả</text>
+
+  <!-- Tier 3 -->
+  <rect x="650" y="294" width="236" height="138" rx="10" fill="#ecfdf5" stroke="#34d399" stroke-width="1.8"/>
+  <text x="768" y="322" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">3. Tầng dữ liệu (Database)</text>
+  <text x="768" y="346" text-anchor="middle" font-size="12.5" fill="#334155">PostgreSQL 16 (Cổng TCP 5432)</text>
+  <rect x="668" y="364" width="200" height="52" rx="6" fill="#d1fae5"/>
+  <text x="768" y="386" text-anchor="middle" font-size="12.5" fill="#065f46">Cập nhật tồn kho và lưu bản ghi</text>
+  <text x="768" y="405" text-anchor="middle" font-size="12.5" fill="#065f46">đơn hàng an toàn xuống đĩa</text>
+</svg>
