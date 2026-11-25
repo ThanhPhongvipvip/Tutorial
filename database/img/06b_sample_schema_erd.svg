@@ -1,53 +1,119 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 250" width="920" height="250" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" width="920" height="420" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
   <defs>
-    <marker id="arrRef" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <marker id="arrFK5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
     </marker>
   </defs>
 
-  <rect x="2" y="2" width="916" height="246" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
-  <text x="460" y="30" text-anchor="middle" font-size="16.5" font-weight="700" fill="#0f172a">Hình 3.1: Lược đồ 4 bảng dữ liệu mẫu dùng trong Phần 3</text>
+  <rect x="2" y="2" width="916" height="416" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="32" text-anchor="middle" font-size="16.5" font-weight="700" fill="#0f172a">Hình 3.1: Lược đồ 5 bảng dữ liệu mẫu (ERD) dùng xuyên suốt Phần 3 – 5 (database-demo/)</text>
 
-  <rect x="28" y="54" width="184" height="168" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-  <rect x="28" y="54" width="184" height="30" rx="6" fill="#0f766e"/>
-  <text x="120" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">1. categories (Danh mục)</text>
-  <text x="42" y="106" font-size="12" font-weight="700" fill="#b45309">id (PK)</text>
-  <text x="42" y="128" font-size="12" fill="#334155">name (Laptop, Phụ kiện)</text>
-  <rect x="38" y="148" width="164" height="58" rx="5" fill="#ccfbf1"/>
-  <text x="120" y="170" text-anchor="middle" font-size="11.5" fill="#115e59">1 | Laptop</text>
-  <text x="120" y="190" text-anchor="middle" font-size="11.5" fill="#115e59">2 | Phụ kiện</text>
+  <!-- Top Row: 1. categories -> 2. products -->
+  <!-- categories -->
+  <rect x="34" y="54" width="236" height="148" rx="8" fill="#f8fafc" stroke="#0f766e" stroke-width="1.6"/>
+  <rect x="34" y="54" width="236" height="30" rx="8" fill="#0f766e"/>
+  <text x="152" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">1. categories (Danh mục)</text>
+  <text x="48" y="106" font-size="12" font-weight="700" fill="#b45309">PK  id</text>
+  <text x="148" y="106" font-size="11.5" font-family="monospace" fill="#64748b">int IDENTITY</text>
+  <text x="48" y="128" font-size="12" fill="#1e293b">UQ  name</text>
+  <text x="148" y="128" font-size="11.5" font-family="monospace" fill="#64748b">varchar(100)</text>
+  <text x="48" y="150" font-size="12" fill="#475569">    description</text>
+  <text x="148" y="150" font-size="11.5" font-family="monospace" fill="#64748b">text</text>
+  <rect x="44" y="162" width="216" height="30" rx="5" fill="#ccfbf1"/>
+  <text x="152" y="181" text-anchor="middle" font-size="11.5" fill="#115e59">4 danh mục: Laptop, Phụ kiện...</text>
 
-  <line x1="254" y1="102" x2="214" y2="102" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrRef)"/>
+  <!-- Relation categories (1) to products (N) -->
+  <line x1="270" y1="124" x2="342" y2="124" stroke="#2563eb" stroke-width="2"/>
+  <!-- Crow's foot on products side -->
+  <line x1="330" y1="124" x2="342" y2="115" stroke="#2563eb" stroke-width="2"/>
+  <line x1="330" y1="124" x2="342" y2="133" stroke="#2563eb" stroke-width="2"/>
+  <line x1="286" y1="115" x2="286" y2="133" stroke="#2563eb" stroke-width="2"/>
+  <text x="306" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">1 : N</text>
 
-  <rect x="256" y="54" width="204" height="168" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-  <rect x="256" y="54" width="204" height="30" rx="6" fill="#047857"/>
-  <text x="358" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">2. products (Sản phẩm)</text>
-  <text x="270" y="104" font-size="12" font-weight="700" fill="#b45309">id (PK)</text>
-  <text x="270" y="124" font-size="12" fill="#334155">name, price, stock</text>
-  <text x="270" y="144" font-size="12" font-weight="600" fill="#1d4ed8">category_id (FK)</text>
-  <rect x="266" y="158" width="184" height="48" rx="5" fill="#d1fae5"/>
-  <text x="358" y="178" text-anchor="middle" font-size="11.5" fill="#065f46">Chuột không dây | 350k</text>
-  <text x="358" y="196" text-anchor="middle" font-size="11.5" fill="#065f46">stock = 50 | cat_id = 2</text>
+  <!-- products -->
+  <rect x="344" y="54" width="276" height="168" rx="8" fill="#f8fafc" stroke="#047857" stroke-width="1.6"/>
+  <rect x="344" y="54" width="276" height="30" rx="8" fill="#047857"/>
+  <text x="482" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">2. products (Sản phẩm)</text>
+  <text x="358" y="104" font-size="12" font-weight="700" fill="#b45309">PK  id</text>
+  <text x="488" y="104" font-size="11.5" font-family="monospace" fill="#64748b">bigint IDENTITY</text>
+  <text x="358" y="124" font-size="12" fill="#1e293b">    name, price, stock</text>
+  <text x="488" y="124" font-size="11.5" font-family="monospace" fill="#64748b">CHECK >= 0</text>
+  <text x="358" y="144" font-size="12" font-weight="600" fill="#1d4ed8">FK  category_id</text>
+  <text x="488" y="144" font-size="11.5" font-family="monospace" fill="#1d4ed8">→ categories(id)</text>
+  <text x="358" y="164" font-size="12" font-weight="600" fill="#047857">    specs</text>
+  <text x="488" y="164" font-size="11.5" font-family="monospace" fill="#047857">jsonb (GIN)</text>
+  <rect x="354" y="176" width="256" height="36" rx="5" fill="#d1fae5"/>
+  <text x="482" y="192" text-anchor="middle" font-size="11" fill="#065f46">10 sản phẩm • Có specs JSONB và</text>
+  <text x="482" y="206" text-anchor="middle" font-size="11" fill="#065f46">sản phẩm stock = 1 (test FOR UPDATE)</text>
 
-  <rect x="488" y="54" width="186" height="168" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-  <rect x="488" y="54" width="186" height="30" rx="6" fill="#1d4ed8"/>
-  <text x="581" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">3. users (Khách hàng)</text>
-  <text x="502" y="104" font-size="12" font-weight="700" fill="#b45309">id (PK)</text>
-  <text x="502" y="124" font-size="12" fill="#334155">name, email</text>
-  <text x="502" y="144" font-size="12" fill="#334155">is_active (true/false)</text>
-  <rect x="498" y="158" width="166" height="48" rx="5" fill="#dbeafe"/>
-  <text x="581" y="178" text-anchor="middle" font-size="11.5" fill="#1e3a8a">1 | Phong | true</text>
-  <text x="581" y="196" text-anchor="middle" font-size="11.5" fill="#1e3a8a">2 | Linh  | true</text>
+  <!-- 5. order_items (Right center, bridges products and orders) -->
+  <rect x="646" y="138" width="242" height="172" rx="8" fill="#f8fafc" stroke="#d97706" stroke-width="1.8"/>
+  <rect x="646" y="138" width="242" height="30" rx="8" fill="#d97706"/>
+  <text x="767" y="158" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">5. order_items (Chi tiết đơn)</text>
+  <text x="660" y="188" font-size="12" font-weight="700" fill="#b45309">PK,FK  order_id</text>
+  <text x="772" y="188" font-size="11.5" font-family="monospace" fill="#1d4ed8">→ orders(id)</text>
+  <text x="660" y="209" font-size="12" font-weight="700" fill="#b45309">PK,FK  product_id</text>
+  <text x="772" y="209" font-size="11.5" font-family="monospace" fill="#1d4ed8">→ products(id)</text>
+  <text x="660" y="230" font-size="12" fill="#1e293b">       quantity</text>
+  <text x="772" y="230" font-size="11.5" font-family="monospace" fill="#64748b">int CHECK &gt; 0</text>
+  <text x="660" y="250" font-size="12" fill="#1e293b">       unit_price</text>
+  <text x="772" y="250" font-size="11.5" font-family="monospace" fill="#64748b">numeric(12,2)</text>
+  <rect x="656" y="262" width="222" height="38" rx="5" fill="#fef3c7"/>
+  <text x="767" y="278" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">Bảng trung gian cho quan hệ N : N</text>
+  <text x="767" y="293" text-anchor="middle" font-size="10.5" fill="#78350f">Khóa ghép PK(order_id, product_id)</text>
 
-  <line x1="714" y1="102" x2="676" y2="102" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrRef)"/>
+  <!-- Line products -> order_items -->
+  <path d="M 620 130 L 633 130 L 633 204 L 646 204" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <line x1="636" y1="204" x2="646" y2="196" stroke="#2563eb" stroke-width="2"/>
+  <line x1="636" y1="204" x2="646" y2="212" stroke="#2563eb" stroke-width="2"/>
+  <text x="633" y="120" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1d4ed8">1:N</text>
 
-  <rect x="716" y="54" width="176" height="168" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-  <rect x="716" y="54" width="176" height="30" rx="6" fill="#7c3aed"/>
-  <text x="804" y="74" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">4. orders (Đơn hàng)</text>
-  <text x="730" y="104" font-size="12" font-weight="700" fill="#b45309">id (PK)</text>
-  <text x="730" y="124" font-size="12" font-weight="600" fill="#1d4ed8">user_id (FK)</text>
-  <text x="730" y="144" font-size="12" fill="#334155">amount, status</text>
-  <rect x="726" y="158" width="156" height="48" rx="5" fill="#ede9fe"/>
-  <text x="804" y="178" text-anchor="middle" font-size="11.5" fill="#5b21b6">#101 | user=1 | 500k</text>
-  <text x="804" y="196" text-anchor="middle" font-size="11.5" fill="#5b21b6">status = 'completed'</text>
+  <!-- Bottom Row: 3. users -> 4. orders -->
+  <!-- users -->
+  <rect x="34" y="230" width="236" height="162" rx="8" fill="#f8fafc" stroke="#1d4ed8" stroke-width="1.6"/>
+  <rect x="34" y="230" width="236" height="30" rx="8" fill="#1d4ed8"/>
+  <text x="152" y="250" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">3. users (Khách hàng)</text>
+  <text x="48" y="280" font-size="12" font-weight="700" fill="#b45309">PK  id</text>
+  <text x="148" y="280" font-size="11.5" font-family="monospace" fill="#64748b">bigint IDENTITY</text>
+  <text x="48" y="300" font-size="12" fill="#1e293b">    name</text>
+  <text x="148" y="300" font-size="11.5" font-family="monospace" fill="#64748b">varchar(100)</text>
+  <text x="48" y="320" font-size="12" fill="#1e293b">UQ  email, phone</text>
+  <text x="148" y="320" font-size="11.5" font-family="monospace" fill="#64748b">(Cho phép NULL)</text>
+  <text x="48" y="340" font-size="12" fill="#1e293b">    is_active</text>
+  <text x="148" y="340" font-size="11.5" font-family="monospace" fill="#64748b">boolean</text>
+  <rect x="44" y="350" width="216" height="32" rx="5" fill="#dbeafe"/>
+  <text x="152" y="370" text-anchor="middle" font-size="11" fill="#1e3a8a">5 khách (Phong VIP, Tuấn chưa mua...)</text>
+
+  <!-- Relation users (0..1) to orders (N) -->
+  <line x1="270" y1="308" x2="342" y2="308" stroke="#2563eb" stroke-width="2"/>
+  <line x1="330" y1="308" x2="342" y2="299" stroke="#2563eb" stroke-width="2"/>
+  <line x1="330" y1="308" x2="342" y2="317" stroke="#2563eb" stroke-width="2"/>
+  <circle cx="290" cy="308" r="5" fill="#ffffff" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="306" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">0..1 : N</text>
+
+  <!-- orders -->
+  <rect x="344" y="236" width="276" height="156" rx="8" fill="#f8fafc" stroke="#7c3aed" stroke-width="1.6"/>
+  <rect x="344" y="236" width="276" height="30" rx="8" fill="#7c3aed"/>
+  <text x="482" y="256" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">4. orders (Đơn hàng)</text>
+  <text x="358" y="286" font-size="12" font-weight="700" fill="#b45309">PK  id</text>
+  <text x="488" y="286" font-size="11.5" font-family="monospace" fill="#64748b">bigint IDENTITY</text>
+  <text x="358" y="306" font-size="12" font-weight="600" fill="#1d4ed8">FK  user_id</text>
+  <text x="488" y="306" font-size="11.5" font-family="monospace" fill="#1d4ed8">→ users(id) NULL</text>
+  <text x="358" y="326" font-size="12" fill="#1e293b">    amount, status</text>
+  <text x="488" y="326" font-size="11.5" font-family="monospace" fill="#64748b">pending/completed</text>
+  <rect x="354" y="340" width="256" height="42" rx="5" fill="#ede9fe"/>
+  <text x="482" y="357" text-anchor="middle" font-size="11" fill="#5b21b6">6 đơn hàng • Có đơn user_id = NULL</text>
+  <text x="482" y="373" text-anchor="middle" font-size="11" fill="#5b21b6">(vãng lai) để test JOIN và bẫy NOT IN</text>
+
+  <!-- Line orders -> order_items -->
+  <path d="M 620 296 L 633 296 L 633 224 L 646 224" fill="none" stroke="#2563eb" stroke-width="2"/>
+  <line x1="636" y1="224" x2="646" y2="216" stroke="#2563eb" stroke-width="2"/>
+  <line x1="636" y1="224" x2="646" y2="232" stroke="#2563eb" stroke-width="2"/>
+  <text x="633" y="314" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1d4ed8">1:N</text>
+
+  <!-- Legend box bottom right -->
+  <rect x="646" y="322" width="242" height="70" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
+  <text x="658" y="342" font-size="11.5" font-weight="700" fill="#1e293b">Ký hiệu đọc sơ đồ ERD (Crow's Foot):</text>
+  <text x="658" y="360" font-size="11" fill="#334155">• Vạch thẳng (|) = 1   • Chữ "chân chim" = Nhiều (N)</text>
+  <text x="658" y="378" font-size="11" fill="#334155">• Vòng tròn (○) = Có thể khuyết (NULL / 0)</text>
 </svg>

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" width="920" height="430" font-family="Segoe UI, Roboto, DejaVu Sans, Arial, sans-serif">
+  <defs>
+    <marker id="arrGo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrBack" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect x="2" y="2" width="916" height="426" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="460" y="34" text-anchor="middle" font-size="16.5" font-weight="700" fill="#0f172a">Hình 0.1: Luồng giao tiếp giữa Ứng dụng và Cơ sở dữ liệu (Ví dụ: Đăng nhập trong dự án Qt)</text>
+
+  <!-- 5 pipeline boxes -->
+  <!-- 1. Người dùng -->
+  <rect x="22" y="64" width="142" height="120" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.6"/>
+  <rect x="22" y="64" width="142" height="30" rx="8" fill="#334155"/>
+  <text x="93" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">1. Người dùng</text>
+  <text x="93" y="114" text-anchor="middle" font-size="12" fill="#1e293b">Nhập username</text>
+  <text x="93" y="132" text-anchor="middle" font-size="12" fill="#1e293b">và password</text>
+  <text x="93" y="156" text-anchor="middle" font-size="11" fill="#64748b">Nhấn nút Đăng nhập</text>
+  <text x="93" y="173" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">Nhận thông báo UI</text>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="164" y1="106" x2="196" y2="106" stroke="#2563eb" stroke-width="2" marker-end="url(#arrGo)"/>
+  <line x1="196" y1="156" x2="164" y2="156" stroke="#059669" stroke-width="1.8" marker-end="url(#arrBack)"/>
+
+  <!-- 2. Qt Application -->
+  <rect x="200" y="64" width="166" height="120" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.6"/>
+  <rect x="200" y="64" width="166" height="30" rx="8" fill="#1d4ed8"/>
+  <text x="283" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">2. Qt Application</text>
+  <text x="283" y="112" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1e3a8a">Giao diện + AuthService</text>
+  <text x="283" y="132" text-anchor="middle" font-size="11.5" fill="#334155">Kiểm tra đầu vào và</text>
+  <text x="283" y="149" text-anchor="middle" font-size="11.5" fill="#334155">chuẩn bị truy vấn SQL</text>
+  <text x="283" y="171" text-anchor="middle" font-size="11" font-family="monospace" fill="#1d4ed8">QSqlQuery::prepare()</text>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="366" y1="106" x2="398" y2="106" stroke="#2563eb" stroke-width="2" marker-end="url(#arrGo)"/>
+  <line x1="398" y1="156" x2="366" y2="156" stroke="#059669" stroke-width="1.8" marker-end="url(#arrBack)"/>
+
+  <!-- 3. PostgreSQL Driver -->
+  <rect x="402" y="64" width="154" height="120" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.6"/>
+  <rect x="402" y="64" width="154" height="30" rx="8" fill="#d97706"/>
+  <text x="479" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">3. PG Driver (QPSQL)</text>
+  <text x="479" y="114" text-anchor="middle" font-size="11.5" font-weight="600" fill="#92400e">Phiên dịch kết nối</text>
+  <text x="479" y="134" text-anchor="middle" font-size="11.5" fill="#334155">Gửi SQL + tham số qua</text>
+  <text x="479" y="151" text-anchor="middle" font-size="11.5" fill="#334155">mạng (cổng TCP 5432)</text>
+  <text x="479" y="172" text-anchor="middle" font-size="11" fill="#b45309">Nhận bảng kết quả về</text>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="556" y1="106" x2="588" y2="106" stroke="#2563eb" stroke-width="2" marker-end="url(#arrGo)"/>
+  <line x1="588" y1="156" x2="556" y2="156" stroke="#059669" stroke-width="1.8" marker-end="url(#arrBack)"/>
+
+  <!-- 4. PostgreSQL Server -->
+  <rect x="592" y="64" width="152" height="120" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.6"/>
+  <rect x="592" y="64" width="152" height="30" rx="8" fill="#059669"/>
+  <text x="668" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">4. PostgreSQL Server</text>
+  <text x="668" y="114" text-anchor="middle" font-size="11.5" font-weight="600" fill="#065f46">Phần mềm quản trị (DBMS)</text>
+  <text x="668" y="134" text-anchor="middle" font-size="11.5" fill="#334155">Kiểm tra quyền user,</text>
+  <text x="668" y="151" text-anchor="middle" font-size="11.5" fill="#334155">chạy SQL, băm mật khẩu</text>
+  <text x="668" y="172" text-anchor="middle" font-size="11" font-family="monospace" fill="#047857">crypt(:p, password_hash)</text>
+
+  <!-- Arrow 4 -> 5 -->
+  <line x1="744" y1="106" x2="768" y2="106" stroke="#2563eb" stroke-width="2" marker-end="url(#arrGo)"/>
+  <line x1="768" y1="156" x2="744" y2="156" stroke="#059669" stroke-width="1.8" marker-end="url(#arrBack)"/>
+
+  <!-- 5. Database -->
+  <rect x="772" y="64" width="126" height="120" rx="8" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.6"/>
+  <rect x="772" y="64" width="126" height="30" rx="8" fill="#7c3aed"/>
+  <text x="835" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">5. Database</text>
+  <text x="835" y="114" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5b21b6">Kho lưu trữ (appdb)</text>
+  <rect x="784" y="128" width="102" height="44" rx="5" fill="#ede9fe" stroke="#c4b5fd"/>
+  <text x="835" y="147" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4c1d95">Bảng app_users</text>
+  <text x="835" y="163" text-anchor="middle" font-size="10.5" fill="#5b21b6">id, username, hash</text>
+
+  <!-- Legend for arrows -->
+  <rect x="195" y="198" width="530" height="26" rx="5" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="460" y="216" text-anchor="middle" font-size="12" fill="#334155">
+    <tspan font-weight="700" fill="#2563eb">Mũi tên xanh dương →</tspan>: Gửi yêu cầu &amp; câu lệnh SQL    •    <tspan font-weight="700" fill="#059669">← Mũi tên xanh lá</tspan>: Trả dòng kết quả / Trạng thái
+  </text>
+
+  <line x1="28" y1="238" x2="892" y2="238" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="460" y="264" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">Phân biệt 4 khái niệm thường bị nhầm lẫn khi mới bắt đầu</text>
+
+  <!-- Bottom 4 cards -->
+  <rect x="24" y="282" width="206" height="126" rx="8" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+  <text x="127" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">PostgreSQL (Server)</text>
+  <text x="127" y="326" text-anchor="middle" font-size="11.5" fill="#334155">Phần mềm máy chủ chạy nền</text>
+  <text x="127" y="344" text-anchor="middle" font-size="11.5" fill="#334155">để lưu trữ, bảo mật và xử lý</text>
+  <text x="127" y="362" text-anchor="middle" font-size="11.5" fill="#334155">dữ liệu (cổng 5432).</text>
+  <text x="127" y="392" text-anchor="middle" font-size="11.5" font-weight="700" fill="#047857">Ví dụ: container postgres:16</text>
+
+  <rect x="246" y="282" width="206" height="126" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="349" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">SQL (Ngôn ngữ)</text>
+  <text x="349" y="326" text-anchor="middle" font-size="11.5" fill="#334155">Ngôn ngữ chuẩn dùng để viết</text>
+  <text x="349" y="344" text-anchor="middle" font-size="11.5" fill="#334155">lệnh hỏi, thêm, sửa, xóa dữ liệu</text>
+  <text x="349" y="362" text-anchor="middle" font-size="11.5" fill="#334155">gửi tới hệ quản trị.</text>
+  <text x="349" y="392" text-anchor="middle" font-size="11.5" font-family="monospace" font-weight="700" fill="#1e40af">SELECT * FROM app_users;</text>
+
+  <rect x="468" y="282" width="206" height="126" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+  <text x="571" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">pgAdmin 4 &amp; psql (Client)</text>
+  <text x="571" y="326" text-anchor="middle" font-size="11.5" fill="#334155">Công cụ dành cho con người</text>
+  <text x="571" y="344" text-anchor="middle" font-size="11.5" fill="#334155">kết nối vào PostgreSQL Server</text>
+  <text x="571" y="362" text-anchor="middle" font-size="11.5" fill="#334155">để xem bảng và gõ lệnh SQL.</text>
+  <text x="571" y="392" text-anchor="middle" font-size="11.5" font-weight="700" fill="#92400e">pgAdmin (Web) • psql (Terminal)</text>
+
+  <rect x="690" y="282" width="206" height="126" rx="8" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1.5"/>
+  <text x="793" y="305" text-anchor="middle" font-size="13" font-weight="700" fill="#6d28d9">Driver (Thư viện kết nối)</text>
+  <text x="793" y="326" text-anchor="middle" font-size="11.5" fill="#334155">Cầu nối bên trong mã nguồn</text>
+  <text x="793" y="344" text-anchor="middle" font-size="11.5" fill="#334155">ứng dụng giúp app tự nói</text>
+  <text x="793" y="362" text-anchor="middle" font-size="11.5" fill="#334155">chuyện với PostgreSQL Server.</text>
+  <text x="793" y="392" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5b21b6">Qt: QPSQL • Python: psycopg</text>
+</svg>
