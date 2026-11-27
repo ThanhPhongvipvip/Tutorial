@@ -1,5 +1,5 @@
 # Nhập Môn Cơ Sở Dữ Liệu và PostgreSQL 16
-
+(Postgresql full course:  https://www.youtube.com/watch?v=qw--VYLpxG4)
 > Giáo trình từng bước giúp người mới bắt đầu đi từ con số 0 đến hiểu cách thiết kế bảng, viết truy vấn SQL, xử lý giao dịch đồng thời, tối ưu hiệu năng và vận hành PostgreSQL 16 trong ứng dụng phần mềm thực tế.
 >
 > - **Bộ dữ liệu thực hành xuyên suốt Phần 3 – 5:** [`database-demo/`](database-demo/01_create_tables.sql) (`01_create_tables.sql`, `02_insert_sample_data.sql`, `03_verify_database.sql`).
